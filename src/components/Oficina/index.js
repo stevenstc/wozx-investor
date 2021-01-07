@@ -3,7 +3,10 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-export default class EarnTron extends Component {
+
+import cons from "../../cons.js";
+
+export default class WozxInvestor extends Component {
   constructor(props) {
     super(props);
 
@@ -23,12 +26,101 @@ export default class EarnTron extends Component {
     this.Investors = this.Investors.bind(this);
     this.Link = this.Link.bind(this);
     this.withdraw = this.withdraw.bind(this);
+    this.comprarWozx = this.comprarWozx.bind(this);
+    
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     setInterval(() => this.Investors(),1000);
     setInterval(() => this.Link(),1000);
+  };
+
+  async comprarWozx(){
+
+    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    var targetUrl = 'https://data.gateapi.io/api2/1/marketlist';
+
+      function esWozx(cripto) {
+          return cripto.symbol === 'WOZX';
+      }
+
+    fetch(proxyUrl + targetUrl)
+      .then(blob => blob.json())
+      .then(data => {
+        console.log(data.data.find(esWozx).rate);
+        return data;
+      })
+      .catch(e => {
+        console.log(e);
+        return e;
+      });
+      function esTrx(cripto) {
+          return cripto.symbol === 'TRX';
+      }
+
+    fetch(proxyUrl + targetUrl)
+      .then(blob => blob.json())
+      .then(data => {
+        console.log(data.data.find(esTrx).rate);
+        return data;
+      })
+      .catch(e => {
+        console.log(e);
+        return e;
+      });
+
+    
+
+
+      const GateApi = require('gate-api');
+const client = new GateApi.ApiClient();
+// uncomment the next line to change base path
+// client.basePath = "https://some-other-host"
+
+const api = new GateApi.DeliveryApi(client);
+const settle = "usdt"; // 'usdt' | Settle currency
+api.listDeliveryContracts(settle, 
+  {headers: {
+      'Content-Type': 'Not defined',
+      'Accept': 'application/json'
+    }})
+   .then(value => console.log('API called successfully. Returned data: ', value.body),
+         error => console.error(error));
+
+
+   /*
+     const token = '111111111111111111'; //token from local.storage 
+       //const hash = Base64.encode(token);
+        //const Basic = 'Basic ' + hash;
+        const username= 'john.asd@gmail.com';
+        const password= 'aZdfgHkL12'
+        const url= "https://beta.application.com/api/v1/projects/";
+
+        axios.get
+            axios({
+                "url": url,
+                "withCredentials": true,
+                "method": "GET",
+                "headers": {
+                    'Authorization': `Bearer ${token}`
+                },
+                "auth": {
+                    username: username,
+                    password: password
+                }
+            })
+            .then(response => {
+                this.setState({
+                    projects: response
+                });
+            })
+            .catch(error => {
+                console.log('error');
+            })
+        }
+   */
+
   };
 
   async Link() {
@@ -137,7 +229,7 @@ export default class EarnTron extends Component {
             <div className="box">
               <div className="icon"><i className="ion-ios-speedometer-outline" style={{color:'#41cf2e'}}></i></div>
               <h4 className="title"><a href="#services">Disponible</a></h4>
-              <p className="description">{balanceRef+my} TRX <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>Retirar</button></p>
+              <p className="description">{balanceRef+my} TRX <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>llamar API</button></p>
             </div>
           </div>
           <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.2s" data-wow-duration="1.4s">
