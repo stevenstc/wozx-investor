@@ -3,14 +3,32 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-
 import cons from "../../cons.js";
+
+import querystring from 'querystring';
+import sha512 from 'sha512';
+
+var ratetrx = "";
+var ratewozx = "";
+var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
+
+const KEY  = cons.API_KEY;
+const SECRET  = cons.secretKey;
 
 export default class WozxInvestor extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      ratetrx: "",
+      estado:{
+        result:false,
+        texto1:"cargando.",
+        texto2:"cargando..",
+        texto3:"cargando...",
+      },
+      ratewozx: "",
+      datos: {},
       direccion: "",
       link: "Haz una inversión para obtener el LINK de referido",
       registered: false,
@@ -26,102 +44,180 @@ export default class WozxInvestor extends Component {
     this.Investors = this.Investors.bind(this);
     this.Link = this.Link.bind(this);
     this.withdraw = this.withdraw.bind(this);
+    this.rateWozx = this.rateWozx.bind(this);
     this.comprarWozx = this.comprarWozx.bind(this);
+    this.rateTRX = this.rateTRX.bind(this);
+    this.venderTRX = this.venderTRX.bind(this);
+    this.prueba = this.prueba.bind(this);
+    
     
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    setInterval(() => this.Investors(),1000);
-    setInterval(() => this.Link(),1000);
+    this.Investors();
+    this.Link();
+    setInterval(() => this.Investors(),10000);
+    setInterval(() => this.Link(),10000);
   };
 
-  async comprarWozx(){
+  async rateTRX(){
 
-    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    var targetUrl = 'https://data.gateapi.io/api2/1/marketlist';
-
-      function esWozx(cripto) {
-          return cripto.symbol === 'WOZX';
-      }
-
-    fetch(proxyUrl + targetUrl)
-      .then(blob => blob.json())
-      .then(data => {
-        console.log(data.data.find(esWozx).rate);
-        return data;
-      })
-      .catch(e => {
-        console.log(e);
-        return e;
-      });
-      function esTrx(cripto) {
+    function esTrx(cripto) {
           return cripto.symbol === 'TRX';
       }
 
-    fetch(proxyUrl + targetUrl)
-      .then(blob => blob.json())
-      .then(data => {
-        console.log(data.data.find(esTrx).rate);
-        return data;
-      })
-      .catch(e => {
-        console.log(e);
-        return e;
-      });
+    const USER_AGENT = 'stevenSTC';
+    let header1 = {
+      'Access-Control-Allow-Origin' :'*',
+      'User-Agent' : USER_AGENT,
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
+    };
+    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
+    .then(res => res.json())
+    .then(data => {
+      //console.log(data);
+      ratetrx = data.data.find(esTrx).rate; 
+      ratetrx = parseFloat(ratetrx).toFixed(6);
+      ratetrx = ratetrx-ratetrx*0.01;
+      ratetrx = ratetrx.toString();
+      //console.log(ratetrx);
+    })
+    .catch(error => console.log('Error:', error));
 
+    this.setState({
+      ratetrx: ratetrx
+    });
+
+  }
+
+  async venderTRX(){    
+
+    await this.rateTRX();
+    
+    let amount = "40";
+    let currencyPair = "trx_usdt";
+
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
+
+    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+    var hasher = sha512.hmac(SECRET);
+    var hash = hasher.finalize(body);
+    var firma = hash.toString('hex');
+
+    header.KEY = KEY;
+    header.SIGN = firma;
+    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => console.log('Error:', error));
     
 
+  }
 
-      const GateApi = require('gate-api');
-const client = new GateApi.ApiClient();
-// uncomment the next line to change base path
-// client.basePath = "https://some-other-host"
+  async rateWozx(){
 
-const api = new GateApi.DeliveryApi(client);
-const settle = "usdt"; // 'usdt' | Settle currency
-api.listDeliveryContracts(settle, 
-  {headers: {
-      'Content-Type': 'Not defined',
-      'Accept': 'application/json'
-    }})
-   .then(value => console.log('API called successfully. Returned data: ', value.body),
-         error => console.error(error));
+    function esWozx(cripto) {
+          return cripto.symbol === 'WOZX';
+      }
 
+    const USER_AGENT = 'stevenSTC';
+    let header1 = {
+      'Access-Control-Allow-Origin' :'*',
+      'User-Agent' : USER_AGENT,
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
+    };
+    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
+    .then(res => res.json())
+    .then(data => {
+      //console.log(data);
+      ratewozx = data.data.find(esWozx).rate; 
+      ratewozx = parseFloat(ratewozx).toFixed(6);
+      ratewozx = ratewozx+ratewozx*0.01;
+      ratewozx = ratewozx.toString();
+      //console.log(ratewozx);
+    })
+    .catch(error => console.log('Error:', error));
 
-   /*
-     const token = '111111111111111111'; //token from local.storage 
-       //const hash = Base64.encode(token);
-        //const Basic = 'Basic ' + hash;
-        const username= 'john.asd@gmail.com';
-        const password= 'aZdfgHkL12'
-        const url= "https://beta.application.com/api/v1/projects/";
+    this.setState({
+      ratewozx: ratewozx
+    });
 
-        axios.get
-            axios({
-                "url": url,
-                "withCredentials": true,
-                "method": "GET",
-                "headers": {
-                    'Authorization': `Bearer ${token}`
-                },
-                "auth": {
-                    username: username,
-                    password: password
-                }
-            })
-            .then(response => {
-                this.setState({
-                    projects: response
-                });
-            })
-            .catch(error => {
-                console.log('error');
-            })
+  }
+
+  async comprarWozx(){    
+
+    await this.rateWozx();
+    
+    let amount = "1";
+    let currencyPair = "wozx_usdt";
+
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
+
+    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+    var hasher = sha512.hmac(SECRET);
+    var hash = hasher.finalize(body);
+    var firma = hash.toString('hex');
+
+    header.KEY = KEY;
+    header.SIGN = firma;
+    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => console.log('Error:', error));
+    
+
+  }
+
+  async prueba(){ 
+  /* 
+    await request(
+      { url: 'https://data.gateio.life/api2/1/marketlist' },
+      (error, response, body) => {
+        if (error || response.statusCode !== 200) {
+          console.log(error)
         }
-   */
 
-  };
+        console.log(response);
+        console.log(body);
+        //JSON.parse(body)
+
+        
+      }
+    )*/
+
+    // Ejemplo implementando el metodo POST:
+async function postData(url = '', data = {}) {
+  // Opciones por defecto estan marcadas con un *
+  const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept-Language' : 'x-requested-with'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'origin', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    //body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+postData('https://data.gateio.life/api2/1/marketlist', {})
+  .then(data => {
+    console.log(data); // JSON data parsed by `data.json()` call
+  });
+  }
 
   async Link() {
     const {registered} = this.state;
@@ -229,7 +325,9 @@ api.listDeliveryContracts(settle,
             <div className="box">
               <div className="icon"><i className="ion-ios-speedometer-outline" style={{color:'#41cf2e'}}></i></div>
               <h4 className="title"><a href="#services">Disponible</a></h4>
-              <p className="description">{balanceRef+my} TRX <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>llamar API</button></p>
+              <p className="description">{balanceRef+my} TRX <button type="button" className="btn btn-info" onClick={() => this.prueba()}>llamar API</button></p>
+              <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>vender TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>comprar Wozx</button>
             </div>
           </div>
           <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.2s" data-wow-duration="1.4s">

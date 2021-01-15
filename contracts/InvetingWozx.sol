@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.14;
 
 import "./SafeMath.sol";
 
@@ -26,6 +26,7 @@ contract InvetingWozx {
     address sponsor;
     bool exist;
     Referer[] referers;
+    string ethereum;
     uint balanceRef;
     uint totalRef;
     Deposit[] deposits;
@@ -34,9 +35,9 @@ contract InvetingWozx {
     uint withdrawn;
   }
   
-  uint MIN_DEPOSIT = 50 trx;
+  uint public MIN_DEPOSIT = 3000 trx;
 
-  address public owner;
+  address payable public owner;
   address public NoValido;
   bool public Do;
   
@@ -67,19 +68,19 @@ contract InvetingWozx {
       return (totalInvestors, totalInvested, totalRefRewards);
   }
 
-  function Do() public view returns (bool){
+  function Do2() public view returns (bool){
     return Do;
   }
 
-  function InContract() public view returns (uint){
+  function InContract2() public view returns (uint){
     return InContract;
   }
 
-  function owner() public view returns (address){
+  function owner2() public view returns (address){
     return owner;
   }
 
-  function setOwner(address _owner) public returns (address){
+  function setOwner(address payable _owner) public returns (address){
     require (msg.sender == owner);
     require (_owner != owner);
 
@@ -177,7 +178,7 @@ contract InvetingWozx {
     
   }
   
-  function deposit(uint tariff, address _sponsor) external payable {
+  function deposit(uint tariff, address _sponsor) external payable returns (uint ,bool) {
     require(msg.value >= MIN_DEPOSIT);
     require(tariff < tariffs.length);
     require (_sponsor != msg.sender);
@@ -204,6 +205,8 @@ contract InvetingWozx {
     InContract += msg.value.mul(90).div(100);
     
     emit DepositAt(msg.sender, tariff, msg.value);
+
+    return (msg.value, true);
   }
   
   function withdrawable(address any_user) public view returns (uint amount) {
@@ -260,7 +263,26 @@ contract InvetingWozx {
       }
     }
   }
+
+  function miETH (address  _direccion) public view returns(string memory eth)  {
+    Investor storage inv = investors[_direccion];
+    eth = inv.ethereum;
+
+    return eth;
+  }
   
+  function setETH (string memory _direccion) public returns (bool, string memory){
+    Investor storage inv = investors[msg.sender];
+    inv.ethereum = _direccion;
+
+    return (true, _direccion);
+  }
+  
+  function nuevoMinDeposit(uint num)public{
+    require (msg.sender == owner);
+    MIN_DEPOSIT = num*1 trx;
+  }
+ 
   function profit() internal returns (uint) {
     Investor storage investor = investors[msg.sender];
     
@@ -299,6 +321,6 @@ contract InvetingWozx {
     
   }
 
-  function () public payable {}  
+  function () external payable {}  
   
 }

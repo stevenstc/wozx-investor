@@ -128,12 +128,12 @@ class App extends Component {
               <header className="section-header">
                   <h3>Has tu inversión</h3>
               </header>
-              <div  className="row row-eq-height justify-content-center">
+              <div  className="row">
                 <CrowdFunding />
                 <TronLinkInfo />
                 <PanelOwner />
               </div>
-              <div >
+              <div className="container">
                 <Datos />
               </div>
             </div>

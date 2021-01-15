@@ -39,17 +39,17 @@ export default class WozxInvestor extends Component {
     return (
       <div className="row counters">
             
-        <div className="col-lg-4 col-12 text-center">
+        <div className="col-md-12  text-center">
           <span data-toggle="counter-up">{totalInvestors}</span>
           <p>Inversores Globales</p>
         </div>
 
-        <div className="col-lg-4 col-12 text-center">
+        <div className="col-md-12 w-100 text-center">
           <span data-toggle="counter-up">{totalInvested} TRX</span>
           <p>Invertido Global</p>
         </div>
 
-        <div className="col-lg-4 col-12 text-center">
+        <div className="col-md-12 w-100 text-center">
           <span data-toggle="counter-up">{totalRefRewards} TRX</span>
           <p>Recompensas  Globales Referidos</p>
         </div>
