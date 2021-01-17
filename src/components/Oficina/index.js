@@ -251,12 +251,11 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,
-      balanceRef: parseInt(esto.balanceRef._hex)/1000000,
-      totalRef: parseInt(esto.totalRef._hex)/1000000,
-      invested: parseInt(esto.invested._hex)/1000000,
-      paidAt: parseInt(esto.paidAt._hex)/1000000,
+      balanceRef: parseInt(esto.balanceTrx._hex)/1000000,
+      totalRef: parseInt(esto.withdrawnTrx._hex)/1000000,
+      invested: parseInt(esto.investedWozx._hex)/1000000,
       my: parseInt(My.amount._hex)/1000000,
-      withdrawn: parseInt(esto.withdrawn._hex)/1000000
+      withdrawn: parseInt(esto.withdrawnWozx._hex)/1000000
     });
 
   };
@@ -292,8 +291,8 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-duration="1.4s">
             <div className="box">
               <div className="icon"><i className="ion-ios-analytics-outline" style={{color: '#ff689b'}}></i></div>
-              <h4 className="title"><a href="#services">{invested} TRX</a></h4>
-              <p className="description">Total invertido</p>
+              <h4 className="title"><a href="#services">{invested} WOZX</a></h4>
+              <p className="description">Mi inversión</p>
             </div>
           </div>
           <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-duration="1.4s">
