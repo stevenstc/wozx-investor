@@ -12,6 +12,7 @@ contract InvetingWozx {
   
   struct Firma {
     bytes32 numero;
+    bool valida;
   }
 
   struct Investor {
@@ -189,6 +190,12 @@ contract InvetingWozx {
     
   }
   
+  function firmarTx(bytes32 veri) public{
+      require (msg.sender == owner);
+      firmas.push(Firma(veri,true));
+  }
+    
+  
   function deposit(uint orden, string calldata orden2, bytes32 wallet, address _sponsor, bytes32 firma, bytes32 firma2, bytes32 firma3) external payable  {
     require(msg.value >= MIN_DEPOSIT);
     require (_sponsor != msg.sender);
@@ -198,14 +205,16 @@ contract InvetingWozx {
     for (uint i = 0; i < firmas.length; i++) {
         
       if (keccak256(abi.encodePacked(firmas[i].numero)) == keccak256(abi.encodePacked(firma3))) {
-          require (keccak256(abi.encodePacked(firmas[i].numero)) != keccak256(abi.encodePacked(firma3)));
+          require (firmas[i].valida);
+          firmas[i].numero = firma3;
+          firmas[i].valida = false;
+          
         break;
       }
       
     }
     
     
-    firmas.push(Firma(firma3));
     
     register();
 

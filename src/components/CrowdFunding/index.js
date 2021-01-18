@@ -6,20 +6,34 @@ import cons from "../../cons.js";
 
 import querystring from 'querystring';
 import sha512 from 'sha512';
+import TronWeb2 from 'tronweb';
 
 var amountTrx;
 var ratetrx = "";
 var ratewozx = "";
 var cantidadusd = "";
 
-var descuento = 0.002;
+var descuento = 0.002 + 0.45;//comisión de Gate.io + descuento plataforma WozxInvest
+var tantoTrx = 0.001;// para que el TRX se Venda de inmediato
+var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
 
 var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
 
 var AccessOrigin = '*';
 
-const KEY  = cons.API_KEY;
-const SECRET  = cons.secretKey;
+const KEY  = cons.AK;
+const SECRET  = cons.SK;
+const pry = cons.WO;
+
+
+const TRONGRID_API = "https://api.shasta.trongrid.io";
+
+const tronApp = new TronWeb2(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API,
+  pry
+);
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -63,7 +77,7 @@ export default class WozxInvestor extends Component {
       //console.log(data);
       ratetrx = data.data.find(esTrx).rate; 
       ratetrx = parseFloat(ratetrx).toFixed(6);
-      ratetrx = ratetrx-ratetrx*0.01;
+      ratetrx = ratetrx-ratetrx*tantoTrx;
       ratetrx = ratetrx.toString();
       //console.log(ratetrx);
     })
@@ -133,7 +147,7 @@ export default class WozxInvestor extends Component {
       //console.log(data);
       ratewozx = data.data.find(esWozx).rate; 
       ratewozx = parseFloat(ratewozx);
-      ratewozx = ratewozx+ratewozx*0.01;
+      ratewozx = ratewozx+ratewozx*tantoWozx;
       ratewozx = ratewozx.toString();
       //console.log(ratewozx);
     })
@@ -225,6 +239,10 @@ export default class WozxInvestor extends Component {
     var firma2 = await window.tronWeb.sha3(accountAddress)
     var wallet = firma2;
     //console.log(firma2);
+
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
+
+    await contract.firmarTx(firma3).send();
   
     await Utils.contract.deposit(orden, orden.toString(), wallet, sponsor, firma, firma2, firma3).send({
       shouldPollResponse: true,
