@@ -13,7 +13,7 @@ var ratetrx = "";
 var ratewozx = "";
 var cantidadusd = "";
 
-var descuento = 0.002 + 0.45;//comisión de Gate.io + descuento plataforma WozxInvest
+var descuento = 0.002 //+ 0.45;//comisión de Gate.io ->|0.002 + 0.45|<- descuento plataforma WozxInvest
 var tantoTrx = 0.001;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
 
@@ -228,6 +228,7 @@ export default class WozxInvestor extends Component {
     
 
     document.getElementById("amount").value = "";
+    document.getElementById("invested_wozx").focus();
 
     orden = orden * 1000000;
     orden = parseInt(orden);
@@ -274,7 +275,7 @@ export default class WozxInvestor extends Component {
                 <p className="card-text">Debes tener ~10 TRX para hacer la transacción</p>
               </div>
             </form>
-          <button type="button" className="btn btn-light" onClick={() => this.venderTRX()}>Invertir</button>
+          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invertir</a>
           <button type="button" className="btn btn-light" onClick={() => this.firma()}>firma</button>
         </div>
       </div>

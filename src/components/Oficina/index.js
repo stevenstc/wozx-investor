@@ -286,56 +286,52 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           
         </header>
 
-        <div className="row">
+        <div id="invested_wozx" className="row">
 
-          <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-duration="1.4s">
+          <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-analytics-outline" style={{color: '#ff689b'}}></i></div>
-              <h4 className="title"><a href="#services">{invested} WOZX</a></h4>
-              <p className="description">Mi inversión</p>
+              <p className="description">Balance</p>
+              <h4 className="display-2 display-2--light">{invested} WOZX</h4>
             </div>
           </div>
-          <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-duration="1.4s">
+          <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-bookmarks-outline" style={{color: '#e9bf06'}}></i></div>
-              <h4 className="title"><a href="#services">{totalRef} TRX</a></h4>
-              <p className="description">Total ganancias por referidos</p>
+              <p className="description">Withdrawn</p>
+              <h4 className="display-2--light">{totalRef} WOZX</h4>
             </div>
           </div>
 
-          <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1.4s">
+          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Mi balance</p>
-              <h4 className="title"><a href="#services">{my} TRX</a></h4>
-              
+              <p className="description">Balance</p>
+              <h4 className="display-2--light">{my} TRX</h4>
             </div>
           </div>
-          <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1.4s">
+          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Balance por referidos</p>
-              <h4 className="title"><a href="#services"> {balanceRef} TRX</a></h4>
+            <p className="description">Withdrawn</p>
+              <h4 className="display-2--light">{balanceRef} TRX</h4>
               
             </div>
           </div>
 
-          <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1.4s">
+          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-speedometer-outline" style={{color:'#41cf2e'}}></i></div>
-              <h4 className="title"><a href="#services">Disponible</a></h4>
-              <p className="description">{balanceRef+my} TRX <button type="button" className="btn btn-info" onClick={() => this.prueba()}>llamar API</button></p>
-              <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>vender TRX</button>
-              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>comprar Wozx</button>
+              <h4 className="display-2--light">Disponible: <br></br>{invested} WOZX</h4>
+              <button type="button" className="btn btn-info" onClick={() => this.prueba()}>Vender WOZX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>Retirar WOZX</button>
+      
             </div>
           </div>
-          <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.2s" data-wow-duration="1.4s">
+
+          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
             <div className="box">
-              <div className="icon"><i className="ion-ios-clock-outline" style={{color: '#4680ff'}}></i></div>
-              <h4 className="title"><a href="#services">Retirado</a></h4>
-              <p className="description">{withdrawn} TRX</p>
+              <h4 className="display-2--light">Disponible: <br></br>{invested} TRX</h4>
+              <p className="description"> wait time: 0 seconds</p>
+              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>Retirar TRX</button>
             </div>
           </div>
+          
 
         </div>
 
