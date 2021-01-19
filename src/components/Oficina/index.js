@@ -12,8 +12,8 @@ var ratetrx = "";
 var ratewozx = "";
 var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
 
-const KEY  = cons.API_KEY;
-const SECRET  = cons.secretKey;
+const KEY  = cons.AK;
+const SECRET  = cons.SK;
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -21,23 +21,11 @@ export default class WozxInvestor extends Component {
 
     this.state = {
       ratetrx: "",
-      estado:{
-        result:false,
-        texto1:"cargando.",
-        texto2:"cargando..",
-        texto3:"cargando...",
-      },
       ratewozx: "",
       datos: {},
       direccion: "",
       link: "Haz una inversión para obtener el LINK de referido",
-      registered: false,
-      balanceRef: 0,
-      totalRef: 0,
-      invested: 0,
-      paidAt: 0,
-      my: 0,
-      withdrawn: 0
+      registered: false
 
     };
 
@@ -251,11 +239,11 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,
-      balanceRef: parseInt(esto.balanceTrx._hex)/1000000,
-      totalRef: parseInt(esto.withdrawnTrx._hex)/1000000,
-      invested: parseInt(esto.investedWozx._hex)/1000000,
-      my: parseInt(My.amount._hex)/1000000,
-      withdrawn: parseInt(esto.withdrawnWozx._hex)/1000000
+      balanceTrx: parseInt(esto.balanceTrx._hex)/1000000,
+      withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
+      investedWozx: parseInt(esto.investedWozx._hex)/1000000,
+      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
+      mywithdrawableWozx: parseInt(My.amount._hex)/1000000
     });
 
   };
@@ -266,7 +254,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
 
 
   render() {
-    const { balanceRef, totalRef, invested,  withdrawn , my, direccion, link} = this.state;
+    const { balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , mywithdrawableWozx , direccion, link} = this.state;
 
     return (
       
@@ -274,65 +262,52 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
 
         <header style={{'text-align': 'center'}} className="section-header">
           <h3 className="white"><span style={{'font-weight': 'bold'}}>
-          Mi Oficina:</span> <br></br>
+          My office:</span> <br></br>
           <span style={{'font-size': '18px'}}>{direccion}</span></h3><br></br>
           <h3 className="white" style={{'font-weight': 'bold'}}>Link de referido:</h3>
           <h6 className="white" ><a href={link}>{link}</a>&nbsp;
           <CopyToClipboard text={link}>
-            <button type="button" className="btn btn-info">COPIAR</button>
+            <button type="button" className="btn btn-info">Copy to clipboard</button>
           </CopyToClipboard>
           </h6>
           <hr></hr>
           
         </header>
 
-        <div id="invested_wozx" className="row">
+        <div className="centrartexto">
 
-          <div className="subhead" data-wow-duration="1.4s">
-            <div className="box">
-              <p className="description">Balance</p>
-              <h4 className="display-2 display-2--light">{invested} WOZX</h4>
-            </div>
-          </div>
-          <div className="subhead" data-wow-duration="1.4s">
-            <div className="box">
-              <p className="description">Withdrawn</p>
-              <h4 className="display-2--light">{totalRef} WOZX</h4>
-            </div>
+          <div>
+          
+              <h1 className="subhead">Balance</h1>
+              <h3 className="display-2--light">{investedWozx} WOZX</h3>
+              <hr></hr>
+            
           </div>
 
-          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
-            <div className="box">
-              <p className="description">Balance</p>
-              <h4 className="display-2--light">{my} TRX</h4>
-            </div>
-          </div>
-          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
-            <div className="box">
-            <p className="description">Withdrawn</p>
-              <h4 className="display-2--light">{balanceRef} TRX</h4>
-              
-            </div>
+          <div >
+            
+              <h1 className="subhead">Withdrawn</h1>
+              <h3 className="display-2--light">{withdrawnWozx} WOZX</h3>
+              <hr></hr>
+            
+          </div> 
+
+          <div>
+            
+              <h1 className="subhead">Balance</h1>
+              <h3 className="display-2--light">{balanceTrx} TRX</h3>
+              <hr></hr>
+            
           </div>
 
-          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
-            <div className="box">
-              <h4 className="display-2--light">Disponible: <br></br>{invested} WOZX</h4>
-              <button type="button" className="btn btn-info" onClick={() => this.prueba()}>Vender WOZX</button>
-              <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>Retirar WOZX</button>
-      
-            </div>
-          </div>
-
-          <div className="subhead" data-wow-delay="0.1s" data-wow-duration="1.4s">
-            <div className="box">
-              <h4 className="display-2--light">Disponible: <br></br>{invested} TRX</h4>
-              <p className="description"> wait time: 0 seconds</p>
-              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>Retirar TRX</button>
-            </div>
+          <div >
+            
+              <h1 className="subhead">Withdrawn</h1>
+              <h3 className="display-2--light">{withdrawnTrx} TRX</h3>
+              <hr></hr>
+            
           </div>
           
-
         </div>
 
       </div>

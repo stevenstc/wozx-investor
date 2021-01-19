@@ -5,7 +5,7 @@ import Utils from "../../utils";
 import CrowdFunding from "../CrowdFunding";
 import Datos from "../Datos";
 import Oficina from "../Oficina";
-import TronLinkInfo from "../TronLinkInfo";
+import Oficina2 from "../Oficina2";
 import TronLinkGuide from "../TronLinkGuide";
 import PanelOwner from "../PanelOwner";
 
@@ -121,28 +121,26 @@ class App extends Component {
       );
 
     return (
-      <div>
-        <div>
-          <section id="why-us" className="wow fadeIn">
-            <div className="container">
-              <header className="section-header">
-                  <h3>Has tu inversión</h3>
-              </header>
-              <div  className="row">
-                <CrowdFunding />
-                <TronLinkInfo />
-                <PanelOwner />
-              </div>
-              <div className="container">
-                <Datos />
-              </div>
-            </div>
-          </section>
+
+      <div className="row contact-content" data-aos="fade-up">
+            
+        <div className="contact-primary">
           
-          <section id="services" className="section-bg">
+          <div  className="row">
+            
+            <PanelOwner />
             <Oficina /> 
-          </section>
+          </div>
         </div>
+        <div className="contact-secondary">
+          <div className="contact-info">
+            <CrowdFunding />
+            <hr></hr>
+            <hr></hr>
+            <Oficina2 /> 
+          </div>
+        </div>
+
       </div>
       
 

@@ -1461,7 +1461,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
     padding: 0;
     outline: 0;
     border: none;
-    width: 80px;
+    width: 160px;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
 }
@@ -3011,9 +3011,14 @@ html.no-csstransitions .home-content__main {
     position: relative;
 }
 
+.tron {
+    padding-left: 5rem;
+    padding-right: 5rem;
+}
+
 .contact-content h3 {
     margin-top: 0;
-    margin-bottom: 6.6rem;
+    /*margin-bottom: 6.6rem;*/
     color: #FFFFFF;
 }
 
@@ -3034,6 +3039,7 @@ html.no-csstransitions .home-content__main {
     color: rgba(255, 255, 255, 0.6);
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     margin-bottom: .9rem;
+    
 }
 
 .contact-content input[type="email"]:focus,
@@ -3046,13 +3052,31 @@ html.no-csstransitions .home-content__main {
 .contact-content textarea:focus,
 .contact-content select:focus {
     color: #FFFFFF;
-    border-bottom: 1px solid #39b54a;
+    border-bottom: 4px solid #39b54a;
+}
+
+#amount {
+    
+    font-size: 20px;
+}
+.form{
+    text-align: center;
+}
+
+.centrartexto{
+    text-align: center;
 }
 
 .contact-content button,
 .contact-content .btn {
-    margin-top: 3.6rem;
+    /*margin-top: 3.6rem;*/
 }
+
+.contact-content .btn:active {
+
+    background-color:#39b54a;
+}
+
 .contact-content input::-webkit-input-placeholder,
 .contact-content select::-webkit-input-placeholder,
 .contact-content textarea::-webkit-input-placeholder {
@@ -3381,10 +3405,10 @@ footer .row {
     padding: 0;
     outline: 0;
     border: none;
-    width: 85px;
-    height: 28px;
+    width: 161px;
+    height: 32px;
     background: url("../images/logo-footer.png") no-repeat center;
-    background-size: 85px 28px;
+    background-size: 161px 32px;
     font: 0/0 a;
     text-shadow: none;
     color: transparent;

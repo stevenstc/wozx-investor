@@ -22,9 +22,9 @@ const TronLinkGuide = props => {
 
     if(!installed) {
         return (
-            <div className='row' onClick={ openTronLink }>
-                <div className='col-xs-12 col-md-8'>
-                    <h1>TronLink Required</h1>
+            <div className='row tron contact-content aos-init aos-animate' onClick={ openTronLink }>
+                <div>
+                    <h5>TronLink Required</h5>
                     <p>
                         To create a post or tip others you must install TronLink. TronLink is a TRON wallet for the browser
                         that can be <a href={ WEBSTORE_URL } target='_blank' rel='noopener noreferrer'>installed from the Chrome Webstore</a>.
@@ -37,9 +37,9 @@ const TronLinkGuide = props => {
     }
 
     return (
-        <div className='tronLink row' onClick={ openTronLink }>
-            <div className='info col-xs-12 col-md-8'>
-                <h1>Log in Required</h1>
+        <div className='row tron contact-content aos-init aos-animate' onClick={ openTronLink }>
+            <div>
+                <h5>Log in Required</h5>
                 <p>
                     TronLink is installed but you must first log in. Open TronLink from the browser bar and set up your
                     first wallet or decrypt a previously-created wallet.

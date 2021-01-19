@@ -46,7 +46,6 @@ export default class WozxInvestor extends Component {
     }
 
     this.deposit = this.deposit.bind(this);
-    this.firma = this.firma.bind(this);
     this.rateWozx = this.rateWozx.bind(this);
     this.comprarWozx = this.comprarWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
@@ -228,7 +227,6 @@ export default class WozxInvestor extends Component {
     
 
     document.getElementById("amount").value = "";
-    document.getElementById("invested_wozx").focus();
 
     orden = orden * 1000000;
     orden = parseInt(orden);
@@ -253,30 +251,22 @@ export default class WozxInvestor extends Component {
     
   };
 
-  async firma() {
-    console.log(await window.tronWeb.sha3('0x5B38Da6a701c568545dCfcB03FcB875f56beddC4'));
-  }
-
   render() {
     
     return (
       
       <div className="card wow bounceInUp">
-          <i className="fa fa-diamond"></i>
         <div className="card-body">
-          <h5 className="card-title">Diamante</h5>
-          <h6 className="card-text">
-            Retorno: <strong>200%</strong><br></br>
-            <strong>2%</strong> por día<br></br>
-          </h6>
+        <header className="section-header">
+              <h3>Has tu inversión</h3>
+          </header>
             <form>
               <div className="form-group">
-                <input type="text" className="form-control" id="amount" placeholder="Min. 50 TRX"></input>
+                <input type="text" className="form-control" id="amount" placeholder="Min. deposit 3000 TRX"></input>
                 <p className="card-text">Debes tener ~10 TRX para hacer la transacción</p>
               </div>
             </form>
           <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invertir</a>
-          <button type="button" className="btn btn-light" onClick={() => this.firma()}>firma</button>
         </div>
       </div>
 
