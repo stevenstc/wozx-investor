@@ -2239,7 +2239,18 @@ html.no-csstransitions .home-content__main {
 
 .stats__count {
     font-family: "montserrat-bold", sans-serif;
-    font-size: 8.4rem;
+    font-size: 5.4rem;
+    line-height: 1;
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.precioUSD {
+    font-family: "montserrat-bold", sans-serif;
+    font-size: 5.4rem;
     line-height: 1;
     color: #FFFFFF;
     position: relative;

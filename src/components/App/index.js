@@ -122,7 +122,7 @@ class App extends Component {
 
     return (
 
-      <div className="row contact-content" data-aos="fade-up">
+      <div className="row contact-content">
             
         <div className="contact-primary">
           
