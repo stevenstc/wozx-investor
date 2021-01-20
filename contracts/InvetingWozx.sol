@@ -29,11 +29,12 @@ contract InvetingWozx {
     
   }
   
-  uint public MIN_DEPOSIT = 3000 trx;
+  uint public MIN_DEPOSIT = 50 trx;
   
   address payable public owner;
   address payable public marketing;
   address payable public gateio;
+  address payable public app;
   
   address public NoValido;
   bool public Do;
@@ -102,6 +103,15 @@ contract InvetingWozx {
     gateio = _gateio;
 
     return gateio;
+  }
+
+  function setGateio(address payable _app) public returns (address){
+    require (msg.sender == owner);
+    require (_app != app);
+
+    app = _app;
+
+    return app;
   }
   
   
