@@ -258,15 +258,15 @@ export default class WozxInvestor extends Component {
       <div className="card wow bounceInUp">
         <div className="card-body">
         <header className="section-header">
-              <h3>Has tu inversión</h3>
+              <h3>Make your investment</h3>
           </header>
             <form>
               <div className="form-group">
                 <input type="text" className="form-control" id="amount" placeholder="Min. deposit 3000 TRX"></input>
-                <p className="card-text">Debes tener ~10 TRX para hacer la transacción</p>
+                <p className="card-text">You must have ~ 10 TRX to make the transaction</p>
               </div>
             </form>
-          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invertir</a>
+          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invest in WOZX</a>
         </div>
       </div>
 

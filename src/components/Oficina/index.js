@@ -25,7 +25,11 @@ export default class WozxInvestor extends Component {
       datos: {},
       direccion: "",
       link: "Haz una inversión para obtener el LINK de referido",
-      registered: false
+      registered: false,
+      balanceTrx: "0",
+      withdrawnTrx: "0",
+      investedWozx: "0",
+      withdrawnWozx: "0"
 
     };
 
@@ -242,8 +246,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
       balanceTrx: parseInt(esto.balanceTrx._hex)/1000000,
       withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
-      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
-      mywithdrawableWozx: parseInt(My.amount._hex)/1000000
+      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000
     });
 
   };
@@ -254,7 +257,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
 
 
   render() {
-    const { balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , mywithdrawableWozx , direccion, link} = this.state;
+    const { balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link} = this.state;
 
     return (
       
@@ -264,8 +267,8 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           <h3 className="white"><span style={{'font-weight': 'bold'}}>
           My office:</span> <br></br>
           <span style={{'font-size': '18px'}}>{direccion}</span></h3><br></br>
-          <h3 className="white" style={{'font-weight': 'bold'}}>Link de referido:</h3>
-          <h6 className="white" ><a href={link}>{link}</a>&nbsp;
+          <h3 className="white" style={{'font-weight': 'bold'}}>Referral link:</h3>
+          <h6 className="white" ><a href={link}>{link}</a>&nbsp;<br></br><br></br>
           <CopyToClipboard text={link}>
             <button type="button" className="btn btn-info">Copy to clipboard</button>
           </CopyToClipboard>
@@ -274,9 +277,9 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           
         </header>
 
-        <div className="centrartexto">
+        <div className="row centrartexto">
 
-          <div>
+          <div className="col-five">
           
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{investedWozx} WOZX</h3>
@@ -284,15 +287,17 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
             
           </div>
 
-          <div >
+          <div className="col-seven">
             
               <h1 className="subhead">Withdrawn</h1>
               <h3 className="display-2--light">{withdrawnWozx} WOZX</h3>
               <hr></hr>
             
           </div> 
+        </div>
+        <div className="row centrartexto">
 
-          <div>
+          <div className="col-five">
             
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{balanceTrx} TRX</h3>
@@ -300,7 +305,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
             
           </div>
 
-          <div >
+          <div className="col-seven">
             
               <h1 className="subhead">Withdrawn</h1>
               <h3 className="display-2--light">{withdrawnTrx} TRX</h3>

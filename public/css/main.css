@@ -3119,7 +3119,7 @@ html.no-csstransitions .home-content__main {
 }
 .contact-primary, .contact-secondary {
     float: left;
-    padding: 0 5rem;
+    padding: 0 3rem;
 }
 
 .contact-primary {

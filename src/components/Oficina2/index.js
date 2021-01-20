@@ -278,8 +278,8 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
             <div className="box">
               <h3 className="display-2--light">Disponible: <br></br>{investedWozx} WOZX</h3>
   
-              <button type="button" className="btn btn-info" onClick={() => this.prueba()}>Vender WOZX</button>
-              <button type="button" className="btn btn-info" onClick={() => void(0)}>Retirar WOZX (ETH)</button>
+              <button type="button" className="btn btn-info" onClick={() => this.prueba()}>Sell WOZX</button>
+              <button type="button" className="btn btn-info" onClick={() => void(0)}>withdrawal WOZX (ETH)</button>
               <hr></hr>
       
             </div>
@@ -288,7 +288,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
               <h3 className="display-2--light">Disponible: <br></br>{balanceTrx} TRX</h3>
-              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>Retirar TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>withdrawal TRX</button>
               <hr></hr>
             </div>
           </div>

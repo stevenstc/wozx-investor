@@ -105,7 +105,7 @@ contract InvetingWozx {
     return gateio;
   }
 
-  function setGateio(address payable _app) public returns (address){
+  function setApp(address payable _app) public returns (address){
     require (msg.sender == owner);
     require (_app != app);
 

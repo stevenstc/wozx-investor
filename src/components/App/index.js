@@ -136,7 +136,6 @@ class App extends Component {
           <div className="contact-info">
             <CrowdFunding />
             <hr></hr>
-            <hr></hr>
             <Oficina2 /> 
           </div>
         </div>
