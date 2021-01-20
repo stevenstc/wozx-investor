@@ -40,7 +40,6 @@ export default class WozxInvestor extends Component {
     this.comprarWozx = this.comprarWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
     this.venderTRX = this.venderTRX.bind(this);
-    this.prueba = this.prueba.bind(this);
     
     
   }
@@ -167,50 +166,6 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async prueba(){ 
-  /* 
-    await request(
-      { url: 'https://data.gateio.life/api2/1/marketlist' },
-      (error, response, body) => {
-        if (error || response.statusCode !== 200) {
-          console.log(error)
-        }
-
-        console.log(response);
-        console.log(body);
-        //JSON.parse(body)
-
-        
-      }
-    )*/
-
-    // Ejemplo implementando el metodo POST:
-async function postData(url = '', data = {}) {
-  // Opciones por defecto estan marcadas con un *
-  const response = await fetch(url, {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept-Language' : 'x-requested-with'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'origin', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    //body: JSON.stringify(data) // body data type must match "Content-Type" header
-  });
-  return response.json(); // parses JSON response into native JavaScript objects
-}
-
-postData('https://data.gateio.life/api2/1/marketlist', {})
-  .then(data => {
-    console.log(data); // JSON data parsed by `data.json()` call
-  });
-  }
-
   async Link() {
     const {registered} = this.state;
     if(registered){
@@ -237,9 +192,6 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
 
     let direccion = await window.tronWeb.trx.getAccount();
     let esto = await Utils.contract.investors(direccion.address).call();
-    let My = await Utils.contract.MYwithdrawable().call();
-    //console.log(esto);
-    //console.log(My);
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,

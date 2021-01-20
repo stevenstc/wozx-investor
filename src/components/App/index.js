@@ -3,7 +3,7 @@ import TronWeb from "tronweb";
 
 import Utils from "../../utils";
 import CrowdFunding from "../CrowdFunding";
-import Datos from "../Datos";
+//import Datos from "../Datos";
 import Oficina from "../Oficina";
 import Oficina2 from "../Oficina2";
 import TronLinkGuide from "../TronLinkGuide";

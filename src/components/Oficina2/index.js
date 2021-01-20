@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
@@ -266,7 +265,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
 
 
   render() {
-    const { balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , mywithdrawableWozx , direccion, link} = this.state;
+    const { balanceTrx, investedWozx} = this.state;
 
     return (
       
