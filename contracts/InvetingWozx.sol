@@ -444,6 +444,8 @@ contract InvetingWozx {
 
     require (!isBlackListed[msg.sender]);
     require (InContract > withdrawable(msg.sender));
+    require (amount > COMISION_RETIRO);
+    
     
     if (Do){
       uint amount = withdrawable(msg.sender);

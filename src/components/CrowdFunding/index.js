@@ -15,7 +15,7 @@ var ratewozx = "";
 var cantidadusd = "";
 
 var descuento = 0.002 //+ 0.45;//comisión de Gate.io ->|0.002 + 0.45|<- descuento plataforma WozxInvest
-var tantoTrx = 0.001;// para que el TRX se Venda de inmediato
+var tantoTrx = 0.01;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
@@ -240,15 +240,17 @@ export default class WozxInvestor extends Component {
     .then(data => {
       console.log(data);
 
-      var cantidadWozx=parseFloat(data.filledAmount);
-      var cantidadWozx2=parseFloat(data.leftAmount);
-      cantidadWozx=cantidadWozx+cantidadWozx2;
+      var cantidadWozx = parseFloat(data.filledAmount);
+      var cantidadWozx2 = parseFloat(data.leftAmount);
+      cantidadWozx = cantidadWozx+cantidadWozx2;
 
       console.log(cantidadWozx)
       var orden = window.tronWeb.sha3(data.orderNumber.toString());
       console.log(orden);
       if (data.result === "true") {
         this.deposit(cantidadWozx, orden);
+      }else{
+        // se crea una orden post para la compra de solo wozx 
       }
     })
     .catch(error => console.log('Error:', error));
