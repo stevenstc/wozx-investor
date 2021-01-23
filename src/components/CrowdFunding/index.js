@@ -10,12 +10,15 @@ import TronWeb2 from 'tronweb';
 
 var amountTrx;
 var ratetrx = "";
+var ratetrx_usd = "";
 var ratewozx = "";
 var cantidadusd = "";
 
 var descuento = 0.002 //+ 0.45;//comisión de Gate.io ->|0.002 + 0.45|<- descuento plataforma WozxInvest
 var tantoTrx = 0.001;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
+var minimo_usd = 1;// (100) para dolares (100 USD)
+var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 
 var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
 
@@ -42,18 +45,73 @@ export default class WozxInvestor extends Component {
     this.state = {
       amountTrx: "",
       usdtrx: "",
+      min: 3000
 
     }
 
     this.deposit = this.deposit.bind(this);
+    this.deposit2 = this.deposit2.bind(this);
     this.rateWozx = this.rateWozx.bind(this);
     this.comprarWozx = this.comprarWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
     this.venderTRX = this.venderTRX.bind(this);
+    this.postComprarWozx = this.postComprarWozx.bind(this);
+    this.postVenderTRX = this.postVenderTRX.bind(this);
+    this.reatizarTodoPost = this.reatizarTodoPost.bind(this);
+    this.ordenEjecutada = this.ordenEjecutada.bind(this);
+    this.minDepo = this.minDepo.bind(this);
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+    await this.reatizarTodoPost();
+    setInterval(() => this.reatizarTodoPost(),120*1000);
+    await this.minDepo();
+    setInterval(() => this.minDepo(),30*1000);
+    
+  };
+
+  async minDepo(){
+
+    function esTrx(cripto) {
+          return cripto.symbol === 'TRX';
+      }
+
+    const USER_AGENT = 'stevenSTC';
+    let header1 = {
+      'Access-Control-Allow-Origin' :AccessOrigin,
+      'User-Agent' : USER_AGENT,
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With',
+      'mode':'no-cors'
+    };
+    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
+    .then(res => res.json())
+    .then(data => {
+      //console.log(data);
+      ratetrx_usd = data.data.find(esTrx).rate; 
+      ratetrx_usd = parseFloat(ratetrx_usd).toFixed(6);
+      //console.log(ratetrx);
+    })
+    .catch(error => console.log('Error:', error));
+
+
+    var mindepo = await Utils.contract.MIN_DEPOSIT().call();
+    mindepo = parseInt(mindepo._hex)/1000000;
+
+    this.setState({
+      min: mindepo
+    });
+    //console.log(mindepo);
+
+    if (mindepo*ratetrx_usd >= minimo_usd+minimo_usd*rango_minimo || mindepo*ratetrx_usd <= minimo_usd-minimo_usd*rango_minimo) {
+
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.nuevoMinDeposit(parseInt(minimo_usd/ratetrx_usd)).send();
+      console.log("EVENTO: nuevo minimo de deposito "+parseInt(minimo_usd/ratetrx_usd)+" TRX")
+
+    }
+
+
   };
 
 
@@ -90,6 +148,9 @@ export default class WozxInvestor extends Component {
     await this.rateTRX();
     
     amountTrx = document.getElementById("amount").value;
+    amountTrx = amountTrx - amountTrx*descuento;
+    amountTrx = amountTrx.toString();
+
     let currencyPair = "trx_usdt";
 
     let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amountTrx});
@@ -112,18 +173,18 @@ export default class WozxInvestor extends Component {
       var cantidadTrx2=parseFloat(data.leftAmount);
       cantidadTrx=cantidadTrx+cantidadTrx2;
       var precioTrx=parseFloat(data.filledRate);
-      cantidadusd = precioTrx*cantidadTrx-precioTrx*cantidadTrx*descuento;
+      cantidadusd = precioTrx*cantidadTrx-precioTrx*cantidadTrx*tantoTrx;
       //console.log(cantidadusd);
 
       if (data.result === "true") {
         this.comprarWozx(cantidadusd);
+      }else{
+        // cantidad muy alta de TRX pendiente se ejecuta post recepcion de fondos
+        this.deposit2();
       }
 
     })
     .catch(error => console.log('Error:', error));
-
-
-    
 
     
   }
@@ -177,7 +238,7 @@ export default class WozxInvestor extends Component {
     await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
     .then(res => res.json())
     .then(data => {
-      //console.log(data);
+      console.log(data);
 
       var cantidadWozx=parseFloat(data.filledAmount);
       var cantidadWozx2=parseFloat(data.leftAmount);
@@ -185,7 +246,7 @@ export default class WozxInvestor extends Component {
 
       console.log(cantidadWozx)
       var orden = window.tronWeb.sha3(data.orderNumber.toString());
-      //console.log(orden);
+      console.log(orden);
       if (data.result === "true") {
         this.deposit(cantidadWozx, orden);
       }
@@ -210,7 +271,8 @@ export default class WozxInvestor extends Component {
         }
         
         if (get['ref']) {
-          document.getElementById('sponsor').value = get['ref'];            
+          tmp = get['ref'].split('#')
+          document.getElementById('sponsor').value = tmp[0];            
         }else{
 
            document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
@@ -240,7 +302,6 @@ export default class WozxInvestor extends Component {
     //console.log(firma2);
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
-
     await contract.firmarTx(firma3).send();
   
     await Utils.contract.deposit(orden, orden.toString(), wallet, sponsor, firma, firma2, firma3).send({
@@ -251,7 +312,183 @@ export default class WozxInvestor extends Component {
     
   };
 
+  async deposit2() {
+
+    var loc = document.location.href;
+    if(loc.indexOf('?')>0){
+        var getString = loc.split('?')[1];
+        var GET = getString.split('&');
+        var get = {};
+        for(var i = 0, l = GET.length; i < l; i++){
+            var tmp = GET[i].split('=');
+            get[tmp[0]] = unescape(decodeURI(tmp[1]));
+        }
+        
+        if (get['ref']) {
+          tmp = get['ref'].split('#')
+          document.getElementById('sponsor').value = tmp[0];            
+        }else{
+
+           document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
+        }
+        
+        
+    }else{
+      
+        document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'; 
+    }
+
+    let amount = document.getElementById("amount").value;
+    let sponsor = document.getElementById("sponsor").value;
+
+    await Utils.contract.depositPost(sponsor).send({
+      shouldPollResponse: true,
+      callValue: amount * 1000000 // converted to SUN
+    });
+
+    await this.crearOrdenPost(amount);
+
+    document.getElementById("amount").value = "";
+
+    
+  };
+
+  async crearOrdenPost(amount){
+
+    await this.rateWozx();
+    await this.rateTRX();
+
+    var orden = amount*ratetrx+ratetrx*tantoTrx;
+    orden = orden-orden*descuento;
+    orden = orden / ratewozx+ratewozx*tantoWozx;
+    orden = parseInt(orden*1000000);
+    console.log(orden);
+    console.log(amount);
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    console.log(accountAddress);
+    var rt = parseInt(ratetrx*1000000); 
+    var rw = parseInt(ratewozx*1000000);
+    var am = parseInt(amount*1000000);
+    console.log(am);
+    console.log(rt);
+    console.log(rw);
+
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+    await contract.ordenPost(accountAddress, am, rt, rw, orden).send();
+    
+  };
+
+  async reatizarTodoPost(){
+
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+    var orden = await contract.verOrdenPost().call();
+    console.log(orden);
+
+    orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, rTron:parseInt(orden[2]._hex)/1000000, rWozx:parseInt(orden[3]._hex)/1000000, tWozx:parseInt(orden[4]._hex)/1000000 }
+    console.log(orden);
+
+    if (orden.tron > 0){
+      this.postVenderTRX(orden.nOrden, orden.tron, orden.rTron, orden.rWozx)
+    }
+     
+  }
+
+  async postVenderTRX(numeroDeOrden, _amountTrx, nuevoRate1, nuevoRate2){    
+
+    ratetrx = nuevoRate1;
+    amountTrx = _amountTrx;
+    amountTrx = amountTrx.toString();
+
+    let currencyPair = "trx_usdt";
+
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amountTrx});
+
+    let header = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    var hasher = sha512.hmac(SECRET);
+    var hash = hasher.finalize(body);
+    var firma = hash.toString('hex');
+
+    header.KEY = KEY;
+    header.SIGN = firma;
+    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body})
+    .then(res => res.json())
+    .then(data => {
+      //console.log(data);
+      var cantidadTrx=parseFloat(data.filledAmount);
+      var cantidadTrx2=parseFloat(data.leftAmount);
+      cantidadTrx=cantidadTrx+cantidadTrx2;
+      var precioTrx=parseFloat(data.filledRate);
+      cantidadusd = precioTrx*cantidadTrx;
+      //console.log(cantidadusd);
+
+      if (data.result === "true") {
+        this.postComprarWozx(cantidadusd, nuevoRate2, numeroDeOrden);
+      }
+
+    })
+    .catch(error => console.log('Error:', error));
+
+  };
+
+  async postComprarWozx(usd, nuevoRate, numeroDeOrden){    
+    
+
+    ratewozx = nuevoRate;
+    
+    let amount = usd/parseFloat(ratewozx).toFixed(6);
+    //console.log(parseFloat(amount.toFixed(6)));
+    amount = amount.toString();
+    let currencyPair = "wozx_usdt";
+
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
+
+    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+    var hasher = sha512.hmac(SECRET);
+    var hash = hasher.finalize(body);
+    var firma = hash.toString('hex');
+
+    header.KEY = KEY;
+    header.SIGN = firma;
+    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
+    .then(res => res.json())
+    .then(data => {
+      //console.log(data);
+
+      var cantidadWozx=parseFloat(data.filledAmount);
+      var cantidadWozx2=parseFloat(data.leftAmount);
+      cantidadWozx=cantidadWozx+cantidadWozx2;
+
+      console.log(cantidadWozx)
+      //console.log(orden);
+      if (data.result === "true") {
+        //la app actualiza en blockchain la orden se completo
+          
+        this.ordenEjecutada(numeroDeOrden);
+      }
+    })
+    .catch(error => console.log('Error:', error));
+    
+    
+    
+  };
+
+  async ordenEjecutada(numeroDeOrden){
+
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+    await contract.ejecutarOrden(numeroDeOrden).send();
+    console.log("Orden N°: "+numeroDeOrden+" se ejecutó exitosamente")
+  }
+
   render() {
+    var { min } = this.state;
+
+    min = "Min. deposit "+min+" TRX";
     
     return (
       
@@ -262,7 +499,7 @@ export default class WozxInvestor extends Component {
           </header>
             <form>
               <div className="form-group">
-                <input type="text" className="form-control" id="amount" placeholder="Min. deposit 3000 TRX"></input>
+                <input type="text" className="form-control" id="amount" placeholder={min}></input>
                 <p className="card-text">You must have ~ 10 TRX to make the transaction</p>
               </div>
             </form>

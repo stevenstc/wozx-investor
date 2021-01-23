@@ -3119,7 +3119,7 @@ html.no-csstransitions .home-content__main {
 }
 .contact-primary, .contact-secondary {
     float: left;
-    padding: 0 5rem;
+    padding: 0 3rem;
 }
 
 .contact-primary {
@@ -3416,10 +3416,10 @@ footer .row {
     padding: 0;
     outline: 0;
     border: none;
-    width: 161px;
-    height: 32px;
+    width: 103px;
+    height: 35px;
     background: url("../images/logo-footer.png") no-repeat center;
-    background-size: 161px 32px;
+    background-size: 103px 35px;
     font: 0/0 a;
     text-shadow: none;
     color: transparent;

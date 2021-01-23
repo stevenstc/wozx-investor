@@ -126,7 +126,7 @@ class App extends Component {
             
         <div className="contact-primary">
           
-          <div  className="row">
+          <div>
             
             <PanelOwner />
             <Oficina /> 

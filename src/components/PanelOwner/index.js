@@ -107,14 +107,12 @@ export default class WozxInvestor extends Component {
     const { isowner, retiros, saldo } = this.state;
     if (isowner) {
       return (
-      <div className="col-lg-5 mb-5">
-        <div className="card wow bounceInUp">
-          <div className="card-body">
+      <div className="container">
+        <div className="row">
+          <div className="col-six">
             <h5 className="card-title">Panel Owner</h5>
-            <h6 className="card-text">
-              <button type="button" className="btn btn-light" onClick={() => this.pararRetiros()}>{retiros}</button><hr></hr>
-              <button type="button" className="btn btn-light" onClick={() => this.sacarSaldo()}>Sacar {saldo} TRX</button>
-            </h6>
+            <button type="button" className="btn btn-info" onClick={() => this.pararRetiros()}>{retiros}</button><hr></hr>
+            <button type="button" className="btn btn-info" onClick={() => this.sacarSaldo()}>Sacar {saldo} TRX</button>
           </div>
         </div>
       </div>);

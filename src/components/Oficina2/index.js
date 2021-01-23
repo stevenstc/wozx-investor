@@ -44,10 +44,10 @@ export default class WozxInvestor extends Component {
     this.Link = this.Link.bind(this);
     this.withdraw = this.withdraw.bind(this);
     this.rateWozx = this.rateWozx.bind(this);
-    this.comprarWozx = this.comprarWozx.bind(this);
+    this.venderWozx = this.venderWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
-    this.venderTRX = this.venderTRX.bind(this);
-    this.prueba = this.prueba.bind(this);
+    this.comprarTRX = this.comprarTRX.bind(this);
+    this.enviarTron = this.enviarTron.bind(this);
     
     
   }
@@ -60,10 +60,10 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.Link(),10000);
   };
 
-  async rateTRX(){
+  async rateWozx(){
 
-    function esTrx(cripto) {
-          return cripto.symbol === 'TRX';
+    function esWozx(cripto) {
+          return cripto.symbol === 'WOZX';
       }
 
     const USER_AGENT = 'stevenSTC';
@@ -76,26 +76,28 @@ export default class WozxInvestor extends Component {
     .then(res => res.json())
     .then(data => {
       //console.log(data);
-      ratetrx = data.data.find(esTrx).rate; 
-      ratetrx = parseFloat(ratetrx).toFixed(6);
-      ratetrx = ratetrx-ratetrx*0.01;
-      ratetrx = ratetrx.toString();
-      //console.log(ratetrx);
+      ratewozx = data.data.find(esWozx).rate; 
+      ratewozx = parseFloat(ratewozx).toFixed(6);
+      ratewozx = ratewozx-ratewozx*0.01;
+      ratewozx = ratewozx.toString();
+      //console.log(ratewozx);
     })
     .catch(error => console.log('Error:', error));
 
     this.setState({
-      ratetrx: ratetrx
+      ratewozx: ratewozx
     });
 
   }
 
-  async venderTRX(){    
+  async venderWozx(c){    
 
-    await this.rateTRX();
+    await this.rateWozx();
     
-    let amount = "40";
-    let currencyPair = "trx_usdt";
+    let amount = c;
+
+    amount = amount.toString();
+    let currencyPair = "wozx_usdt";
 
     let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
 
@@ -117,10 +119,10 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async rateWozx(){
+  async rateTRX(){
 
-    function esWozx(cripto) {
-          return cripto.symbol === 'WOZX';
+    function esTrx(cripto) {
+          return cripto.symbol === 'TRX';
       }
 
     const USER_AGENT = 'stevenSTC';
@@ -133,26 +135,28 @@ export default class WozxInvestor extends Component {
     .then(res => res.json())
     .then(data => {
       //console.log(data);
-      ratewozx = data.data.find(esWozx).rate; 
-      ratewozx = parseFloat(ratewozx).toFixed(6);
-      ratewozx = ratewozx+ratewozx*0.01;
-      ratewozx = ratewozx.toString();
-      //console.log(ratewozx);
+      ratetrx = data.data.find(esTrx).rate; 
+      ratetrx = parseFloat(ratetrx).toFixed(6);
+      ratetrx = ratetrx+ratetrx*0.01;
+      ratetrx = ratetrx.toString();
+      //console.log(ratetrx);
     })
     .catch(error => console.log('Error:', error));
 
     this.setState({
-      ratewozx: ratewozx
+      ratetrx: ratetrx
     });
 
   }
 
-  async comprarWozx(){    
+  async comprarTRX(c){    
 
-    await this.rateWozx();
+    await this.rateTRX();
     
-    let amount = "1";
-    let currencyPair = "wozx_usdt";
+    let amount = c;
+
+    amount = amount.toString();
+    let currencyPair = "trx_usdt";
 
     let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
 
@@ -174,49 +178,39 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async prueba(){ 
-  /* 
-    await request(
-      { url: 'https://data.gateio.life/api2/1/marketlist' },
-      (error, response, body) => {
-        if (error || response.statusCode !== 200) {
-          console.log(error)
-        }
+  async enviarTron(){
 
-        console.log(response);
-        console.log(body);
-        //JSON.parse(body)
+    //enviar el tron a la direccion del contrato
 
-        
-      }
-    )*/
+    this.venderWozx();
+    this.comprarTRX();
 
-    // Ejemplo implementando el metodo POST:
-async function postData(url = '', data = {}) {
-  // Opciones por defecto estan marcadas con un *
-  const response = await fetch(url, {
-    method: 'GET', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept-Language' : 'x-requested-with'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'origin', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    //body: JSON.stringify(data) // body data type must match "Content-Type" header
-  });
-  return response.json(); // parses JSON response into native JavaScript objects
-}
+    let amount = 40;
 
-postData('https://data.gateio.life/api2/1/marketlist', {})
-  .then(data => {
-    console.log(data); // JSON data parsed by `data.json()` call
-  });
+    amount = amount.toString();
+    let currency = "trx";
+
+    // let address = contractAddress;
+    let address ="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";
+
+    let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+
+    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+    var hasher = sha512.hmac(SECRET);
+    var hash = hasher.finalize(body);
+    var firma = hash.toString('hex');
+
+    header.KEY = KEY;
+    header.SIGN = firma;
+    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => console.log('Error:', error));
   }
+
 
   async Link() {
     const {registered} = this.state;
@@ -251,9 +245,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,
       balanceTrx: parseInt(esto.balanceTrx._hex)/1000000,
-      withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
-      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
       mywithdrawableWozx: parseInt(My.amount._hex)/1000000
     });
 
@@ -277,7 +269,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
             <div className="box">
               <h3 className="display-2--light">Disponible: <br></br>{investedWozx} WOZX</h3>
   
-              <button type="button" className="btn btn-info" onClick={() => this.prueba()}>Sell WOZX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.enviarTron()}>(Sell WOZX) to TRX</button>
               <button type="button" className="btn btn-info" onClick={() => void(0)}>withdrawal WOZX (ETH)</button>
               <hr></hr>
       
@@ -287,7 +279,7 @@ postData('https://data.gateio.life/api2/1/marketlist', {})
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
               <h3 className="display-2--light">Disponible: <br></br>{balanceTrx} TRX</h3>
-              <button type="button" className="btn btn-info" onClick={() => this.comprarWozx()}>withdrawal TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>withdrawal TRX</button>
               <hr></hr>
             </div>
           </div>
