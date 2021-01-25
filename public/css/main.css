@@ -1636,6 +1636,22 @@ button::-moz-focus-inner, input::-moz-focus-inner {
     left: 0;
 }
 
+.alerta {
+position: absolute;
+background-color: black;
+padding: 2%;
+top: 120%; /* Buscamos el centro horizontal (relativo) del navegador */
+left: 50%; /* Buscamos el centro vertical (relativo) del navegador */
+width: 100%; /* Definimos el ancho del objeto a centrar */
+/*height: 100px; /* Definimos el alto del objeto a centrar */
+margin-top: -50%; /* Restamos la mitad de la altura del objeto con un margin-top */
+margin-left: -50%; /* Restamos la mitad de la anchura del objeto con un margin-left */
+}
+
+.alerta0 {
+    display: none;
+}
+
 
 /* ------------------------------------------------------------------- 
  * ## mobile menu toggle 

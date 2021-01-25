@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
@@ -38,6 +39,7 @@ const tronApp = new TronWeb2(
   pry
 );
 
+
 export default class WozxInvestor extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +47,9 @@ export default class WozxInvestor extends Component {
     this.state = {
       amountTrx: "",
       usdtrx: "",
-      min: 3000
+      min: 3000,
+      alerta: "alerta0",
+      texto: ""
 
     }
 
@@ -145,6 +149,11 @@ export default class WozxInvestor extends Component {
 
   async venderTRX(){    
 
+    this.setState({
+      alerta: "alerta",
+      texto:"Please wait, do not close this window, your investment is being processed"
+    });
+
     await this.rateTRX();
     
     amountTrx = document.getElementById("amount").value;
@@ -177,6 +186,10 @@ export default class WozxInvestor extends Component {
       //console.log(cantidadusd);
 
       if (data.result === "true") {
+        this.setState({
+          alerta: "alerta",
+          texto:"Buying WOZX"
+        });
         this.comprarWozx(cantidadusd);
       }else{
         // cantidad muy alta de TRX pendiente se ejecuta post recepcion de fondos
@@ -249,8 +262,15 @@ export default class WozxInvestor extends Component {
       console.log(orden);
       if (data.result === "true") {
         this.deposit(cantidadWozx, orden);
+        this.setState({
+          alerta: "alerta0"
+        });
       }else{
         // se crea una orden post para la compra de solo wozx 
+        this.setState({
+          alerta: "alerta",
+          texto:"Your order is being processed, it may take up to 10 minutes, if you have problems, consult technical support"
+        });
       }
     })
     .catch(error => console.log('Error:', error));
@@ -359,6 +379,11 @@ export default class WozxInvestor extends Component {
 
     await this.rateWozx();
     await this.rateTRX();
+
+    this.setState({
+          alerta: "alerta",
+          texto:"Your order is being processed, it may take up to 10 minutes"
+        });
 
     var orden = amount*ratetrx+ratetrx*tantoTrx;
     orden = orden-orden*descuento;
@@ -488,7 +513,13 @@ export default class WozxInvestor extends Component {
   }
 
   render() {
-    var { min } = this.state;
+    var { min, alerta, texto } = this.state;
+
+    //const alerta = "alerta";
+    texto = (<><p>{texto}</p></>);
+    
+    
+    
 
     min = "Min. deposit "+min+" TRX";
     
@@ -507,8 +538,15 @@ export default class WozxInvestor extends Component {
             </form>
           <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invest in WOZX</a>
         </div>
+        <div className={alerta}>
+          {texto}
+        </div>
+        
       </div>
 
     );
   }
 }
+
+
+
