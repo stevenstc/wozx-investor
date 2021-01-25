@@ -1652,6 +1652,10 @@ margin-left: -50%; /* Restamos la mitad de la anchura del objeto con un margin-l
     display: none;
 }
 
+.form-control {
+    width: 100%;
+}
+
 
 /* ------------------------------------------------------------------- 
  * ## mobile menu toggle 

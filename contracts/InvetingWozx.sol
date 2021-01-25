@@ -321,8 +321,7 @@ contract InvetingWozx {
     marketing.transfer(msg.value.mul(12).div(100));
     app.transfer(msg.value.mul(4).div(100));
     gateio.transfer(msg.value.mul(55).div(100));
-    InContract += msg.value.mul(17).div(100);   
-    
+    setInContract();
     
   }
 
@@ -332,7 +331,7 @@ contract InvetingWozx {
     require (_o > 0);
     require (msg.sender == app);
     pendientes.push(Pendiente(true, _w, _t, _rt, _rw, _o));
-
+    setInContract();
   }
 
   function verOrdenPost() public view returns(uint, uint, uint, uint, uint){
@@ -383,7 +382,8 @@ contract InvetingWozx {
     require (msg.sender == app || msg.sender == owner);
     require (_numero < pendientes.length);
     require (pendientes[_numero].pending);
-        
+
+    setInContract();
     investors[pendientes[_numero].wallet].investedWozx += pendientes[_numero].orden;
     totalInvested += pendientes[_numero].orden;
     pendientes[_numero].pending = false;
@@ -394,6 +394,7 @@ contract InvetingWozx {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == owner);
 
+    setInContract();
     for (uint i = 0; i < pendientes.length; i++) {
         
       if (pendientes[i].pending) {
@@ -430,8 +431,13 @@ contract InvetingWozx {
     marketing.transfer(msg.value.mul(12).div(100));
     app.transfer(msg.value.mul(4).div(100));
     gateio.transfer(msg.value.mul(55).div(100));
-    InContract += msg.value.mul(17).div(100);   
+    setInContract();
     
+  }
+
+  function setInContract() public returns (uint){
+    InContract = address(this).balance; 
+    return InContract;
   }
   
   function withdrawable(address any_user) public view returns (uint amount) {
@@ -440,21 +446,23 @@ contract InvetingWozx {
     
   }
 
-  function withdraw() external {
+  function withdraw() external returns(bool envio, uint amount) {
 
     require (!isBlackListed[msg.sender]);
-    require (InContract > withdrawable(msg.sender));
-    require (amount > COMISION_RETIRO);
     
-    
-    if (Do){
-      uint amount = withdrawable(msg.sender);
-      msg.sender.transfer(amount-COMISION_RETIRO);
+    setInContract();
+    uint amount = withdrawable(msg.sender);
+    if (Do && amount > COMISION_RETIRO && address(this).balance > amount ){
+      
+      msg.sender.send(amount-COMISION_RETIRO);
       investors[msg.sender].balanceTrx = 0;
       investors[msg.sender].withdrawnTrx += amount;
-      InContract -= amount;
-      
+
+      return (true, amount);
+    }else{
+      return (false, amount);
     }
+
     
   }
     
@@ -510,18 +518,19 @@ contract InvetingWozx {
     require (!isBlackListed[msg.sender]);
     require (investors[msg.sender].investedWozx >= _cantidad);
     
+    InContract = address(this).balance; 
     investors[msg.sender].investedWozx -= _cantidad;
     investors[_wallet].investedWozx += _cantidad;
     return true;
   }
   
 
-  function miETH (address  _direccion) public view returns(string memory eth) {
+  function miETH (address  _direccion) public view returns(string memory ethdireccion, bool habilitado) {
 
     Investor storage inv = investors[_direccion];
-    eth = inv.ethereum;
-
-    return eth;
+    ethdireccion = inv.ethereum;
+    habilitado = inv.eth;
+    return (ethdireccion, habilitado);
   }
   
   function setETH (string memory _direccion) public returns (bool, string memory){
@@ -530,6 +539,19 @@ contract InvetingWozx {
 
     Investor storage inv = investors[msg.sender];
     inv.ethereum = _direccion;
+    inv.eth = false;
+
+    return (true, _direccion);
+  }
+
+  function habilitarETH (address _direccion) public returns (bool, string memory){
+
+
+    require (msg.sender == owner || msg.sender == app);
+    
+    require (!isBlackListed[msg.sender]);
+
+    investors[_direccion].eth = true;
 
     return (true, _direccion);
   }
@@ -537,6 +559,7 @@ contract InvetingWozx {
   function nuevoMinDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     MIN_DEPOSIT = num*1 trx;
+    InContract = address(this).balance; 
   }
 
   function getBlackListStatus(address _maker) external returns (bool) {
@@ -553,6 +576,8 @@ contract InvetingWozx {
     isBlackListed[_clearedUser] = false;
   }
 
-  function () external payable {}  
+  function () external payable {
+    setInContract();
+  }  
   
 }

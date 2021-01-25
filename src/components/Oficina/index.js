@@ -34,12 +34,7 @@ export default class WozxInvestor extends Component {
     };
 
     this.Investors = this.Investors.bind(this);
-    this.Link = this.Link.bind(this);
-    this.withdraw = this.withdraw.bind(this);
-    this.rateWozx = this.rateWozx.bind(this);
-    this.comprarWozx = this.comprarWozx.bind(this);
-    this.rateTRX = this.rateTRX.bind(this);
-    this.venderTRX = this.venderTRX.bind(this);
+    this.enviarWozx = this.enviarWozx.bind(this);
     
     
   }
@@ -47,146 +42,8 @@ export default class WozxInvestor extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.Investors();
-    this.Link();
     setInterval(() => this.Investors(),10000);
-    setInterval(() => this.Link(),10000);
   };
-
-  async rateTRX(){
-
-    function esTrx(cripto) {
-          return cripto.symbol === 'TRX';
-      }
-
-    const USER_AGENT = 'stevenSTC';
-    let header1 = {
-      'Access-Control-Allow-Origin' :'*',
-      'User-Agent' : USER_AGENT,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
-    };
-    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
-    .then(res => res.json())
-    .then(data => {
-      //console.log(data);
-      ratetrx = data.data.find(esTrx).rate; 
-      ratetrx = parseFloat(ratetrx).toFixed(6);
-      ratetrx = ratetrx-ratetrx*0.01;
-      ratetrx = ratetrx.toString();
-      //console.log(ratetrx);
-    })
-    .catch(error => console.log('Error:', error));
-
-    this.setState({
-      ratetrx: ratetrx
-    });
-
-  }
-
-  async venderTRX(){    
-
-    await this.rateTRX();
-    
-    let amount = "40";
-    let currencyPair = "trx_usdt";
-
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
-
-    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
-
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
-
-    header.KEY = KEY;
-    header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-    })
-    .catch(error => console.log('Error:', error));
-    
-
-  }
-
-  async rateWozx(){
-
-    function esWozx(cripto) {
-          return cripto.symbol === 'WOZX';
-      }
-
-    const USER_AGENT = 'stevenSTC';
-    let header1 = {
-      'Access-Control-Allow-Origin' :'*',
-      'User-Agent' : USER_AGENT,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
-    };
-    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
-    .then(res => res.json())
-    .then(data => {
-      //console.log(data);
-      ratewozx = data.data.find(esWozx).rate; 
-      ratewozx = parseFloat(ratewozx).toFixed(6);
-      ratewozx = ratewozx+ratewozx*0.01;
-      ratewozx = ratewozx.toString();
-      //console.log(ratewozx);
-    })
-    .catch(error => console.log('Error:', error));
-
-    this.setState({
-      ratewozx: ratewozx
-    });
-
-  }
-
-  async comprarWozx(){    
-
-    await this.rateWozx();
-    
-    let amount = "1";
-    let currencyPair = "wozx_usdt";
-
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
-
-    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
-
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
-
-    header.KEY = KEY;
-    header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-    })
-    .catch(error => console.log('Error:', error));
-    
-
-  }
-
-  async Link() {
-    const {registered} = this.state;
-    if(registered){
-
-      let loc = document.location.href;
-      if(loc.indexOf('?')>0){
-        loc = loc.split('?')[0]
-      }
-      let mydireccion = await window.tronWeb.trx.getAccount();
-      mydireccion = window.tronWeb.address.fromHex(mydireccion.address)
-      mydireccion = loc+'?ref='+mydireccion;
-      this.setState({
-        link: mydireccion,
-      });
-    }else{
-      this.setState({
-        link: "Haz una inversión para obtener el LINK de referido",
-      });
-    }
-  }
-    
 
   async Investors() {
 
@@ -203,9 +60,16 @@ export default class WozxInvestor extends Component {
 
   };
 
-  async withdraw(){
-    await Utils.contract.withdraw().send()
-  };
+  async enviarWozx(){
+    let direccion = document.getElementById("enviartronwozx").value;
+    var cantidad = document.getElementById("cantidadwozx").value;
+
+    cantidad = parseInt(cantidad*1000000);
+
+    await Utils.contract.enviarWozx(direccion, cantidad).send();
+
+    document.getElementById("cantidadwozx").value = "";
+  }
 
 
   render() {
@@ -264,6 +128,28 @@ export default class WozxInvestor extends Component {
               <hr></hr>
             
           </div>
+          
+        </div>
+        <div className="row centrartexto">
+
+          <div className="col-eight">
+            
+              <h3 className="display-2--light"> Send WOZX to:</h3>
+              <input type="text" class="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="TBEhx2CjKcr62Zg4PnEm5FQMr2EVrUfXoM" />
+              <small id="emailHelp" className="form-text text-muted">make sure the address is well written, once sent, this action cannot be reversed</small>
+
+            
+          </div>
+
+          <div className="col-four">
+
+              <h3 className="display-2--light"> Available {investedWozx} </h3>
+              <input type="number" class="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
+              <a className="btn btn-light"  href="#enviartronwozx" onClick={() => this.enviarWozx()}>send WOZX</a>
+            
+          </div>
+
+          <hr />
           
         </div>
 

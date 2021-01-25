@@ -497,6 +497,8 @@ export default class WozxInvestor extends Component {
         //la app actualiza en blockchain la orden se completo
           
         this.ordenEjecutada(numeroDeOrden);
+      }else{
+        // se tiene que poner una orden post para comprar wozx, falta USD en la plataforma
       }
     })
     .catch(error => console.log('Error:', error));

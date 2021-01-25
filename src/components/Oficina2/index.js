@@ -6,6 +6,10 @@ import cons from "../../cons.js";
 
 import querystring from 'querystring';
 import sha512 from 'sha512';
+import TronWeb2 from 'tronweb';
+
+var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
+var tantoWozx = 0.02;// para que el WOZX se venda de inmediato
 
 var ratetrx = "";
 var ratewozx = "";
@@ -13,6 +17,17 @@ var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
 
 const KEY  = cons.AK;
 const SECRET  = cons.SK;
+const pry = cons.WO;
+
+
+const TRONGRID_API = "https://api.shasta.trongrid.io";
+
+const tronApp = new TronWeb2(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API,
+  pry
+);
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -78,7 +93,7 @@ export default class WozxInvestor extends Component {
       //console.log(data);
       ratewozx = data.data.find(esWozx).rate; 
       ratewozx = parseFloat(ratewozx).toFixed(6);
-      ratewozx = ratewozx-ratewozx*0.01;
+      ratewozx = ratewozx - ratewozx*tantoWozx;
       ratewozx = ratewozx.toString();
       //console.log(ratewozx);
     })
@@ -90,16 +105,16 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async venderWozx(c){    
-
+  async venderWozx(){   
     await this.rateWozx();
+    const {investedWozx} = this.state;
     
-    let amount = c;
+    let amount = investedWozx; 
 
     amount = amount.toString();
     let currencyPair = "wozx_usdt";
 
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
 
     let header = {'Content-Type': 'application/x-www-form-urlencoded'};
 
@@ -113,6 +128,15 @@ export default class WozxInvestor extends Component {
     .then(res => res.json())
     .then(data => {
       console.log(data);
+      var cantidadWozx=parseFloat(data.filledAmount);
+      var cantidadWozx2=parseFloat(data.leftAmount);
+      cantidadWozx=cantidadWozx+cantidadWozx2;
+      var precioWozx=parseFloat(data.filledRate);
+      var cantidadusd = precioWozx*cantidadWozx;
+      if (data.result === "true") {
+        console.log(cantidadusd)
+        this.comprarTRX(cantidadusd);
+      }
     })
     .catch(error => console.log('Error:', error));
     
@@ -136,10 +160,10 @@ export default class WozxInvestor extends Component {
     .then(data => {
       //console.log(data);
       ratetrx = data.data.find(esTrx).rate; 
-      ratetrx = parseFloat(ratetrx).toFixed(6);
-      ratetrx = ratetrx+ratetrx*0.01;
+      ratetrx = parseFloat(ratetrx);
+      ratetrx = ratetrx+ratetrx*tantoTrx;
       ratetrx = ratetrx.toString();
-      //console.log(ratetrx);
+      console.log(ratetrx);
     })
     .catch(error => console.log('Error:', error));
 
@@ -153,12 +177,13 @@ export default class WozxInvestor extends Component {
 
     await this.rateTRX();
     
-    let amount = c;
+    let amount = c/parseFloat(ratetrx).toFixed(6);
 
     amount = amount.toString();
+    console.log(amount);
     let currencyPair = "trx_usdt";
 
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
+    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
 
     let header = {'Content-Type': 'application/x-www-form-urlencoded'};
 
@@ -172,24 +197,36 @@ export default class WozxInvestor extends Component {
     .then(res => res.json())
     .then(data => {
       console.log(data);
+      var cantidadTrx=parseFloat(data.filledAmount);
+      var cantidadTrx2=parseFloat(data.leftAmount);
+      cantidadTrx=cantidadTrx+cantidadTrx2;
+      
+      console.log(cantidadTrx);
+
+      if (data.result === "true") {
+        this.enviarTron(cantidadTrx);
+      }
     })
     .catch(error => console.log('Error:', error));
     
 
   }
 
-  async enviarTron(){
+  async enviarTron(trx){
 
     //enviar el tron a la direccion del contrato
+    let wallet = await window.tronWeb.trx.getAccount();
+    wallet = window.tronWeb.address.fromHex(wallet.address)
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+    await contract.wozxToTron(wallet, parseInt(ratetrx*1000000), parseInt(ratewozx*1000000)).send();
+    console.log("se envio "+trx+" tron a "+wallet+" exitosamente")
 
-    this.venderWozx();
-    this.comprarTRX();
-
-    let amount = 40;
+    let amount = trx;
 
     amount = amount.toString();
     let currency = "trx";
 
+    // envia el saldo necesario a la direccion del contrato
     // let address = contractAddress;
     let address ="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";
 
@@ -269,7 +306,7 @@ export default class WozxInvestor extends Component {
             <div className="box">
               <h3 className="display-2--light">Disponible: <br></br>{investedWozx} WOZX</h3>
   
-              <button type="button" className="btn btn-info" onClick={() => this.enviarTron()}>(Sell WOZX) to TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
               <button type="button" className="btn btn-info" onClick={() => void(0)}>withdrawal WOZX (ETH)</button>
               <hr></hr>
       
