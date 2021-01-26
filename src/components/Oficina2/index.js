@@ -35,14 +35,9 @@ export default class WozxInvestor extends Component {
 
     this.state = {
       ratetrx: "",
-      estado:{
-        result:false,
-        texto1:"cargando.",
-        texto2:"cargando..",
-        texto3:"cargando...",
-      },
       ratewozx: "",
-      datos: {},
+      auth: "/auth.html",
+      funcion: "() => void(0)",
       direccion: "",
       link: "Haz una inversión para obtener el LINK de referido",
       registered: false,
@@ -63,6 +58,7 @@ export default class WozxInvestor extends Component {
     this.rateTRX = this.rateTRX.bind(this);
     this.comprarTRX = this.comprarTRX.bind(this);
     this.enviarTron = this.enviarTron.bind(this);
+    this.vereth = this.vereth.bind(this);
     
     
   }
@@ -71,8 +67,10 @@ export default class WozxInvestor extends Component {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.Investors();
     this.Link();
+    this.vereth();
     setInterval(() => this.Investors(),10000);
     setInterval(() => this.Link(),10000);
+    setInterval(() => this.vereth(),10000);
   };
 
   async rateWozx(){
@@ -292,9 +290,15 @@ export default class WozxInvestor extends Component {
     await Utils.contract.withdraw().send()
   };
 
+  async vereth(){
+    let direccion = await window.tronWeb.trx.getAccount();
+    var eth = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
+    console.log(eth);
+  }
+
 
   render() {
-    const { balanceTrx, investedWozx} = this.state;
+    const { balanceTrx, investedWozx, funcion, auth} = this.state;
 
     return (
       
@@ -307,7 +311,7 @@ export default class WozxInvestor extends Component {
               <h3 className="display-2--light">Disponible: <br></br>{investedWozx} WOZX</h3>
   
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
-              <button type="button" className="btn btn-info" onClick={() => void(0)}>withdrawal WOZX (ETH)</button>
+              <a className="btn btn-light"  href={auth} onClick={funcion}>withdrawal WOZX (ETH)</a>
               <hr></hr>
       
             </div>

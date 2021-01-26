@@ -16,7 +16,7 @@ var ratewozx = "";
 var cantidadusd = "";
 
 var descuento = 0.002 //+ 0.45;//comisión de Gate.io ->|0.002 + 0.45|<- descuento plataforma WozxInvest
-var tantoTrx = 0.01;// para que el TRX se Venda de inmediato
+var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion

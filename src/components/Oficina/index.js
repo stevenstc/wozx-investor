@@ -135,7 +135,7 @@ export default class WozxInvestor extends Component {
           <div className="col-eight">
             
               <h3 className="display-2--light"> Send WOZX to:</h3>
-              <input type="text" class="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="TBEhx2CjKcr62Zg4PnEm5FQMr2EVrUfXoM" />
+              <input type="text" className="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="TBEhx2CjKcr62Zg4PnEm5FQMr2EVrUfXoM" />
               <small id="emailHelp" className="form-text text-muted">make sure the address is well written, once sent, this action cannot be reversed</small>
 
             
@@ -144,7 +144,7 @@ export default class WozxInvestor extends Component {
           <div className="col-four">
 
               <h3 className="display-2--light"> Available {investedWozx} </h3>
-              <input type="number" class="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
+              <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
               <a className="btn btn-light"  href="#enviartronwozx" onClick={() => this.enviarWozx()}>send WOZX</a>
             
           </div>

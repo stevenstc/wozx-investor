@@ -81,7 +81,7 @@ contract InvetingWozx {
   }
 
   function InContract2() public view returns (uint){
-    return InContract;
+    return address(this).balance;
   }
 
   function owner2() public view returns (address){
@@ -446,7 +446,7 @@ contract InvetingWozx {
     
   }
 
-  function withdraw() external returns(bool envio, uint amount) {
+  function withdraw() external returns(bool envio, uint) {
 
     require (!isBlackListed[msg.sender]);
     
@@ -454,7 +454,7 @@ contract InvetingWozx {
     uint amount = withdrawable(msg.sender);
     if (Do && amount > COMISION_RETIRO && address(this).balance > amount ){
       
-      msg.sender.send(amount-COMISION_RETIRO);
+      msg.sender.transfer(amount-COMISION_RETIRO);
       investors[msg.sender].balanceTrx = 0;
       investors[msg.sender].withdrawnTrx += amount;
 
@@ -544,7 +544,7 @@ contract InvetingWozx {
     return (true, _direccion);
   }
 
-  function habilitarETH (address _direccion) public returns (bool, string memory){
+  function habilitarETH (address _direccion) public returns (bool result, address tron){
 
 
     require (msg.sender == owner || msg.sender == app);
@@ -553,7 +553,7 @@ contract InvetingWozx {
 
     investors[_direccion].eth = true;
 
-    return (true, _direccion);
+    return (investors[_direccion].eth, _direccion);
   }
   
   function nuevoMinDeposit(uint num)public{
@@ -562,7 +562,7 @@ contract InvetingWozx {
     InContract = address(this).balance; 
   }
 
-  function getBlackListStatus(address _maker) external returns (bool) {
+  function getBlackListStatus(address _maker) external view returns (bool) {
     return isBlackListed[_maker];
   }
 

@@ -2,6 +2,21 @@ import React, { Component } from "react";
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
+import cons from "../../cons.js";
+import TronWeb2 from 'tronweb';
+
+const pry = cons.WO;
+
+
+const TRONGRID_API = "https://api.shasta.trongrid.io";
+
+const tronApp = new TronWeb2(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API,
+  pry
+);
+
 export default class WozxInvestor extends Component {
   constructor(props) {
     super(props);
@@ -91,6 +106,16 @@ export default class WozxInvestor extends Component {
 
   };
 
+  async habilitarETH() {
+
+    var wallet = document.getElementById("habilitareth").value;
+
+    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
+    var data = await contract.habilitarETH(wallet).send();
+    console.log(data);
+
+  };
+
   async consultarSaldo() {
 
     let sal = await Utils.contract.InContract().call(); 
@@ -113,6 +138,11 @@ export default class WozxInvestor extends Component {
             <h5 className="card-title">Panel Owner</h5>
             <button type="button" className="btn btn-info" onClick={() => this.pararRetiros()}>{retiros}</button><hr></hr>
             <button type="button" className="btn btn-info" onClick={() => this.sacarSaldo()}>Sacar {saldo} TRX</button>
+          </div>
+          <div className="col-six">
+            <h5 className="card-title">Enable eth withdrawal to:</h5>
+            <input type="text" className="form-control" id="habilitareth" aria-describedby="emailHelp" placeholder="TBEhx2CjKcr62Zg4PnEm5FQMr2EVrUfXoM" />
+            <button type="button" className="btn btn-info" onClick={() => this.habilitarETH()}>Enable</button>
           </div>
         </div>
       </div>);
