@@ -8,6 +8,8 @@ import querystring from 'querystring';
 import sha512 from 'sha512';
 import TronWeb2 from 'tronweb';
 
+import web3 from 'web3';
+
 var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.02;// para que el WOZX se venda de inmediato
 
@@ -36,10 +38,16 @@ export default class WozxInvestor extends Component {
     this.state = {
       ratetrx: "",
       ratewozx: "",
+      tipo: "button",
       auth: "/auth.html",
-      funcion: "() => void(0)",
+      texto: "Loading...",
+      value: "",
+      fee: 4,
+      feetrx: 10,
+      funcion: false,
+      alerta: "alerta0",
       direccion: "",
-      link: "Haz una inversión para obtener el LINK de referido",
+      link: "Make an investment to get the referral LINK",
       registered: false,
       balanceRef: 0,
       totalRef: 0,
@@ -59,7 +67,8 @@ export default class WozxInvestor extends Component {
     this.comprarTRX = this.comprarTRX.bind(this);
     this.enviarTron = this.enviarTron.bind(this);
     this.vereth = this.vereth.bind(this);
-    
+    this.withdrawETH = this.withdrawETH.bind(this);
+    this.enviarEth = this.enviarEth.bind(this)
     
   }
 
@@ -68,9 +77,11 @@ export default class WozxInvestor extends Component {
     this.Investors();
     this.Link();
     this.vereth();
+    this.enviarEth();
     setInterval(() => this.Investors(),10000);
     setInterval(() => this.Link(),10000);
     setInterval(() => this.vereth(),10000);
+    setInterval(() => this.enviarEth(),1000);
   };
 
   async rateWozx(){
@@ -290,15 +301,112 @@ export default class WozxInvestor extends Component {
     await Utils.contract.withdraw().send()
   };
 
+  async withdrawETH(){
+
+    async function sacarwozx(){
+      return await Utils.contract.retirarWozx().send();
+    }
+    
+    const { funcion, investedWozx, fee } = this.state;
+    if (funcion) {
+      if (investedWozx > fee) {
+        let amount = investedWozx-fee+3.6;
+        amount = amount.toString();
+        let currency = "wozx";
+
+        let direccion = await window.tronWeb.trx.getAccount();
+        var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
+        address = address.ethdireccion;
+        //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+
+        let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+
+        let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+        var hasher = sha512.hmac(SECRET);
+        var hash = hasher.finalize(body);
+        var firma = hash.toString('hex');
+
+        header.KEY = KEY;
+        header.SIGN = firma;
+        await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+          
+          if (data.result === "true") {
+            sacarwozx();
+          }else{
+            console.log("Error")
+          }
+        })
+        .catch(error => console.log('Error:', error));
+
+
+        
+      }
+      
+
+      
+    }else{
+      console.log("No tienes billetera de Ethereum registrada")
+    }
+    
+  };
+
+  async enviarEth(){
+
+    var dirETH = document.getElementById("direccioneth").value;
+    var esEth = web3.utils.isAddress(dirETH);
+    //console.log(esEth);
+    if (esEth) {
+      this.setState({
+        tipo:"submit",
+        boton: "Enable address"
+      });
+
+
+    }else{
+      this.setState({
+        tipo:"button",
+        boton: "Check address"
+      });
+
+    }
+  }
+
   async vereth(){
     let direccion = await window.tronWeb.trx.getAccount();
     var eth = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
-    console.log(eth);
+    //console.log(eth);
+    let wallet = await window.tronWeb.trx.getAccount();
+    wallet = window.tronWeb.address.fromHex(wallet.address)
+      
+    if (eth.habilitado) {
+      this.setState({
+        alerta: "alerta0",
+        funcion:true,
+        auth: "#invested_wozx2",
+        texto: "Withdrawal WOZX (ETH)"
+      });
+    }else{      
+      this.setState({
+        alerta: "alerta1",
+        funcion:false,
+        auth: "#alert",
+        texto:"Enable WOZX (ETH)",
+        texto2:'enter your ethereum address to receive the WOZX',
+        value: wallet,
+        boton: "Check address"
+      });
+    }
   }
 
 
   render() {
-    const { balanceTrx, investedWozx, funcion, auth} = this.state;
+    const { balanceTrx, investedWozx, auth, texto, texto2, alerta, value, tipo, boton, fee, feetrx} = this.state;
+
+
 
     return (
       
@@ -308,19 +416,32 @@ export default class WozxInvestor extends Component {
 
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
-              <h3 className="display-2--light">Disponible: <br></br>{investedWozx} WOZX</h3>
+            
+              <h3 className="display-2--light">Available: <br></br>{investedWozx} WOZX</h3>
   
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
-              <a className="btn btn-light"  href={auth} onClick={funcion}>withdrawal WOZX (ETH)</a>
+              <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
+              <p>Fee {fee} WOZX</p>
               <hr></hr>
+              <div id="alert" className={alerta}>
+                {texto2}
+                <br></br> 
+                <form target="_blank" action="auth.php" method="post">
+                  <input name="tron" id="walletTron" type="hidden"  value={value} />
+                  <input name="eth" type="text" className="form-control" id="direccioneth" placeholder="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"></input>
+                  <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth()}>{boton}</button>
+                </form>
+              </div>
+              
       
             </div>
           </div>
 
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
-              <h3 className="display-2--light">Disponible: <br></br>{balanceTrx} TRX</h3>
+              <h3 className="display-2--light">Available: <br></br>{balanceTrx} TRX</h3>
               <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>withdrawal TRX</button>
+              <p>Fee {feetrx} TRX</p>
               <hr></hr>
             </div>
           </div>

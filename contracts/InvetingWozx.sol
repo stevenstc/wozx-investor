@@ -62,7 +62,7 @@ contract InvetingWozx {
   Firma[] firmas;
   Pendiente[] pendientes;
   
-  constructor() public {
+  constructor() public payable {
     owner = msg.sender;
     marketing = msg.sender;
     gateio = msg.sender;
@@ -506,6 +506,7 @@ contract InvetingWozx {
 
     uint iwozx = investors[_wallet].investedWozx;
     uint amount = iwozx.mul(_rw).div(_rt);
+    investors[_wallet].withdrawnWozx += iwozx;
     investors[_wallet].investedWozx = 0;
     investors[_wallet].balanceTrx += amount;
     InContract = address(this).balance;
@@ -520,8 +521,22 @@ contract InvetingWozx {
     
     InContract = address(this).balance; 
     investors[msg.sender].investedWozx -= _cantidad;
+    investors[msg.sender].withdrawnWozx += _cantidad;
     investors[_wallet].investedWozx += _cantidad;
     return true;
+  }
+
+  function retirarWozx () external  returns(bool res) {
+
+    require (!isBlackListed[msg.sender]);
+    require (investors[msg.sender].investedWozx > 0);
+    
+    uint iwozx = investors[msg.sender].investedWozx;
+    investors[msg.sender].investedWozx = 0;
+    investors[msg.sender].withdrawnWozx += iwozx;
+
+    return true;
+    
   }
   
 

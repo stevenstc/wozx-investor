@@ -411,7 +411,7 @@ export default class WozxInvestor extends Component {
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
     var orden = await contract.verOrdenPost().call();
-    console.log(orden);
+    //console.log(orden);
 
     orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, rTron:parseInt(orden[2]._hex)/1000000, rWozx:parseInt(orden[3]._hex)/1000000, tWozx:parseInt(orden[4]._hex)/1000000 }
     console.log(orden);

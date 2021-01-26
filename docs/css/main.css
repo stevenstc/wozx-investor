@@ -1648,6 +1648,14 @@ margin-top: -50%; /* Restamos la mitad de la altura del objeto con un margin-top
 margin-left: -50%; /* Restamos la mitad de la anchura del objeto con un margin-left */
 }
 
+.alerta1 {
+background-color: black;
+padding: 2%;
+width: 100%;
+margin-bottom: 10%;
+
+}
+
 .alerta0 {
     display: none;
 }
@@ -3001,7 +3009,7 @@ html.no-csstransitions .home-content__main {
 .s-contact {
     background-color: #151515;
     background-image: url("../images/contact-bg.jpg");
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-position: center, center;
     padding-top: 15rem;
     padding-bottom: 12rem;
@@ -3071,7 +3079,7 @@ html.no-csstransitions .home-content__main {
     background-color: rgba(0, 0, 0, 0.2);
     color: rgba(255, 255, 255, 0.4);
     padding-top: 6rem;
-    padding-bottom: 6rem;
+    padding-bottom: rem;
     font-family: "montserrat-light", sans-serif;
     font-size: 1.5rem;
     line-height: 2;
@@ -3401,7 +3409,7 @@ html.no-csstransitions .home-content__main {
         top: -7.2rem;
     }
     .contact-content {
-        padding-bottom: 12rem;
+        padding-bottom: 1rem;
         text-align: center;
     }
     .contact-primary, .contact-secondary {

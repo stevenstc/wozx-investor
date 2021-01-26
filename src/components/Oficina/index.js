@@ -13,7 +13,7 @@ export default class WozxInvestor extends Component {
       ratewozx: "",
       datos: {},
       direccion: "",
-      link: "Haz una inversión para obtener el LINK de referido",
+      link: "Make an investment to get the referral LINK",
       registered: false,
       balanceTrx: "0",
       withdrawnTrx: "0",
