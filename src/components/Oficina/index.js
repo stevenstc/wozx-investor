@@ -3,17 +3,6 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-import cons from "../../cons.js";
-
-import querystring from 'querystring';
-import sha512 from 'sha512';
-
-var ratetrx = "";
-var ratewozx = "";
-var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
-
-const KEY  = cons.AK;
-const SECRET  = cons.SK;
 
 export default class WozxInvestor extends Component {
   constructor(props) {
