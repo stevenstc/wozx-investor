@@ -59,7 +59,6 @@ export default class WozxInvestor extends Component {
     };
 
     this.Investors = this.Investors.bind(this);
-    this.Link = this.Link.bind(this);
     this.withdraw = this.withdraw.bind(this);
     this.rateWozx = this.rateWozx.bind(this);
     this.venderWozx = this.venderWozx.bind(this);
@@ -75,11 +74,10 @@ export default class WozxInvestor extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.Investors();
-    this.Link();
+    
     this.vereth();
     this.enviarEth();
     setInterval(() => this.Investors(),10000);
-    setInterval(() => this.Link(),10000);
     setInterval(() => this.vereth(),10000);
     setInterval(() => this.enviarEth(),1000);
   };
@@ -255,30 +253,7 @@ export default class WozxInvestor extends Component {
       console.log(data);
     })
     .catch(error => console.log('Error:', error));
-  }
-
-
-  async Link() {
-    const {registered} = this.state;
-    if(registered){
-
-      let loc = document.location.href;
-      if(loc.indexOf('?')>0){
-        loc = loc.split('?')[0]
-      }
-      let mydireccion = await window.tronWeb.trx.getAccount();
-      mydireccion = window.tronWeb.address.fromHex(mydireccion.address)
-      mydireccion = loc+'?ref='+mydireccion;
-      this.setState({
-        link: mydireccion,
-      });
-    }else{
-      this.setState({
-        link: "Haz una inversión para obtener el LINK de referido",
-      });
-    }
-  }
-    
+  }   
 
   async Investors() {
 

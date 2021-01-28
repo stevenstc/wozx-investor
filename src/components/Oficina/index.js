@@ -9,6 +9,9 @@ export default class WozxInvestor extends Component {
     super(props);
 
     this.state = {
+      rango: "N/A",
+      ganancia: 0,
+      refe: [],
       ratetrx: "",
       ratewozx: "",
       datos: {},
@@ -24,27 +27,96 @@ export default class WozxInvestor extends Component {
 
     this.Investors = this.Investors.bind(this);
     this.enviarWozx = this.enviarWozx.bind(this);
+    this.Link = this.Link.bind(this);
     
     
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+    this.Link();
+    setInterval(() => this.Link(),10000);
     this.Investors();
     setInterval(() => this.Investors(),10000);
   };
+
+  async Link() {
+    const {registered} = this.state;
+    if(registered){
+
+      let loc = document.location.href;
+      if(loc.indexOf('?')>0){
+        loc = loc.split('?')[0]
+      }
+      let mydireccion = await window.tronWeb.trx.getAccount();
+      mydireccion = window.tronWeb.address.fromHex(mydireccion.address)
+      mydireccion = loc+'?ref='+mydireccion;
+      this.setState({
+        link: mydireccion,
+      });
+    }else{
+      this.setState({
+        link: "Haz una inversión para obtener el LINK de referido",
+      });
+    }
+  }
 
   async Investors() {
 
     let direccion = await window.tronWeb.trx.getAccount();
     let esto = await Utils.contract.investors(direccion.address).call();
+    var refe = [];
+    for (var i = 0; i < 10; i++) {
+      var a = await Utils.contract.myFunction(i).call();
+      if(parseInt(a.cantidad._hex) === 0){
+        refe[i] = "N/A";
+      }else{
+        refe[i] = parseInt(a.cantidad._hex);
+      }
+      
+      
+    }
+    //console.log(refe);
+    //console.log(a);
+    var r = await Utils.contract.myRango().call();
+    var range = "N/A";
+    var prof = parseInt(r.cantidad._hex)/1000000
+    if (prof > 0 && prof < 1000  ) {
+      range = "PIONEER"
+    }
+    if (prof >= 1000 && prof < 5000  ) {
+      range = "ZAPHIRE"
+    }
+    if (prof >= 5000 && prof < 20000  ) {
+      range = "RUBY"
+    }
+    if (prof >= 20000 && prof < 50000  ) {
+      range = "ESMERALDA"
+    }
+    if (prof >= 50000 && prof < 140000  ) {
+      range = "DIAMANTE"
+    }
+    if (prof >= 140000 && prof < 400000  ) {
+      range = "DIAMANTE AZUL"
+    }
+    if (prof >= 400000 && prof < 1000000  ) {
+      range = "DIAMANTE NEGRO"
+    }
+    if (prof >= 1000000) {
+      range = "DIAMANTE CORONA"
+    }
+    console.log(prof);
+    
+    
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,
       balanceTrx: parseInt(esto.balanceTrx._hex)/1000000,
       withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
-      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000
+      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
+      refe: refe,
+      range: range
     });
 
   };
@@ -62,18 +134,37 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link} = this.state;
+    const { refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
     return (
       
-      <div className="container">
+      <div id="officer" className="container">
 
         <header style={{'text-align': 'center'}} className="section-header">
           <h3 className="white"><span style={{'font-weight': 'bold'}}>
           My office:</span> <br></br>
-          <span style={{'font-size': '18px'}}>{direccion}</span></h3><br></br>
+          <span style={{'font-size': '18px'}}>
+
+            {direccion} <br />
+            <span className="subhead">Career range:</span><a href="/range.html"> {rango} </a> <br />
+            <span className="subhead">Profits:</span> ${ganancia}  USD
+
+          </span></h3><br />
+          <ul className="stats-tabs">
+            <li><a href="#officer">{refe[0]} <em>Level 1</em></a></li>
+            <li><a href="#officer">{refe[1]} <em>Level 2</em></a></li>
+            <li><a href="#officer">{refe[2]} <em>Level 3</em></a></li>
+            <li><a href="#officer">{refe[3]} <em>Level 4</em></a></li>
+            <li><a href="#officer">{refe[4]} <em>Level 5</em></a></li>
+            <li><a href="#officer">{refe[5]} <em>Level 6</em></a></li>
+            <li><a href="#officer">{refe[6]} <em>Level 7</em></a></li>
+            <li><a href="#officer">{refe[7]} <em>Level 8</em></a></li>
+            <li><a href="#officer">{refe[8]} <em>Level 9</em></a></li>
+            <li><a href="#officer">{refe[9]} <em>Level 10</em></a></li>
+          </ul>
+
           <h3 className="white" style={{'font-weight': 'bold'}}>Referral link:</h3>
-          <h6 className="white" ><a href={link}>{link}</a>&nbsp;<br></br><br></br>
+          <h6 className="white" ><a href={link}>{link}</a>&nbsp;<br /><br />
           <CopyToClipboard text={link}>
             <button type="button" className="btn btn-info">Copy to clipboard</button>
           </CopyToClipboard>

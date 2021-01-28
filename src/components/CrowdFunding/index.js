@@ -100,10 +100,13 @@ export default class WozxInvestor extends Component {
 
 
     var mindepo = await Utils.contract.MIN_DEPOSIT().call();
+    var rateApp = await Utils.contract.rateTRON().call();
     mindepo = parseInt(mindepo._hex)/1000000;
+    rateApp = parseInt(rateApp._hex)/1000000;
 
     this.setState({
-      min: mindepo
+      min: mindepo,
+      rateApp: rateApp
     });
     //console.log(mindepo);
 
@@ -112,6 +115,14 @@ export default class WozxInvestor extends Component {
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
       await contract.nuevoMinDeposit(parseInt(minimo_usd/ratetrx_usd)).send();
       console.log("EVENTO: nuevo minimo de deposito "+parseInt(minimo_usd/ratetrx_usd)+" TRX")
+
+    }
+
+    if (rateApp >= ratetrx_usd+ratetrx_usd*rango_minimo || rateApp <= ratetrx_usd-ratetrx_usd*rango_minimo) {
+
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.nuevoRatetron(parseInt(ratetrx_usd*1000000)).send();
+      console.log("EVENTO: nuevo rate de TRX "+ratetrx_usd+" // "+rateApp);
 
     }
 

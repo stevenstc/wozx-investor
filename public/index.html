@@ -10,7 +10,7 @@
     <!--- basic page needs
     ================================================== -->
     <meta charset="utf-8">
-    <title>Wozx Invest</title>
+    <title>EWozx</title>
     <meta name="description" content="a page when you can invest an trade in crypto calling wozx ">
     <meta name="author" content="Miguel Merchan">
 
@@ -322,7 +322,7 @@
             
 
             <div class="col-six stats__col">
-                <div class="precioUSD" id="p1">2 USD</div>
+                <div class="precioUSD" id="p1">$2 USD</div>
                 <h5>Token Price</h5>
             </div>
 
@@ -335,7 +335,7 @@
                   // Work with JSON data here
 
                   console.log(data.market_data.current_price.usd);
-                  document.getElementById("p1").innerHTML = data.market_data.current_price.usd;
+                  document.getElementById("p1").innerHTML = "$"+data.market_data.current_price.usd+" USD";
                 }).catch(err => {
                     console.log(err)
                   

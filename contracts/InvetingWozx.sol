@@ -2,11 +2,12 @@ pragma solidity ^0.5.14;
 
 import "./SafeMath.sol";
 
-contract InvetingWozx {
+contract EWozx {
   using SafeMath for uint;
 
   struct Referer {
     address myReferer;
+    uint porciento;
     uint nivel;
   }
   
@@ -23,6 +24,12 @@ contract InvetingWozx {
     uint rateWozx;
     uint orden;
   }
+
+  struct Nivel {
+    uint n; 
+
+  }
+  
   
 
   struct Investor {
@@ -33,6 +40,8 @@ contract InvetingWozx {
     Referer[] referers;
     string ethereum;
     bool eth;
+    uint rango;
+    Nivel[10] niveles;
     uint balanceTrx;
     uint withdrawnTrx;
     uint investedWozx;
@@ -42,6 +51,7 @@ contract InvetingWozx {
   
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
+  uint public rateTRON = 0;
   
   address payable public owner;
   address payable public marketing;
@@ -165,62 +175,62 @@ contract InvetingWozx {
       
     if (investors[spo].registered) {
 
-      investors[spo].referers.push(Referer(ref,1000));
-      nvl++;
+      investors[spo].referers.push(Referer(ref,8000,nvl));
+      
      
       if (investors[spo].exist){
         spo = investors[spo].sponsor;
         if (investors[spo].registered){
-          investors[spo].referers.push(Referer(ref,200));
-          nvl++;
+          investors[spo].referers.push(Referer(ref,2000,nvl++));
+     
           
           if (investors[spo].exist){
             spo = investors[spo].sponsor;
             if (investors[spo].registered){
-              investors[spo].referers.push(Referer(ref,100));
-              nvl++;
+              investors[spo].referers.push(Referer(ref,1000,nvl++));
+              
               
               if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,100));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,500,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,100));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,500,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,50));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,50));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,50));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,25));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,125,nvl++));
+                   
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,25));
-                   nvl++;
+                   investors[spo].referers.push(Referer(ref,125,nvl++));
+                   
                    
                 }
               }
@@ -260,10 +270,17 @@ contract InvetingWozx {
             break;
           }
           if ( investors[spo].referers[e].myReferer == yo){
-              uint b = investors[spo].referers[e].nivel;
-              uint a = amount * b / 10000;
+              uint b = investors[spo].referers[e].porciento;
+              uint a = amount * b / 100000;
               investors[spo].balanceTrx += a;
               totalRefRewards += a;
+              investors[spo].rango += a*rateTRON;
+
+              for (uint n = 0; n < investors[spo].niveles.length; n++) {
+                if (investors[spo].referers[e].nivel == n){
+                  investors[spo].niveles[n].n++;
+                }
+              }
           }
         }
 
@@ -317,10 +334,9 @@ contract InvetingWozx {
     totalInvested += orden;
     
     
-    owner.transfer(msg.value.mul(12).div(100));
-    marketing.transfer(msg.value.mul(12).div(100));
-    app.transfer(msg.value.mul(4).div(100));
-    gateio.transfer(msg.value.mul(55).div(100));
+    owner.transfer(msg.value.mul(10).div(100));
+    marketing.transfer(msg.value.mul(10).div(100));
+    gateio.transfer(msg.value.mul(67).div(100));
     setInContract();
     
   }
@@ -377,6 +393,21 @@ contract InvetingWozx {
 
   }
 
+  function myFunction (uint _nivel) public view returns(uint cantidad){
+    
+    require (_nivel < investors[msg.sender].niveles.length && _nivel >= 0 );
+    
+    return investors[msg.sender].niveles[_nivel].n;
+      
+  }
+
+  function myRango () public view returns(uint cantidad){
+    
+    return investors[msg.sender].rango;
+      
+  }
+  
+
   function ejecutarOrden(uint _numero) public {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
@@ -427,10 +458,9 @@ contract InvetingWozx {
       rewardReferers(msg.sender, msg.value.mul(17).div(100), investors[msg.sender].sponsor);
     } 
     
-    owner.transfer(msg.value.mul(12).div(100));
-    marketing.transfer(msg.value.mul(12).div(100));
-    app.transfer(msg.value.mul(4).div(100));
-    gateio.transfer(msg.value.mul(55).div(100));
+    owner.transfer(msg.value.mul(10).div(100));
+    marketing.transfer(msg.value.mul(10).div(100));
+    gateio.transfer(msg.value.mul(67).div(100));
     setInContract();
     
   }
@@ -455,12 +485,13 @@ contract InvetingWozx {
     if (Do && amount > COMISION_RETIRO && address(this).balance > amount ){
       
       msg.sender.transfer(amount-COMISION_RETIRO);
+      app.transfer(5 trx);
       investors[msg.sender].balanceTrx = 0;
-      investors[msg.sender].withdrawnTrx += amount;
+      investors[msg.sender].withdrawnTrx += amount-COMISION_RETIRO;
 
-      return (true, amount);
+      return (true, amount-COMISION_RETIRO);
     }else{
-      return (false, amount);
+      return (false, amount-COMISION_RETIRO);
     }
 
     
@@ -508,7 +539,8 @@ contract InvetingWozx {
     uint amount = iwozx.mul(_rw).div(_rt);
     investors[_wallet].withdrawnWozx += iwozx;
     investors[_wallet].investedWozx = 0;
-    investors[_wallet].balanceTrx += amount;
+    app.transfer(5 trx);
+    investors[_wallet].balanceTrx += amount-5 trx;
     InContract = address(this).balance;
     return true;
     
@@ -575,6 +607,13 @@ contract InvetingWozx {
     require (msg.sender == owner || msg.sender == app);
     MIN_DEPOSIT = num*1 trx;
     InContract = address(this).balance; 
+  }
+
+  function nuevoRatetron(uint rate)public{
+    require (msg.sender == owner || msg.sender == app);
+    require (rate != rateTRON);
+    rateTRON = rate;
+    
   }
 
   function getBlackListStatus(address _maker) external view returns (bool) {

@@ -1097,7 +1097,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
     font-family: "montserrat-regular", sans-serif;
     font-weight: bold;
     border: none;
-    color: #000000;
+    color: white;
 }
 
 .stats-tabs li a:hover {
