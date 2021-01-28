@@ -8,7 +8,6 @@ contract EWozx {
   struct Referer {
     address myReferer;
     uint porciento;
-    uint nivel;
   }
   
   struct Firma {
@@ -26,12 +25,10 @@ contract EWozx {
   }
 
   struct Nivel {
-    uint n; 
+    uint n;
 
   }
   
-  
-
   struct Investor {
     string mensaje;
     bool registered;
@@ -51,7 +48,7 @@ contract EWozx {
   
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
-  uint public rateTRON = 0;
+  uint public rateTRON = 28677;
   
   address payable public owner;
   address payable public marketing;
@@ -175,61 +172,80 @@ contract EWozx {
       
     if (investors[spo].registered) {
 
-      investors[spo].referers.push(Referer(ref,8000,nvl));
+      investors[spo].referers.push(Referer(ref,8000));
+      investors[spo].niveles[nvl].n++;
+      nvl++;
       
      
       if (investors[spo].exist){
         spo = investors[spo].sponsor;
         if (investors[spo].registered){
-          investors[spo].referers.push(Referer(ref,2000,nvl++));
+          investors[spo].referers.push(Referer(ref,2000));
+          investors[spo].niveles[nvl].n++;
+          nvl++;
      
           
           if (investors[spo].exist){
             spo = investors[spo].sponsor;
             if (investors[spo].registered){
-              investors[spo].referers.push(Referer(ref,1000,nvl++));
+              investors[spo].referers.push(Referer(ref,1000));
+              investors[spo].niveles[nvl].n++;
+              nvl++;
               
               
               if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500,nvl++));
+                   investors[spo].referers.push(Referer(ref,500));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500,nvl++));
+                   investors[spo].referers.push(Referer(ref,500));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   investors[spo].referers.push(Referer(ref,250));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   investors[spo].referers.push(Referer(ref,250));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250,nvl++));
+                   investors[spo].referers.push(Referer(ref,250));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125,nvl++));
+                   investors[spo].referers.push(Referer(ref,125));
+                   investors[spo].niveles[nvl].n++;
+                    nvl++;
                    
                    
                    if (investors[spo].exist){
                 spo = investors[spo].sponsor;
                 if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125,nvl++));
+                   investors[spo].referers.push(Referer(ref,125));
+                   investors[spo].niveles[nvl].n++;
                    
                    
                 }
@@ -271,16 +287,12 @@ contract EWozx {
           }
           if ( investors[spo].referers[e].myReferer == yo){
               uint b = investors[spo].referers[e].porciento;
-              uint a = amount * b / 100000;
+              uint a = amount.mul(b).div(100000);
               investors[spo].balanceTrx += a;
               totalRefRewards += a;
-              investors[spo].rango += a*rateTRON;
-
-              for (uint n = 0; n < investors[spo].niveles.length; n++) {
-                if (investors[spo].referers[e].nivel == n){
-                  investors[spo].niveles[n].n++;
-                }
-              }
+              investors[spo].rango += a.mul(rateTRON);
+              
+              
           }
         }
 

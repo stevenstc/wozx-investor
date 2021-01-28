@@ -47,7 +47,6 @@ export default class WozxInvestor extends Component {
       funcion: false,
       alerta: "alerta0",
       direccion: "",
-      link: "Make an investment to get the referral LINK",
       registered: false,
       balanceRef: 0,
       totalRef: 0,

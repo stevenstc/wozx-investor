@@ -74,13 +74,12 @@ export default class WozxInvestor extends Component {
         refe[i] = parseInt(a.cantidad._hex);
       }
       
-      
     }
     //console.log(refe);
     //console.log(a);
     var r = await Utils.contract.myRango().call();
     var range = "N/A";
-    var prof = parseInt(r.cantidad._hex)/1000000
+    var prof = parseInt(r.cantidad._hex)/1000000000000
     if (prof > 0 && prof < 1000  ) {
       range = "PIONEER"
     }
@@ -105,7 +104,7 @@ export default class WozxInvestor extends Component {
     if (prof >= 1000000) {
       range = "DIAMANTE CORONA"
     }
-    console.log(prof);
+    //console.log(prof);
     
     
     this.setState({
@@ -116,7 +115,7 @@ export default class WozxInvestor extends Component {
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
       withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
       refe: refe,
-      range: range
+      rango: range
     });
 
   };
