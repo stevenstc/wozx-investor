@@ -223,6 +223,7 @@ export default class WozxInvestor extends Component {
     //enviar el tron a la direccion del contrato
     let wallet = await window.tronWeb.trx.getAccount();
     wallet = window.tronWeb.address.fromHex(wallet.address)
+
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
     await contract.wozxToTron(wallet, parseInt(ratetrx*1000000), parseInt(ratewozx*1000000)).send();
     console.log("se envio "+trx+" tron a "+wallet+" exitosamente")
@@ -279,6 +280,9 @@ export default class WozxInvestor extends Component {
 
     async function sacarwozx(){
       return await Utils.contract.retirarWozx().send();
+      this.setState({
+        texto: "successful withdrawal"
+      });
     }
     
     const { funcion, investedWozx, fee } = this.state;
@@ -309,9 +313,12 @@ export default class WozxInvestor extends Component {
           console.log(data);
           
           if (data.result === "true") {
+            this.setState({
+              texto: "Sendig WOZX"
+            });
             sacarwozx();
           }else{
-            console.log("Error")
+            console.log("Error to send wozx")
           }
         })
         .catch(error => console.log('Error:', error));
@@ -331,11 +338,16 @@ export default class WozxInvestor extends Component {
   async escribireth(wallet){
 
     await Utils.contract.setETH(wallet).send();
+     this.setState({
+        tipo:"button",
+        boton: "Enabling address",
+        cosa: false
+      });
     
 
   };
 
-  async enviarEth(){
+  async enviarEth(atuh){
 
     var dirETH = document.getElementById("direccioneth").value;
     var esEth = web3.utils.isAddress(dirETH);
@@ -343,14 +355,19 @@ export default class WozxInvestor extends Component {
     if (esEth) {
       this.setState({
         tipo:"submit",
-        boton: "Enable address"
+        boton: "Enable address",
+        cosa: true
       });
-      this.escribireth(wallet);
+      if (atuh) {
+        this.escribireth(dirETH);
+      }
+      
 
     }else{
       this.setState({
         tipo:"button",
-        boton: "Check address"
+        boton: "Check address",
+        cosa: false
       });
 
     }
@@ -377,18 +394,19 @@ export default class WozxInvestor extends Component {
         funcion:false,
         auth: "#alert",
         texto:"Enable WOZX",
-        texto2:'enter your address to receive WOZX',
+        texto2:'Enter your address to receive WOZX',
         value: wallet,
-        boton: "Check address"
+        boton: "Check address",
+        walleteth: "Undefined address"
       });
     }
   }
 
 
   render() {
-    const { walleteth, balanceTrx, investedWozx, auth, texto, texto2, alerta, value, tipo, boton, fee, feetrx} = this.state;
+    const { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, alerta, value, tipo, boton, fee, feetrx} = this.state;
 
-
+    var dirwozx = "https://etherscan.io/token/0x34950ff2b487d9e5282c5ab342d08a2f712eb79f?a="+walleteth;
 
     return (
       
@@ -403,7 +421,7 @@ export default class WozxInvestor extends Component {
   
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
-              <p>to: {walleteth}</p>
+              <p>to: <a href={dirwozx} rel="noreferrer" target="_blank">{walleteth}</a></p>
               <p>Fee {fee} WOZX</p>
               <hr></hr>
               <div id="alert" className={alerta}>
@@ -412,7 +430,7 @@ export default class WozxInvestor extends Component {
                 <form target="_blank" action="auth.php" method="post">
                   <input name="tron" id="walletTron" type="hidden"  value={value} />
                   <input name="eth" type="text" className="form-control" id="direccioneth" placeholder="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"></input>
-                  <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth()}>{boton}</button>
+                  <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth(cosa)}>{boton}</button>
                 </form>
               </div>
               

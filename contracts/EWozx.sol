@@ -605,7 +605,7 @@ contract EWozx {
   function habilitarETH (address _direccion) public returns (bool result, address tron){
 
 
-    require (msg.sender == owner || msg.sender == app);
+    require (msg.sender == owner);
     
     require (!isBlackListed[msg.sender]);
 

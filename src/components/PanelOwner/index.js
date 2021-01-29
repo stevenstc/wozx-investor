@@ -24,7 +24,8 @@ export default class WozxInvestor extends Component {
     this.state = {
       isowner: false,
       retiros: "",
-      saldo: 0
+      saldo: 0,
+      texto: "Enable"
     };
 
     this.isOwner = this.isOwner.bind(this);
@@ -109,10 +110,18 @@ export default class WozxInvestor extends Component {
   async habilitarETH() {
 
     var wallet = document.getElementById("habilitareth").value;
-
-    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
-    var data = await contract.habilitarETH(wallet).send();
+    this.setState({
+        texto: "Enabling..."
+    });
+    //let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
+    var data = await Utils.contract.habilitarETH(wallet).send();
     console.log(data);
+
+    this.setState({
+        texto: "address enabled"
+    });
+
+    document.getElementById("habilitareth").value = "";
 
   };
 
@@ -129,7 +138,7 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { isowner, retiros, saldo } = this.state;
+    const { texto, isowner, retiros, saldo } = this.state;
     if (isowner) {
       return (
       <div className="container">
@@ -142,7 +151,7 @@ export default class WozxInvestor extends Component {
           <div className="col-six">
             <h5 className="card-title">Enable eth withdrawal to:</h5>
             <input type="text" className="form-control" id="habilitareth" aria-describedby="emailHelp" placeholder="TBEhx2CjKcr62Zg4PnEm5FQMr2EVrUfXoM" />
-            <button type="button" className="btn btn-info" onClick={() => this.habilitarETH()}>Enable</button>
+            <button type="button" className="btn btn-info" onClick={() => this.habilitarETH()}>{texto}</button>
           </div>
         </div>
       </div>);
