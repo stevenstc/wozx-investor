@@ -15,9 +15,9 @@ var ratetrx_usd = "";
 var ratewozx = "";
 var cantidadusd = "";
 
-var descuento = 0.002 //+ 0.45;//comisión de Gate.io ->|0.002 + 0.45|<- descuento plataforma WozxInvest
+var descuento = 0.002 //+ 0.30;// + 0.30|<- se resta para comprar el 70% en wozx para los usuarios
 var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
-var tantoWozx = 0.02;// para que el WOZX se Compre de inmediato
+var tantoWozx = 0.06;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 
@@ -549,7 +549,7 @@ export default class WozxInvestor extends Component {
                 <p className="card-text">You must have ~ 10 TRX to make the transaction</p>
               </div>
             </form>
-          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Invest in WOZX</a>
+          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Buy WOZX</a>
         </div>
         <div className={alerta}>
           {texto}

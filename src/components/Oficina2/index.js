@@ -328,6 +328,13 @@ export default class WozxInvestor extends Component {
     
   };
 
+  async escribireth(wallet){
+
+    await Utils.contract.setETH(wallet).send();
+    
+
+  };
+
   async enviarEth(){
 
     var dirETH = document.getElementById("direccioneth").value;
@@ -338,7 +345,7 @@ export default class WozxInvestor extends Component {
         tipo:"submit",
         boton: "Enable address"
       });
-
+      this.escribireth(wallet);
 
     }else{
       this.setState({
@@ -361,15 +368,16 @@ export default class WozxInvestor extends Component {
         alerta: "alerta0",
         funcion:true,
         auth: "#invested_wozx2",
-        texto: "Withdrawal WOZX (ETH)"
+        texto: "Withdrawal WOZX",
+        walleteth: eth.ethdireccion
       });
     }else{      
       this.setState({
         alerta: "alerta1",
         funcion:false,
         auth: "#alert",
-        texto:"Enable WOZX (ETH)",
-        texto2:'enter your ethereum address to receive the WOZX',
+        texto:"Enable WOZX",
+        texto2:'enter your address to receive WOZX',
         value: wallet,
         boton: "Check address"
       });
@@ -378,7 +386,7 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { balanceTrx, investedWozx, auth, texto, texto2, alerta, value, tipo, boton, fee, feetrx} = this.state;
+    const { walleteth, balanceTrx, investedWozx, auth, texto, texto2, alerta, value, tipo, boton, fee, feetrx} = this.state;
 
 
 
@@ -395,6 +403,7 @@ export default class WozxInvestor extends Component {
   
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
+              <p>to: {walleteth}</p>
               <p>Fee {fee} WOZX</p>
               <hr></hr>
               <div id="alert" className={alerta}>

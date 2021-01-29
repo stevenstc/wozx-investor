@@ -30,7 +30,6 @@ contract EWozx {
   }
   
   struct Investor {
-    string mensaje;
     bool registered;
     address sponsor;
     bool exist;
@@ -346,9 +345,9 @@ contract EWozx {
     totalInvested += orden;
     
     
-    owner.transfer(msg.value.mul(10).div(100));
-    marketing.transfer(msg.value.mul(10).div(100));
-    gateio.transfer(msg.value.mul(67).div(100));
+    owner.transfer(msg.value.mul(9).div(100));
+    marketing.transfer(msg.value.mul(9).div(100));
+    gateio.transfer(msg.value.mul(70).div(100));
     setInContract();
     
   }
@@ -470,9 +469,9 @@ contract EWozx {
       rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
     } 
     
-    owner.transfer(msg.value.mul(10).div(100));
-    marketing.transfer(msg.value.mul(10).div(100));
-    gateio.transfer(msg.value.mul(67).div(100));
+    owner.transfer(msg.value.mul(9).div(100));
+    marketing.transfer(msg.value.mul(9).div(100));
+    gateio.transfer(msg.value.mul(70).div(100));
     setInContract();
     
   }

