@@ -2,20 +2,6 @@ import React, { Component } from "react";
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-import cons from "../../cons.js";
-import TronWeb2 from 'tronweb';
-
-const pry = cons.WO;
-
-
-const TRONGRID_API = "https://api.shasta.trongrid.io";
-
-const tronApp = new TronWeb2(
-  TRONGRID_API,
-  TRONGRID_API,
-  TRONGRID_API,
-  pry
-);
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -113,7 +99,7 @@ export default class WozxInvestor extends Component {
     this.setState({
         texto: "Enabling..."
     });
-    //let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
+    
     var data = await Utils.contract.habilitarETH(wallet).send();
     console.log(data);
 

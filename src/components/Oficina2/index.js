@@ -279,10 +279,11 @@ export default class WozxInvestor extends Component {
   async withdrawETH(){
 
     async function sacarwozx(){
-      return await Utils.contract.retirarWozx().send();
+      
       this.setState({
         texto: "successful withdrawal"
       });
+      await Utils.contract.retirarWozx().send();
     }
     
     const { funcion, investedWozx, fee } = this.state;
@@ -421,7 +422,7 @@ export default class WozxInvestor extends Component {
   
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
-              <p>to: <a href={dirwozx} rel="noreferrer" target="_blank">{walleteth}</a></p>
+              <p>to: <a href={dirwozx} rel="noopener noreferrer" target="_blank">{walleteth}</a></p>
               <p>Fee {fee} WOZX</p>
               <hr></hr>
               <div id="alert" className={alerta}>
