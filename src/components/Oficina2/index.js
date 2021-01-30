@@ -11,11 +11,11 @@ import TronWeb2 from 'tronweb';
 import web3 from 'web3';
 
 var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
-var tantoWozx = 0.02;// para que el WOZX se venda de inmediato
+var tantoWozx = 0.06;// para que el WOZX se venda de inmediato
 
 var ratetrx = "";
 var ratewozx = "";
-var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
+var proxyUrl = cons.proxy;
 
 const KEY  = cons.AK;
 const SECRET  = cons.SK;

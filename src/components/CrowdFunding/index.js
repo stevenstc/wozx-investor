@@ -21,7 +21,7 @@ var tantoWozx = 0.06;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 
-var proxyUrl = 'https://proxy-wozx.herokuapp.com/';
+var proxyUrl = cons.proxy;
 
 var AccessOrigin = '*';
 
