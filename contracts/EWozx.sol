@@ -171,7 +171,7 @@ contract EWozx {
       
     if (investors[spo].registered) {
 
-      investors[spo].referers.push(Referer(ref,8000));
+      investors[spo].referers.push(Referer(ref,5000));
       investors[spo].niveles[nvl].n++;
       nvl++;
       
@@ -179,7 +179,7 @@ contract EWozx {
       if (investors[spo].exist){
         spo = investors[spo].sponsor;
         if (investors[spo].registered){
-          investors[spo].referers.push(Referer(ref,2000));
+          investors[spo].referers.push(Referer(ref,1000));
           investors[spo].niveles[nvl].n++;
           nvl++;
      
@@ -345,9 +345,9 @@ contract EWozx {
     totalInvested += orden;
     
     
-    owner.transfer(msg.value.mul(9).div(100));
-    marketing.transfer(msg.value.mul(9).div(100));
-    gateio.transfer(msg.value.mul(70).div(100));
+    owner.transfer(msg.value.mul(7).div(100));
+    marketing.transfer(msg.value.mul(7).div(100));
+    gateio.transfer(msg.value.mul(77).div(100));
     setInContract();
     
   }
@@ -469,9 +469,9 @@ contract EWozx {
       rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
     } 
     
-    owner.transfer(msg.value.mul(9).div(100));
-    marketing.transfer(msg.value.mul(9).div(100));
-    gateio.transfer(msg.value.mul(70).div(100));
+    owner.transfer(msg.value.mul(7).div(100));
+    marketing.transfer(msg.value.mul(7).div(100));
+    gateio.transfer(msg.value.mul(77).div(100));
     setInContract();
     
   }

@@ -20,8 +20,10 @@ var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.06;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
-
+var walletSponsor = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb
 var proxyUrl = cons.proxy;
+
+console.log(contractAddress);
 
 var AccessOrigin = '*';
 
@@ -308,13 +310,13 @@ export default class WozxInvestor extends Component {
           document.getElementById('sponsor').value = tmp[0];            
         }else{
 
-           document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
+           document.getElementById('sponsor').value = walletSponsor;
         }
         
         
     }else{
       
-        document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'; 
+        document.getElementById('sponsor').value = walletSponsor; 
     }
 
     let amount = document.getElementById("amount").value;
@@ -362,13 +364,13 @@ export default class WozxInvestor extends Component {
           document.getElementById('sponsor').value = tmp[0];            
         }else{
 
-           document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
+           document.getElementById('sponsor').value = walletSponsor;
         }
         
         
     }else{
       
-        document.getElementById('sponsor').value = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb'; 
+        document.getElementById('sponsor').value = walletSponsor; 
     }
 
     let amount = document.getElementById("amount").value;
