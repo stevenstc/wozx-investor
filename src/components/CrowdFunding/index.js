@@ -32,7 +32,7 @@ const SECRET  = cons.SK;
 const pry = cons.WO;
 
 
-const TRONGRID_API = "https://api.shasta.trongrid.io";
+const TRONGRID_API = "https://api.trongrid.io";
 
 const tronApp = new TronWeb2(
   TRONGRID_API,
@@ -50,8 +50,7 @@ export default class WozxInvestor extends Component {
       amountTrx: "",
       usdtrx: "",
       min: 3000,
-      alerta: "alerta0",
-      texto: ""
+      texto: "Buy WOZX"
 
     }
 
@@ -163,8 +162,7 @@ export default class WozxInvestor extends Component {
   async venderTRX(){    
 
     this.setState({
-      alerta: "alerta",
-      texto:"Please wait, do not close this window, your investment is being processed"
+      texto:"Please wait"
     });
 
     await this.rateTRX();
@@ -200,7 +198,6 @@ export default class WozxInvestor extends Component {
 
       if (data.result === "true") {
         this.setState({
-          alerta: "alerta",
           texto:"Buying WOZX"
         });
         this.comprarWozx(cantidadusd);
@@ -275,14 +272,10 @@ export default class WozxInvestor extends Component {
       console.log(orden);
       if (data.result === "true") {
         this.deposit(cantidadWozx, orden);
-        this.setState({
-          alerta: "alerta0"
-        });
       }else{
         // se crea una orden post para la compra de solo wozx 
         this.setState({
-          alerta: "alerta",
-          texto:"Your order is being processed, it may take up to 10 minutes, if you have problems, consult technical support"
+          texto:"Order processed"
         });
       }
     })
@@ -394,8 +387,7 @@ export default class WozxInvestor extends Component {
     await this.rateTRX();
 
     this.setState({
-          alerta: "alerta",
-          texto:"Your order is being processed, it may take up to 10 minutes"
+          texto:"Order is being processed"
         });
 
     var orden = amount*ratetrx+ratetrx*tantoTrx;
@@ -416,7 +408,7 @@ export default class WozxInvestor extends Component {
     console.log(rw);
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    await contract.ordenPost(accountAddress, am, rt, rw, orden).send();
+    await contract.ordenPost(accountAddress, am, orden).send();
     
   };
 
@@ -426,18 +418,18 @@ export default class WozxInvestor extends Component {
     var orden = await contract.verOrdenPost().call();
     //console.log(orden);
 
-    orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, rTron:parseInt(orden[2]._hex)/1000000, rWozx:parseInt(orden[3]._hex)/1000000, tWozx:parseInt(orden[4]._hex)/1000000 }
+    orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[4]._hex)/1000000 }
     console.log(orden);
 
     if (orden.tron > 0){
-      this.postVenderTRX(orden.nOrden, orden.tron, orden.rTron, orden.rWozx)
+      this.postVenderTRX(orden.nOrden, orden.tron)
     }
      
   }
 
-  async postVenderTRX(numeroDeOrden, _amountTrx, nuevoRate1, nuevoRate2){    
+  async postVenderTRX(numeroDeOrden, _amountTrx){    
 
-    ratetrx = nuevoRate1;
+    await this.rateTRX();
     amountTrx = _amountTrx;
     amountTrx = amountTrx.toString();
 
@@ -467,7 +459,7 @@ export default class WozxInvestor extends Component {
       //console.log(cantidadusd);
 
       if (data.result === "true") {
-        this.postComprarWozx(cantidadusd, nuevoRate2, numeroDeOrden);
+        this.postComprarWozx(cantidadusd, numeroDeOrden);
       }
 
     })
@@ -475,10 +467,9 @@ export default class WozxInvestor extends Component {
 
   };
 
-  async postComprarWozx(usd, nuevoRate, numeroDeOrden){    
+  async postComprarWozx(usd, numeroDeOrden){    
     
-
-    ratewozx = nuevoRate;
+    await this.rateWozx();
     
     let amount = usd/parseFloat(ratewozx).toFixed(6);
     //console.log(parseFloat(amount.toFixed(6)));
@@ -509,7 +500,7 @@ export default class WozxInvestor extends Component {
       if (data.result === "true") {
         //la app actualiza en blockchain la orden se completo
           
-        this.ordenEjecutada(numeroDeOrden);
+        this.ordenEjecutada(numeroDeOrden, parseInt(cantidadWozx*1000000));
       }else{
         // se tiene que poner una orden post para comprar wozx, falta USD en la plataforma
       }
@@ -520,21 +511,16 @@ export default class WozxInvestor extends Component {
     
   };
 
-  async ordenEjecutada(numeroDeOrden){
+  async ordenEjecutada(numeroDeOrden, cantidadWozx){
 
-    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+    let contract = await tronApp.contract().at(contractAddress);
+    await contract.fillPost(numeroDeOrden,cantidadWozx).send();
     await contract.ejecutarOrden(numeroDeOrden).send();
-    console.log("Orden N°: "+numeroDeOrden+" se ejecutó exitosamente")
+    console.log("Orden N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX")
   }
 
   render() {
-    var { min, alerta, texto } = this.state;
-
-    //const alerta = "alerta";
-    texto = (<><p>{texto}</p></>);
-    
-    
-    
+    var { min, texto } = this.state;
 
     min = "Min. deposit "+min+" TRX";
     
@@ -551,10 +537,7 @@ export default class WozxInvestor extends Component {
                 <p className="card-text">You must have ~ 10 TRX to make the transaction</p>
               </div>
             </form>
-          <a className="btn btn-light"  href="#invested_wozx" onClick={() => this.venderTRX()}>Buy WOZX</a>
-        </div>
-        <div className={alerta}>
-          {texto}
+          <button type="button" className="btn btn-light" onClick={() => this.venderTRX()}>{texto}</button>
         </div>
         
       </div>

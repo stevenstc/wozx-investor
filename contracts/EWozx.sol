@@ -19,8 +19,6 @@ contract EWozx {
     bool pending;
     address wallet;
     uint tron;
-    uint rateTrx; 
-    uint rateWozx;
     uint orden;
   }
 
@@ -61,6 +59,8 @@ contract EWozx {
   uint public totalInvested;
   uint public totalRefRewards;
   uint public InContract;
+
+  uint[10] public porcientos;
   
 
   mapping (address => Investor) public investors;
@@ -75,6 +75,17 @@ contract EWozx {
     app = msg.sender;
     start();
     Do = true;
+
+    porcientos[0] = 5000;
+    porcientos[1] = 1000;
+    porcientos[2] = 1000;
+    porcientos[3] = 500;
+    porcientos[4] = 500;
+    porcientos[5] = 250;
+    porcientos[6] = 250;
+    porcientos[7] = 250;
+    porcientos[8] = 125;
+    porcientos[9] = 125;
 
   }
 
@@ -165,113 +176,22 @@ contract EWozx {
   }
 
   function registerReferers(address ref, address spo) internal {
-      
-    uint nvl = 0;
 
-      
-    if (investors[spo].registered) {
+    for (uint nvl = 0; nvl < 10; nvl++){
 
-      investors[spo].referers.push(Referer(ref,5000));
-      investors[spo].niveles[nvl].n++;
-      nvl++;
-      
-     
-      if (investors[spo].exist){
+      if (investors[spo].exist && investors[spo].registered){
+
         spo = investors[spo].sponsor;
-        if (investors[spo].registered){
-          investors[spo].referers.push(Referer(ref,1000));
-          investors[spo].niveles[nvl].n++;
-          nvl++;
-     
-          
-          if (investors[spo].exist){
-            spo = investors[spo].sponsor;
-            if (investors[spo].registered){
-              investors[spo].referers.push(Referer(ref,1000));
-              investors[spo].niveles[nvl].n++;
-              nvl++;
-              
-              
-              if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125));
-                   investors[spo].niveles[nvl].n++;
-                   
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-            }
-          }
-        }
+        investors[spo].referers.push(Referer(ref,porcientos[nvl]));
+        investors[spo].niveles[nvl].n++;
+        
+      }else{
+        break;
       }
+
+
     }
+    
   }
   
   function rewardReferers(address yo, uint amount, address sponsor) internal {
@@ -352,13 +272,24 @@ contract EWozx {
     
   }
 
-  function ordenPost(address _w , uint _t, uint _rt, uint _rw, uint _o) public{
+  function ordenPost(address _w , uint _t, uint _o) public{
     require (!isBlackListed[msg.sender]);
     require (_t >= MIN_DEPOSIT );
     require (_o > 0);
     require (msg.sender == app);
-    pendientes.push(Pendiente(true, _w, _t, _rt, _rw, _o));
+    pendientes.push(Pendiente(true, _w, _t, _o));
     setInContract();
+  }
+
+  function fillPost(uint _numero, uint _orden) public returns(uint){
+    require (msg.sender == app || msg.sender == owner);
+    require (_numero < pendientes.length);
+    require (pendientes[_numero].pending);
+
+    pendientes[_numero].orden = _orden;
+
+    return (_orden);
+
   }
 
   function verOrdenPost() public view returns(uint, uint, uint, uint, uint){
