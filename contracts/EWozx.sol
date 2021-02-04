@@ -176,15 +176,16 @@ contract EWozx {
     }
   }
 
-  function registerReferers(address ref, address spo) internal {
-
+  function registerReferers(address ref, address sponsor) internal {
+    address spo = sponsor;
     for (uint nvl = 0; nvl < 10; nvl++){
 
       if (investors[spo].exist && investors[spo].registered){
 
-        spo = investors[spo].sponsor;
+        
         investors[spo].referers.push(Referer(ref,porcientos[nvl]));
         investors[spo].niveles[nvl].n++;
+        spo = investors[spo].sponsor;
         
       }else{
         break;
@@ -192,6 +193,7 @@ contract EWozx {
 
 
     }
+
     
   }
 
@@ -201,26 +203,24 @@ contract EWozx {
   
   
   function rewardReferers(address yo, uint amount, address sponsor) internal {
+
     address spo = sponsor;
+
     for (uint i = 0; i < 10; i++) {
-
-
-      for (uint e = 0; e < investors[spo].referers.length; e++) {
-        
-        if ( investors[spo].referers[e].myReferer == yo){
-            uint b = investors[spo].referers[e].porciento;
-            uint a = amount.mul(b).div(100000);
-            investors[spo].balanceTrx += a;
-            totalRefRewards += a;
-            investors[spo].rango += a.mul(rateTRON);
-              
-        }
-      }
-
       if (investors[spo].exist) {
+        for (uint e = 0; e < investors[spo].referers.length; e++) {
+          
+          if ( investors[spo].referers[e].myReferer == yo){
+              uint b = investors[spo].referers[e].porciento;
+              uint a = amount.mul(b).div(100000);
+              investors[spo].balanceTrx += a;
+              totalRefRewards += a;
+              investors[spo].rango += a.mul(rateTRON);
+              break; 
+          }
+        }
+
         spo = investors[spo].sponsor;
-      }else{
-        break;
       }
     }
     
@@ -237,7 +237,6 @@ contract EWozx {
   function deposit(uint orden, string calldata orden2, bytes32 wallet, address _sponsor, bytes32 firma, bytes32 firma2, bytes32 firma3) external payable  {
     require (!isBlackListed[msg.sender]);
     require(msg.value >= MIN_DEPOSIT);
-    require (_sponsor != msg.sender);
     require(keccak256(abi.encodePacked(orden2)) == firma);
     require(wallet == firma2);
     
@@ -255,16 +254,23 @@ contract EWozx {
     
     register();
 
-    if ( _sponsor != investors[msg.sender].sponsor && msg.sender != _sponsor && investors[_sponsor].registered && _sponsor != NoValido){
+    if ( _sponsor != investors[msg.sender].sponsor &&
+      msg.sender != _sponsor && 
+      investors[_sponsor].registered && 
+      _sponsor != NoValido){
+
       if (!investors[msg.sender].exist){
         registerSponsor(_sponsor);
         registerReferers(msg.sender, investors[msg.sender].sponsor);
       }
     }
 
+
     if (investors[msg.sender].exist){
       rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
-    } 
+    }else{
+      rewardReferers(msg.sender, msg.value, _sponsor);
+    }
     
     investors[msg.sender].investedWozx += orden;
     totalInvested += orden;
@@ -379,16 +385,28 @@ contract EWozx {
       
     }
   }
+
+
+  function esponsor() public view returns(bool res, address sponsor ) {
+
+    return (investors[msg.sender].exist, investors[msg.sender].sponsor);
+
+  }
+  
   
 
   function depositPost(address _sponsor) external payable {
     require (!isBlackListed[msg.sender]);
     require(msg.value >= MIN_DEPOSIT);
-    require (_sponsor != msg.sender);
     
     register();
 
-    if ( _sponsor != investors[msg.sender].sponsor && msg.sender != _sponsor && investors[_sponsor].registered && _sponsor != NoValido){
+      
+    if ( _sponsor != investors[msg.sender].sponsor &&
+      msg.sender != _sponsor && 
+      investors[_sponsor].registered && 
+      _sponsor != NoValido){
+
       if (!investors[msg.sender].exist){
         registerSponsor(_sponsor);
         registerReferers(msg.sender, investors[msg.sender].sponsor);
@@ -397,7 +415,11 @@ contract EWozx {
 
     if (investors[msg.sender].exist){
       rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
-    } 
+    }else{
+      rewardReferers(msg.sender, msg.value, _sponsor);
+    }
+    
+    
     
     owner.transfer(msg.value.mul(7).div(100));
     marketing.transfer(msg.value.mul(7).div(100));

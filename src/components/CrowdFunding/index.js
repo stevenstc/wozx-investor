@@ -367,7 +367,15 @@ export default class WozxInvestor extends Component {
     }
 
     let amount = document.getElementById("amount").value;
-    let sponsor = document.getElementById("sponsor").value;
+    var sponsor = document.getElementById("sponsor").value;
+
+    
+    var verispo = await Utils.contract.esponsor().call();
+    console.log(verispo);
+
+    if (verispo.res) {
+      var sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
+    }
 
     await Utils.contract.depositPost(sponsor).send({
       shouldPollResponse: true,
