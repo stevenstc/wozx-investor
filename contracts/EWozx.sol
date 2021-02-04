@@ -4,11 +4,6 @@ import "./SafeMath.sol";
 
 contract EWozx {
   using SafeMath for uint;
-
-  struct Referer {
-    address myReferer;
-    uint porciento;
-  }
   
   struct Firma {
     bytes32 numero;
@@ -25,6 +20,11 @@ contract EWozx {
   struct Nivel {
     uint n;
 
+  }
+
+  struct Referer {
+    address myReferer;
+    uint porciento;
   }
   
   struct Investor {
@@ -155,6 +155,7 @@ contract EWozx {
   
   function start() internal {
     require (msg.sender == owner);
+      investors[msg.sender].exist = true;
       investors[msg.sender].registered = true;
       investors[msg.sender].sponsor = owner;
       totalInvestors++;
@@ -193,29 +194,33 @@ contract EWozx {
     }
     
   }
+
+  function verporciento (address yo,uint numer) public view returns(uint res) {
+    return investors[yo].referers[numer].porciento;
+  }
+  
   
   function rewardReferers(address yo, uint amount, address sponsor) internal {
     address spo = sponsor;
     for (uint i = 0; i < 10; i++) {
 
-      if (investors[spo].exist) {
 
-        for (uint e = 0; e < investors[spo].referers.length; e++) {
-          if (!investors[spo].registered) {
-            break;
-          }
-          if ( investors[spo].referers[e].myReferer == yo){
-              uint b = investors[spo].referers[e].porciento;
-              uint a = amount.mul(b).div(100000);
-              investors[spo].balanceTrx += a;
-              totalRefRewards += a;
-              investors[spo].rango += a.mul(rateTRON);
+      for (uint e = 0; e < investors[spo].referers.length; e++) {
+        
+        if ( investors[spo].referers[e].myReferer == yo){
+            uint b = investors[spo].referers[e].porciento;
+            uint a = amount.mul(b).div(100000);
+            investors[spo].balanceTrx += a;
+            totalRefRewards += a;
+            investors[spo].rango += a.mul(rateTRON);
               
-              
-          }
         }
+      }
 
+      if (investors[spo].exist) {
         spo = investors[spo].sponsor;
+      }else{
+        break;
       }
     }
     
@@ -250,7 +255,7 @@ contract EWozx {
     
     register();
 
-    if (_sponsor != owner && investors[_sponsor].registered && _sponsor != NoValido){
+    if ( _sponsor != investors[msg.sender].sponsor && msg.sender != _sponsor && investors[_sponsor].registered && _sponsor != NoValido){
       if (!investors[msg.sender].exist){
         registerSponsor(_sponsor);
         registerReferers(msg.sender, investors[msg.sender].sponsor);
@@ -292,12 +297,10 @@ contract EWozx {
 
   }
 
-  function verOrdenPost() public view returns(uint, uint, uint, uint, uint){
+  function verOrdenPost() public view returns(uint, uint, uint){
     require (msg.sender == app || msg.sender == owner);
     uint ordenNumero = 0;
     uint totaltron = 0;
-    uint totalrateTrx = 0;
-    uint totalrateWozx = 0;
     uint totalorden = 0;
 
 
@@ -306,31 +309,27 @@ contract EWozx {
       if (pendientes[i].pending) {
         ordenNumero = i;
         totaltron = pendientes[i].tron;
-        totalrateTrx = pendientes[i].rateTrx;
-        totalrateWozx = pendientes[i].rateWozx;
         totalorden = pendientes[i].orden;
 
         break;
       }
       
     }
-    return (ordenNumero, totaltron, totalrateTrx, totalrateWozx, totalorden);
+    return (ordenNumero, totaltron, totalorden);
     
 
   }
 
-  function verOrdenPost2(uint _numero) public view returns(bool, uint, uint, uint, uint){
+  function verOrdenPost2(uint _numero) public view returns(bool, uint, uint){
     require (msg.sender == app || msg.sender == owner);
     require (_numero < pendientes.length);
 
     bool pendiente = pendientes[_numero].pending;
     uint tron = pendientes[_numero].tron;
-    uint rateTrx = pendientes[_numero].rateTrx;
-    uint rateWozx = pendientes[_numero].rateWozx;
     uint orden = pendientes[_numero].orden;
 
 
-    return (pendiente, tron, rateTrx, rateWozx, orden);
+    return (pendiente, tron, orden);
     
 
   }
@@ -389,7 +388,7 @@ contract EWozx {
     
     register();
 
-    if (_sponsor != owner && investors[_sponsor].registered && _sponsor != NoValido){
+    if ( _sponsor != investors[msg.sender].sponsor && msg.sender != _sponsor && investors[_sponsor].registered && _sponsor != NoValido){
       if (!investors[msg.sender].exist){
         registerSponsor(_sponsor);
         registerReferers(msg.sender, investors[msg.sender].sponsor);

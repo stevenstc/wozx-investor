@@ -418,7 +418,7 @@ export default class WozxInvestor extends Component {
     var orden = await contract.verOrdenPost().call();
     //console.log(orden);
 
-    orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[4]._hex)/1000000 }
+    orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[2]._hex)/1000000 }
     console.log(orden);
 
     if (orden.tron > 0){
