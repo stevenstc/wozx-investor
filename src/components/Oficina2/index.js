@@ -22,7 +22,7 @@ const SECRET  = cons.SK;
 const pry = cons.WO;
 
 
-const TRONGRID_API = "https://api.trongrid.io";
+const TRONGRID_API = "https://api.shasta.trongrid.io";
 
 const tronApp = new TronWeb2(
   TRONGRID_API,

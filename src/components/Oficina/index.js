@@ -21,7 +21,8 @@ export default class WozxInvestor extends Component {
       balanceTrx: "0",
       withdrawnTrx: "0",
       investedWozx: "0",
-      withdrawnWozx: "0"
+      withdrawnWozx: "0",
+      WozxPe: ""
 
     };
 
@@ -105,6 +106,17 @@ export default class WozxInvestor extends Component {
       range = "DIAMANTE CORONA"
     }
     //console.log(prof);
+    var wozxPe = await Utils.contract.wozxP().call();
+
+    //console.log(wozxPe.res);
+    //console.log("(~ "+parseInt(wozxPe.cantidad._hex)/1000000+" WOZX)")
+
+    if (wozxPe.res) {
+      wozxPe ="(~ "+parseInt(wozxPe.cantidad._hex)/1000000+" WOZX)";
+    }else{
+      wozxPe ="";
+    }
+
     
     
     this.setState({
@@ -114,6 +126,7 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
       withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
+      WozxPe: wozxPe,
       refe: refe,
       rango: range
     });
@@ -133,7 +146,7 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
+    const {WozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
     return (
       
@@ -178,6 +191,7 @@ export default class WozxInvestor extends Component {
           
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{investedWozx} WOZX</h3>
+              <h3 className="display-2--light">{WozxPe}</h3>
               <hr></hr>
             
           </div>

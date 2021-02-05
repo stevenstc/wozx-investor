@@ -6,8 +6,9 @@ contract EWozx {
   using SafeMath for uint;
   
   struct Firma {
-    bytes32 numero;
+    address wallet;
     bool valida;
+    uint orden;
   }
 
   struct Pendiente{
@@ -39,6 +40,8 @@ contract EWozx {
     uint balanceTrx;
     uint withdrawnTrx;
     uint investedWozx;
+    uint wozxPendig;
+    bool p;
     uint withdrawnWozx;
     
   }
@@ -227,30 +230,40 @@ contract EWozx {
     
   }
   
-  function firmarTx(bytes32 veri) public{
+  function firmarTx(address wallet, uint orden) public{
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app);
-    firmas.push(Firma(veri,true));
+    firmas.push(Firma(wallet,true,orden));
   }
-    
-  
-  function deposit(uint orden, string calldata orden2, bytes32 wallet, address _sponsor, bytes32 firma, bytes32 firma2, bytes32 firma3) external payable  {
-    require (!isBlackListed[msg.sender]);
-    require(msg.value >= MIN_DEPOSIT);
-    require(keccak256(abi.encodePacked(orden2)) == firma);
-    require(wallet == firma2);
-    
+
+  function buscarfirma() internal view returns(uint pos) {
     for (uint i = 0; i < firmas.length; i++) {
         
-      if (keccak256(abi.encodePacked(firmas[i].numero)) == keccak256(abi.encodePacked(firma3))) {
-          require (firmas[i].valida);
-          firmas[i].numero = firma3;
-          firmas[i].valida = false;
+      if (firmas[i].wallet == msg.sender && firmas[i].valida ) {
           
+        return (i);
         break;
       }
       
     }
+  }
+
+  function depositpendiente() public view returns(uint cantidad, bool res) {
+    uint i = buscarfirma();
+    if (i == 0){
+        return (0, false);
+      }else{
+        return (firmas[i].orden, firmas[i].valida);
+      }
+
+   
+  }
+  
+  
+  
+  function deposit(address _sponsor) external payable  {
+    require (!isBlackListed[msg.sender]);
+    require(msg.value >= MIN_DEPOSIT);
     
     register();
 
@@ -272,8 +285,14 @@ contract EWozx {
       rewardReferers(msg.sender, msg.value, _sponsor);
     }
     
-    investors[msg.sender].investedWozx += orden;
-    totalInvested += orden;
+    uint orden = buscarfirma();
+    if (firmas[orden].valida){
+      investors[msg.sender].investedWozx += firmas[orden].orden;
+      totalInvested += firmas[orden].orden;
+
+      firmas[orden].valida = false;
+    }
+    
     
     
     owner.transfer(msg.value.mul(7).div(100));
@@ -283,31 +302,42 @@ contract EWozx {
     
   }
 
+  function wozxP() public view returns(bool res, uint cantidad){
+    return ( investors[msg.sender].p, investors[msg.sender].wozxPendig);
+  }
+  
+
   function ordenPost(address _w , uint _t, uint _o) public{
     require (!isBlackListed[msg.sender]);
     require (_t >= MIN_DEPOSIT );
     require (_o > 0);
     require (msg.sender == app);
     pendientes.push(Pendiente(true, _w, _t, _o));
+    investors[_w].wozxPendig = _o;
+    investors[_w].p = true;
     setInContract();
   }
 
-  function fillPost(uint _numero, uint _orden) public returns(uint){
+  function fillPost(uint _numero, uint _orden) public returns(uint, address){
     require (msg.sender == app || msg.sender == owner);
     require (_numero < pendientes.length);
     require (pendientes[_numero].pending);
 
     pendientes[_numero].orden = _orden;
+    address _w = pendientes[_numero].wallet;
+    investors[_w].wozxPendig = 0;
+    investors[_w].p = false;
 
-    return (_orden);
+    return (_orden, _w);
 
   }
 
-  function verOrdenPost() public view returns(uint, uint, uint){
+  function verOrdenPost() public view returns(uint, uint, uint, bool){
     require (msg.sender == app || msg.sender == owner);
     uint ordenNumero = 0;
     uint totaltron = 0;
     uint totalorden = 0;
+    bool pendi = false;
 
 
     for (uint i = 0; i < pendientes.length; i++) {
@@ -316,12 +346,12 @@ contract EWozx {
         ordenNumero = i;
         totaltron = pendientes[i].tron;
         totalorden = pendientes[i].orden;
-
+        pendi = pendientes[i].pending;
         break;
       }
       
     }
-    return (ordenNumero, totaltron, totalorden);
+    return (ordenNumero, totaltron, totalorden, pendi);
     
 
   }
