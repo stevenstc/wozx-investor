@@ -21,8 +21,13 @@ const KEY  = cons.AK;
 const SECRET  = cons.SK;
 const pry = cons.WO;
 
+var pru = "";
+if (cons.PRU) {
+  pru = cons.PRU;
+}
 
-const TRONGRID_API = "https://api.shasta.trongrid.io";
+const TRONGRID_API = "https://api."+pru+"trongrid.io";
+console.log(TRONGRID_API);
 
 const tronApp = new TronWeb2(
   TRONGRID_API,
