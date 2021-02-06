@@ -325,6 +325,8 @@ contract EWozx {
 
     pendientes[_numero].orden = _orden;
     address _w = pendientes[_numero].wallet;
+    investors[_w].investedWozx += _orden;
+    totalInvested += _orden;
     investors[_w].wozxPendig = 0;
     investors[_w].p = false;
 

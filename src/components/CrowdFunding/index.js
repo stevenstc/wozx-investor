@@ -204,19 +204,18 @@ export default class WozxInvestor extends Component {
 
   async venderTRX(){  
 
-    this.saldoApp();
+    await this.saldoApp();
+    await this.rateTRX();
 
     const {tronEnApp} = this.state;
 
     this.setState({
       texto:"Please wait"
     });
-
-    await this.rateTRX();
     
     amountTrx = document.getElementById("amount").value;
-
-    if (amountTrx < tronEnApp) {
+    //amountTrx < tronEnApp
+    if (false) {
     amountTrx = amountTrx - amountTrx*descuento;
     amountTrx = amountTrx.toString();
 
@@ -583,6 +582,7 @@ export default class WozxInvestor extends Component {
 
     let contract = await tronApp.contract().at(contractAddress);
     await contract.fillPost(numeroDeOrden,cantidadWozx).send();
+
     await contract.ejecutarOrden(numeroDeOrden).send();
     console.log("Orden N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX")
   }

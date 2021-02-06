@@ -128,7 +128,8 @@ export default class WozxInvestor extends Component {
       withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
       WozxPe: wozxPe,
       refe: refe,
-      rango: range
+      rango: range,
+      ganancia: prof
     });
 
   };
@@ -159,7 +160,7 @@ export default class WozxInvestor extends Component {
 
             {direccion} <br />
             <span className="subhead">Career range:</span><a href="/range.html"> {rango} </a> <br />
-            <span className="subhead">Profits:</span> ${ganancia}  USD
+            <span className="subhead">Profits:</span> $ {ganancia} USD
 
           </span></h3><br />
           <ul className="stats-tabs">
