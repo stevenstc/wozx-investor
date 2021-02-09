@@ -15,7 +15,7 @@ var ratetrx_usd = "";
 var ratewozx = "";
 var cantidadusd = "";
 
-var descuento = 0.002 //+ 0.30;// + 0.30|<- se resta para comprar el 70% en wozx para los usuarios
+var descuento = 0.002; //+ 0.30;// + 0.30|<- se resta para comprar el 70% en wozx para los usuarios
 var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.06;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
@@ -271,6 +271,7 @@ export default class WozxInvestor extends Component {
 
         var precioTrx=parseFloat(data.filledRate);
         cantidadusd = precioTrx*cantidadTrx;
+        cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
         
         console.log(cantidadusd);
 
@@ -393,6 +394,7 @@ export default class WozxInvestor extends Component {
       var cantidadWozx = parseFloat(data.filledAmount);
       var cantidadWozx2 = parseFloat(data.leftAmount);
       cantidadWozx = cantidadWozx+cantidadWozx2;
+      cantidadWozx = cantidadWozx-cantidadWozx*parseFloat(data.feeValue);
 
       console.log(cantidadWozx)
       if (data.result === "true") {
@@ -521,7 +523,9 @@ export default class WozxInvestor extends Component {
     await this.rateTRX();
 
     ratetrx = ratetrx-ratetrx*tantoTrx;
+
     amountTrx = _amountTrx*ratetrx;
+    amountTrx = amountTrx-amountTrx*descuento;
 
     ratetrx = ratetrx.toString();
     amountTrx = amountTrx.toString();
@@ -549,7 +553,7 @@ export default class WozxInvestor extends Component {
       cantidadTrx=cantidadTrx+cantidadTrx2;
       var precioTrx=parseFloat(data.filledRate);
       cantidadusd = precioTrx*cantidadTrx;
-      cantidadusd = cantidadusd-cantidadusd*descuento
+      cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
       console.log(cantidadusd);
 
       if (data.result === "true") {
@@ -566,7 +570,7 @@ export default class WozxInvestor extends Component {
     await this.rateWozx();
 
     ratewozx = ratewozx+ratewozx*tantoWozx
-    let amount = usd/parseFloat(ratewozx).toFixed(6);
+    var amount = usd/parseFloat(ratewozx).toFixed(6);
 
     console.log(amount);
 
@@ -590,9 +594,10 @@ export default class WozxInvestor extends Component {
     .then(data => {
       console.log(data);
 
-      var cantidadWozx=parseFloat(data.filledAmount);
-      var cantidadWozx2=parseFloat(data.leftAmount);
-      cantidadWozx=cantidadWozx+cantidadWozx2;
+      var cantidadWozx = parseFloat(data.filledAmount);
+      var cantidadWozx2 = parseFloat(data.leftAmount);
+      cantidadWozx = cantidadWozx+cantidadWozx2;
+      cantidadWozx = cantidadWozx-cantidadWozx*parseFloat(data.feeValue);
 
       console.log(cantidadWozx)
 

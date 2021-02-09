@@ -20,6 +20,7 @@ export default class WozxInvestor extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.verHistorial();
+    setInterval(() => this.verHistorial(),30*1000);
   };
 
   async verHistorial(){

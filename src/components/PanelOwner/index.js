@@ -51,7 +51,7 @@ export default class WozxInvestor extends Component {
     if (ownerContrato === ownerTronlink) {
       let sal = await Utils.contract.InContract().call(); 
       sal = parseInt(sal._hex)/1000000;
-      console.log(sal);
+      //console.log(sal);
       this.setState({
         saldo: sal,
         isowner: true
