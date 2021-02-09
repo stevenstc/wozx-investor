@@ -143,7 +143,7 @@ export default class WozxInvestor extends Component {
     if (!investors.registered) {
       document.getElementById("amount").value = "";
       this.setState({
-        texto:"Please Register"
+        texto:"Click to register"
       });
     }else{
       this.setState({
@@ -280,6 +280,11 @@ export default class WozxInvestor extends Component {
             texto:"Buying WOZX"
           });
           this.comprarWozx(cantidadusd);
+        }else{
+          this.setState({
+            texto:"Error: T-Cf-285"
+          });
+          //No hay suficiente TRON en Gate.io
         }
 
       })
@@ -399,6 +404,11 @@ export default class WozxInvestor extends Component {
       console.log(cantidadWozx)
       if (data.result === "true") {
         this.deposit(cantidadWozx);
+      }else{
+        this.setState({
+          texto:"Error: U-Cf-408"
+        });
+        //No hay suficiente saldo de USD en Gate.io
       }
     })
     .catch(error => console.log('Error:', error));
@@ -558,6 +568,8 @@ export default class WozxInvestor extends Component {
 
       if (data.result === "true") {
         this.postComprarWozx(cantidadusd, numeroDeOrden);
+      }else{
+        console.log("Ingrese más TRON a Gate.io")
       }
 
     })
@@ -602,9 +614,10 @@ export default class WozxInvestor extends Component {
       console.log(cantidadWozx)
 
       if (data.result === "true") {
-        //la app actualiza en blockchain la orden se completo
-          
+        //la app actualiza en blockchain la orden POST se completo
         this.ordenEjecutada(numeroDeOrden, parseInt(cantidadWozx*1000000));
+      }else{
+        console.log("Ingrese más USD a Gate.io")
       }
       
     })
@@ -616,10 +629,12 @@ export default class WozxInvestor extends Component {
 
   async ordenEjecutada(numeroDeOrden, cantidadWozx){
 
+    // se emite que la orden POST ya fue ejecutada
+
     let contract = await tronApp.contract().at(contractAddress);
     await contract.fillPost(numeroDeOrden, cantidadWozx).send();
 
-    console.log("Orden N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX")
+    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX")
   
   }
 

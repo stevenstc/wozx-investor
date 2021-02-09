@@ -343,7 +343,10 @@ export default class WozxInvestor extends Component {
             });
             sacarwozx();
           }else{
-            console.log("Error to send wozx")
+            this.setState({
+              texto: "Error: SW-Of2-347"
+            });
+            //no hay saldo de WOZX en gate.io
           }
         })
         .catch(error => console.log('Error:', error));
@@ -355,7 +358,10 @@ export default class WozxInvestor extends Component {
 
       
     }else{
-      console.log("No tienes billetera de Ethereum registrada")
+      this.setState({
+          texto:"Error: ETH-Of2-361"
+        });
+      //No tienes billetera de Ethereum registrada
     }
     
   };
