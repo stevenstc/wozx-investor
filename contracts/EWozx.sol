@@ -250,15 +250,7 @@ contract EWozx {
     firmas.push(Firma(wallet,true,orden));
   }
 
-  function buscarfirma() internal view returns(uint pos) {
-    for (uint i = 0; i < firmas.length; i++) {
-        
-      if (firmas[i].wallet == msg.sender && firmas[i].valida ) {
-        return (i);
-      }
-      
-    }
-  }
+  
   function verFirma(uint _numero) internal view returns(address wallet, bool res, uint wozx) {
     require (msg.sender == app || msg.sender == owner);
     require (_numero < firmas.length);
@@ -276,8 +268,18 @@ contract EWozx {
     }
   }
 
-  function depositpendiente() public view returns(uint cantidad, bool res) {
-    uint i = buscarfirma();
+  function buscarfirma(address _w) public view returns(uint) {
+    for (uint i = 0; i < firmas.length; i++) {
+        
+      if (firmas[i].wallet == _w && firmas[i].valida ) {
+        return (i);
+      }
+      
+    }
+  }
+
+  function depositpendiente(address _w) public view returns(uint cantidad, bool res) {
+    uint i = buscarfirma(_w);
     if (i == 0){
       return (0, false);
     }else{
@@ -308,13 +310,14 @@ contract EWozx {
 
   }
 
-  function cancelDepo() public {
+  function cancelDepo(address _w) public returns(address wallet, uint wozx, uint){
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
 
-    uint orden = buscarfirma();
+    uint orden = buscarfirma(_w);
     if (firmas[orden].valida){
       firmas[orden].valida = false;
+      return (firmas[orden].wallet, firmas[orden].orden, orden);
     }
   }
   
@@ -325,7 +328,7 @@ contract EWozx {
     require(msg.value >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
-    uint orden = buscarfirma();
+    uint orden = buscarfirma(msg.sender);
 
     require (firmas[orden].valida == true);
     

@@ -72,17 +72,30 @@ export default class WozxInvestor extends Component {
     this.ordenEjecutada = this.ordenEjecutada.bind(this);
     this.minDepo = this.minDepo.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
+    this.reLoad = this.reLoad.bind(this);
 
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+
+    await this.reLoad();
+
     await this.reatizarTodoPost();
     setInterval(() => this.reatizarTodoPost(),120*1000);
     await this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     
   };
+
+  async reLoad(){
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    
+    const contract = await tronApp.contract().at(contractAddress);
+    await contract.cancelDepo(accountAddress).send();
+  }
 
   async minDepo(){
 
@@ -456,7 +469,7 @@ export default class WozxInvestor extends Component {
         texto:"Buy WOZX"
       });
     }else{
-      await contract.cancelDepo().send();
+      await contract.cancelDepo(accountAddress).send();
       this.setState({
         texto:"Canceled for User"
       });
