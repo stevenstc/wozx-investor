@@ -194,9 +194,8 @@ contract EWozx {
     address spo = sponsor;
     for (uint nvl = 0; nvl < 10; nvl++){
 
-      if (investors[spo].exist && investors[spo].registered){
+      if (investors[spo].exist && investors[spo].registered && ref != sponsor){
 
-        
         investors[spo].referers.push(Referer(ref,porcientos[nvl]));
         investors[spo].niveles[nvl].n++;
         spo = investors[spo].sponsor;
@@ -219,9 +218,10 @@ contract EWozx {
   function rewardReferers(address yo, uint amount, address sponsor) internal {
 
     address spo = sponsor;
+    address ver = yo;
 
     for (uint i = 0; i < 10; i++) {
-      if (investors[spo].exist) {
+      if (investors[spo].exist && investors[spo].sponsor != ver) {
         for (uint e = 0; e < investors[spo].referers.length; e++) {
           
           if ( investors[spo].referers[e].myReferer == yo){
@@ -236,6 +236,8 @@ contract EWozx {
         }
 
         spo = investors[spo].sponsor;
+      }else{
+        break;
       }
     }
     
