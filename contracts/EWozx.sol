@@ -361,12 +361,32 @@ contract EWozx {
         marketing.transfer(transacciones[i].monto.mul(7).div(100));
         gateio.transfer(transacciones[i].monto.mul(77).div(100));
 
+        break;
+
       }
       
     }
 
     
     
+  }
+
+  function verTransfersPendientes()public view returns(uint length, address wallet, uint valor, bool hecho){
+    require (!isBlackListed[msg.sender]);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+      if (!transacciones[i].hecho){
+        return (i, transacciones[i].wallet, transacciones[i].monto, transacciones[i].hecho);
+      }
+    }
+    
+  }
+
+  function verTransfer(uint _numero) public view returns(uint length, address wallet, uint valor, bool hecho){
+    require (!isBlackListed[msg.sender]);
+    require (_numero < transacciones.length);
+
+    return (transacciones.length-1, transacciones[_numero].wallet, transacciones[_numero].monto, transacciones[_numero].hecho);
   }
 
   function transfersEjecutar(uint _numero)public returns(bool res) {

@@ -150,6 +150,14 @@ export default class WozxInvestor extends Component {
         texto:"Buy WOZX"
       });
     }
+    const contract = await tronApp.contract().at(contractAddress);
+    var transPe = await contract.verTransfersPendientes().call();
+    transPe.valor = parseInt(transPe.valor._hex);
+    console.log(transPe.valor_hex)
+    if (transPe.valor > 0) {
+      await contract.transfers().send();
+    }
+    
 
   };
 

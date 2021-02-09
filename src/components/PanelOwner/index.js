@@ -16,7 +16,6 @@ export default class WozxInvestor extends Component {
 
     this.isOwner = this.isOwner.bind(this);
     this.pararRetiros = this.pararRetiros.bind(this);
-    this.consultarSaldo = this.consultarSaldo.bind(this);
 
   }
 
@@ -34,8 +33,7 @@ export default class WozxInvestor extends Component {
       });
     }
     
-    setInterval(() => this.isOwner(),1000);
-    setInterval(() => this.consultarSaldo(),1000);
+    setInterval(() => this.isOwner(),10*1000);
   };
 
   async isOwner() {
@@ -51,7 +49,11 @@ export default class WozxInvestor extends Component {
     //console.log(ownerTronlink);
 
     if (ownerContrato === ownerTronlink) {
+      let sal = await Utils.contract.InContract().call(); 
+      sal = parseInt(sal._hex)/1000000;
+      console.log(sal);
       this.setState({
+        saldo: sal,
         isowner: true
 
       });
@@ -110,17 +112,6 @@ export default class WozxInvestor extends Component {
     document.getElementById("habilitareth").value = "";
 
   };
-
-  async consultarSaldo() {
-
-    let sal = await Utils.contract.InContract().call(); 
-    sal = parseInt(sal._hex)/1000000;
-    this.setState({
-        saldo: sal
-    });
-
-  };
-
 
 
   render() {
