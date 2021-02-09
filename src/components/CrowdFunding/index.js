@@ -135,6 +135,22 @@ export default class WozxInvestor extends Component {
 
     }
 
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    var investors = await Utils.contract.investors(accountAddress).call();
+
+    if (!investors.registered) {
+      document.getElementById("amount").value = "";
+      this.setState({
+        texto:"Please Register"
+      });
+    }else{
+      this.setState({
+        texto:"Buy WOZX"
+      });
+    }
+
   };
 
   async saldoApp(){
@@ -211,7 +227,6 @@ export default class WozxInvestor extends Component {
 
     var investors = await Utils.contract.investors(accountAddress).call();
     //console.log(investors);
-
 
     if (investors.registered) {
 
@@ -401,6 +416,7 @@ export default class WozxInvestor extends Component {
     });
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
+    await contract.cancelDepo().send();
     await contract.firmarTx(accountAddress, orden).send();
 
     this.setState({
@@ -414,15 +430,15 @@ export default class WozxInvestor extends Component {
 
     console.log(sidep);
 
-    if (!sidep.res) {
+    if (sidep.res) {
+      await contract.transfers().send();
+      this.setState({
+        texto:"Buy WOZX"
+      });
+    }else{
       await contract.cancelDepo().send();
       this.setState({
         texto:"Canceled for User"
-      });
-
-    }else{
-      this.setState({
-        texto:"Buy WOZX"
       });
     }
 

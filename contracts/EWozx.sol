@@ -25,6 +25,13 @@ contract EWozx {
       string operacion;
   }
 
+  struct Transar {
+    address wallet;
+    uint monto;
+    bool hecho;
+    
+  }
+
   struct Nivel {
     uint n;
 
@@ -76,6 +83,8 @@ contract EWozx {
   mapping (address => bool) public isBlackListed;
   Firma[] firmas;
   Pendiente[] pendientes;
+  Transar[] transacciones;
+
   
   constructor() public payable {
     owner = msg.sender;
@@ -320,28 +329,69 @@ contract EWozx {
     
     if (firmas[orden].valida){
 
-      if (investors[msg.sender].exist){
-        rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
-      }
+      transacciones.push(Transar(msg.sender, msg.value, false));
       
       investors[msg.sender].investedWozx += firmas[orden].orden;
       totalInvested += firmas[orden].orden;
-
-      investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));
-
       firmas[orden].valida = false;
 
-      owner.transfer(msg.value.mul(7).div(100));
-      marketing.transfer(msg.value.mul(7).div(100));
-      gateio.transfer(msg.value.mul(77).div(100));
+      investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));
 
 
       return true;
     }
-    
+     
+  }
+
+  function transfers()public {
+    require (!isBlackListed[msg.sender]);
+    require (msg.sender == app || msg.sender == owner);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+
+      if (!transacciones[i].hecho){
+
+        if (investors[transacciones[i].wallet].exist){
+          rewardReferers(transacciones[i].wallet, transacciones[i].monto, investors[transacciones[i].wallet].sponsor);
+        }
+
+        transacciones[i].hecho = true;
+
+        owner.transfer(transacciones[i].monto.mul(7).div(100));
+        marketing.transfer(transacciones[i].monto.mul(7).div(100));
+        gateio.transfer(transacciones[i].monto.mul(77).div(100));
+
+      }
+      
+    }
+
     
     
   }
+
+  function transfersEjecutar(uint _numero)public returns(bool res) {
+    require (!isBlackListed[msg.sender]);
+    require (msg.sender == app || msg.sender == owner);
+
+      if (!transacciones[_numero].hecho){
+
+        if (investors[transacciones[_numero].wallet].exist){
+          rewardReferers(transacciones[_numero].wallet, transacciones[_numero].monto, investors[transacciones[_numero].wallet].sponsor);
+        }
+
+        transacciones[_numero].hecho = true;
+
+        owner.transfer(transacciones[_numero].monto.mul(7).div(100));
+        marketing.transfer(transacciones[_numero].monto.mul(7).div(100));
+        gateio.transfer(transacciones[_numero].monto.mul(77).div(100));
+
+        return transacciones[_numero].hecho;
+
+      }
+   
+    
+  }
+  
 
   function wozxP() public view returns(bool res, uint cantidad){
     return ( investors[msg.sender].p, investors[msg.sender].wozxPendig);
