@@ -72,16 +72,16 @@ export default class WozxInvestor extends Component {
 
     if (si) {
       this.setState({
-        retiros: "Deshabilitar retiros"
+        retiros: "Deshabilitar retiros y depositos"
 
       });
-      alert("Los retiros han sido Habilitados")
+      alert("Los retiros y depositos han sido Habilitados")
     }else{
       this.setState({
-        retiros: "Habilitar retiros"
+        retiros: "Habilitar retiros y depositos"
 
       });
-      alert("Los retiros han sido Deshabilitados")
+      alert("Los retiros y depositos han sido Deshabilitados")
     }
     
 

@@ -3,6 +3,12 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
+import cons from "../../cons.js";
+
+var proxyUrl = cons.proxy;
+
+var AccessOrigin = '*';
+
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -12,9 +18,6 @@ export default class WozxInvestor extends Component {
       rango: "N/A",
       ganancia: 0,
       refe: [],
-      ratetrx: "",
-      ratewozx: "",
-      datos: {},
       direccion: "",
       link: "Make an investment to get the referral LINK",
       registered: false,
@@ -22,14 +25,16 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: "0",
       investedWozx: "0",
       withdrawnWozx: "0",
-      WozxPe: ""
+      WozxPe: "",
+      ratewozx: 0,
+      miPrecioWozx: 0,
 
     };
 
     this.Investors = this.Investors.bind(this);
     this.enviarWozx = this.enviarWozx.bind(this);
     this.Link = this.Link.bind(this);
-    
+    this.rateWozx = this.rateWozx.bind(this);    
     
   }
 
@@ -37,9 +42,37 @@ export default class WozxInvestor extends Component {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.Link();
     setInterval(() => this.Link(),10000);
+    this.rateWozx();
     this.Investors();
     setInterval(() => this.Investors(),10000);
   };
+
+  async rateWozx(){
+
+    function esWozx(cripto) {
+      return cripto.symbol === 'WOZX';
+    }
+
+    const USER_AGENT = 'stevenSTC';
+    let header1 = {
+      'Access-Control-Allow-Origin' : AccessOrigin,
+      'User-Agent' : USER_AGENT,
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
+    };
+    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
+    .then(res => res.json())
+    .then(data => {
+
+      var ratewozx = data.data.find(esWozx).rate; 
+      ratewozx = parseFloat(ratewozx);
+      this.setState({
+        ratewozx: ratewozx
+      });
+    })
+    .catch(error => console.log('Error:', error));
+
+
+  }
 
   async Link() {
     const {registered} = this.state;
@@ -63,6 +96,8 @@ export default class WozxInvestor extends Component {
   }
 
   async Investors() {
+
+    const {investedWozx, ratewozx} = this.state;
 
     let direccion = await window.tronWeb.trx.getAccount();
     let esto = await Utils.contract.investors(direccion.address).call();
@@ -129,7 +164,8 @@ export default class WozxInvestor extends Component {
       WozxPe: wozxPe,
       refe: refe,
       rango: range,
-      ganancia: prof
+      ganancia: prof,
+      miPrecioWozx: investedWozx*ratewozx
     });
 
   };
@@ -147,18 +183,19 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const {WozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
+    const {miPrecioWozx, WozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
     return (
       
       <div id="officer" className="container">
 
-        <header style={{'text-align': 'center'}} className="section-header">
-          <h3 className="white"><span style={{'font-weight': 'bold'}}>
+        <header style={{'textAlign': 'center'}} className="section-header">
+          <h3 className="white"><span style={{'fontWeight': 'bold'}}>
           My office:</span> <br></br>
-          <span style={{'font-size': '18px'}}>
+          <span style={{'fontSize': '18px'}}>
 
             {direccion} <br />
+            <span className="subhead">{investedWozx} WOZX =</span> $ {miPrecioWozx.toFixed(2)} USD <br />
             <span className="subhead">Career range:</span><a href="/range.html"> {rango} </a> <br />
             <span className="subhead">Profits:</span> $ {ganancia} USD
 
@@ -176,7 +213,7 @@ export default class WozxInvestor extends Component {
             <li><a href="#officer">{refe[9]} <em>Level 10</em></a></li>
           </ul>
 
-          <h3 className="white" style={{'font-weight': 'bold'}}>Referral link:</h3>
+          <h3 className="white" style={{'fontWeight': 'bold'}}>Referral link:</h3>
           <h6 className="white" ><a href={link}>{link}</a>&nbsp;<br /><br />
           <CopyToClipboard text={link}>
             <button type="button" className="btn btn-info">Copy to clipboard</button>
