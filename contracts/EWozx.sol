@@ -272,7 +272,7 @@ contract EWozx {
   function buscarfirma(address _w) public view returns(uint) {
     for (uint i = 0; i < firmas.length; i++) {
         
-      if (firmas[i].wallet == _w) {
+      if (firmas[i].wallet == _w && firmas[i].valida ) {
         return (i);
       }
       
@@ -317,7 +317,7 @@ contract EWozx {
 
     uint orden = buscarfirma(_w);
     require (orden > 0);
-    if (firmas[orden].valida == true){
+    if (firmas[orden].valida){
       firmas[orden].valida = false;
       return (firmas[orden].wallet, firmas[orden].orden, orden);
     }
