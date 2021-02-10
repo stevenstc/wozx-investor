@@ -101,12 +101,15 @@ export default class WozxInvestor extends Component {
     };
     
     return (
+
+      <div>
+        <h3>Transactions <button type="button" className="btn btn-light" onClick={() => this.verHistorial()}>Reload</button></h3>
       
-      <div style={divStyle}>
+        <div style={divStyle}>
+          
+          {historial}
         
-        {historial}
-        
-      
+        </div>
       </div>
 
     );
