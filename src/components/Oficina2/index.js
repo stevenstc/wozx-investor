@@ -299,8 +299,16 @@ export default class WozxInvestor extends Component {
   async withdraw(){
     var hay = await Utils.contract.MYwithdrawable().call();
     var minre = await Utils.contract.COMISION_RETIRO().call();
+
+    hay = parseInt(hay.amount._hex);
+    minre = parseInt(minre._hex);
+
+    console.log(hay);
+    //console.log(minre);
+
     if (hay > minre) {
-      await Utils.contract.withdraw().send();
+      console.log("se ejecutó");
+      //await Utils.contract.withdraw().send();
     }
     
   };

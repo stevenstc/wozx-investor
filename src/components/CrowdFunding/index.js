@@ -114,7 +114,7 @@ export default class WozxInvestor extends Component {
     rateApp = parseInt(rateApp._hex)/1000000;
 
     this.setState({
-      min: mindepo,
+      min: mindepo+1,
       rateApp: rateApp
     });
     //console.log(mindepo);
