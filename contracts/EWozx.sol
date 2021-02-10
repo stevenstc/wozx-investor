@@ -269,11 +269,11 @@ contract EWozx {
     }
   }
 
-  function buscarfirma(address _w) public view returns(uint length,address wallet, bool res, uint wozx) {
+  function buscarfirma(address _w) public view returns(uint) {
     for (uint i = 0; i < firmas.length; i++) {
         
       if (firmas[i].wallet == _w) {
-        return (i, firmas[_numero].wallet, firmas[_numero].valida, firmas[_numero].orden);
+        return (i);
       }
       
     }
