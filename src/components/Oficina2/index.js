@@ -145,7 +145,7 @@ export default class WozxInvestor extends Component {
       cantidadWozx=cantidadWozx+cantidadWozx2;
       var precioWozx=parseFloat(data.filledRate);
       var cantidadusd = precioWozx*cantidadWozx;
-      cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
+      cantidadusd = cantidadusd-parseFloat(data.feeValue);
       if (data.result === "true") {
         console.log(cantidadusd)
         this.comprarTRX(cantidadusd);
@@ -218,7 +218,7 @@ export default class WozxInvestor extends Component {
       var cantidadTrx = parseFloat(data.filledAmount);
       var cantidadTrx2 = parseFloat(data.leftAmount);
       cantidadTrx = cantidadTrx+cantidadTrx2;
-      cantidadTrx = cantidadTrx-cantidadTrx*parseFloat(data.feeValue);
+      cantidadTrx = cantidadTrx-parseFloat(data.feeValue);
       
       console.log(cantidadTrx);
 
@@ -307,8 +307,7 @@ export default class WozxInvestor extends Component {
     //console.log(minre);
 
     if (hay > minre) {
-      console.log("se ejecutó");
-      //await Utils.contract.withdraw().send();
+      await Utils.contract.withdraw().send();
     }
     
   };

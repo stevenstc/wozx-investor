@@ -451,8 +451,17 @@ export default class WozxInvestor extends Component {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
 
+      var pending = await contract.depositpendiente(accountAddress).call();
+
+      console.log(pending);
       //cancela cualquier deposito inconcluso para hacer uno nuevo
-      await contract.cancelDepo(accountAddress).send();
+      if (pending.res) {
+        console.log(pending);
+        await contract.cancelDepo(accountAddress).send();
+      }
+      
+
+      //crea una nueva orden directa
       await contract.firmarTx(accountAddress, orden).send();
 
       this.setState({
