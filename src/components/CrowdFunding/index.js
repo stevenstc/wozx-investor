@@ -242,11 +242,15 @@ export default class WozxInvestor extends Component {
       var investors = await Utils.contract.investors(accountAddress).call();
       //console.log(investors);
 
+      const balanceInSun = await window.tronWeb.trx.getBalance(); //number
+      var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
+      balanceInTRX = parseInt(balanceInTRX);//number
+
       if (investors.registered) {
 
         var montoTrx = parseInt(amountTrx);
         var haytron = parseInt(tronEnApp);
-        if (amountTrx >= depomin) {
+        if (amountTrx >= depomin && amountTrx <= balanceInTRX-40) {
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
           amountTrx = amountTrx - amountTrx*descuento;
@@ -270,7 +274,7 @@ export default class WozxInvestor extends Component {
           await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body})
           .then(res => res.json())
           .then(data => {
-            console.log(data);
+            //console.log(data);
             var cantidadTrx=parseFloat(data.filledAmount);
             var cantidadTrx2=parseFloat(data.leftAmount);
             cantidadTrx = cantidadTrx+cantidadTrx2;
@@ -303,10 +307,18 @@ export default class WozxInvestor extends Component {
           }
 
         }else{
-          this.setState({
-            texto:"Enter a higher amount"
-          });
+          if ( depomin >= amountTrx ){
+            this.setState({
+              texto:"Enter a higher amount"
+            });
+          }
 
+          if (balanceInTRX-40 <= amountTrx ){
+            this.setState({
+              texto:"Not enough TRON"
+            });
+          }
+          
         }
 
       }else{
