@@ -536,10 +536,16 @@ contract EWozx {
         investors[pendientes[i].wallet].investedWozx += pendientes[i].orden;
         totalInvested += pendientes[i].orden;
         pendientes[i].pending = false;
+
+        investors[pendientes[i].wallet].wozxPendig = 0;
+        investors[pendientes[i].wallet].p = false;
+
+        investors[pendientes[i].wallet].historial.push(Historia(now, pendientes[i].orden, "WOZX", "Post Bought"));
         
       }
       
     }
+
   }
 
 
@@ -580,10 +586,9 @@ contract EWozx {
     require (Do);
     
     uint amount = withdrawable(msg.sender);
-    if (Do && amount > COMISION_RETIRO && address(this).balance > amount ){
+    if ( amount > COMISION_RETIRO && address(this).balance > amount ){
       
       msg.sender.transfer(amount-COMISION_RETIRO);
-      app.transfer(5 trx);
       investors[msg.sender].balanceTrx = 0;
       investors[msg.sender].withdrawnTrx += amount-COMISION_RETIRO;
       
@@ -638,10 +643,10 @@ contract EWozx {
     investors[_wallet].withdrawnWozx += iwozx;
     investors[_wallet].investedWozx = 0;
     app.transfer(5 trx);
-    investors[_wallet].balanceTrx += amount-5 trx;
+    investors[_wallet].balanceTrx += amount;
 
     investors[_wallet].historial.push(Historia(now, iwozx, "WOZX", "Sell"));
-    investors[_wallet].historial.push(Historia(now, amount-COMISION_RETIRO, "TRX", "Buy"));
+    investors[_wallet].historial.push(Historia(now, amount, "TRX", "Buy"));
 
 
 

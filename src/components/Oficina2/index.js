@@ -297,7 +297,12 @@ export default class WozxInvestor extends Component {
   };
 
   async withdraw(){
-    await Utils.contract.withdraw().send()
+    var hay = await Utils.contract.MYwithdrawable().call();
+    var minre = await Utils.contract.COMISION_RETIRO().call();
+    if (hay > minre) {
+      await Utils.contract.withdraw().send();
+    }
+    
   };
 
   async withdrawETH(){
