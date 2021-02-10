@@ -251,7 +251,7 @@ contract EWozx {
   }
 
   
-  function verFirma(uint _numero) internal view returns(address wallet, bool res, uint wozx) {
+  function verFirma(uint _numero) public view returns(address wallet, bool valida, uint wozx) {
     require (msg.sender == app || msg.sender == owner);
     require (_numero < firmas.length);
     
@@ -259,20 +259,21 @@ contract EWozx {
       
   }
 
-  function cancelFirma(uint _numero) public {
+  function cancelFirma(uint _numero) public returns(bool res){
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
 
     if (firmas[_numero].valida){
       firmas[_numero].valida = false;
+      return true;
     }
   }
 
-  function buscarfirma(address _w) public view returns(uint) {
+  function buscarfirma(address _w) public view returns(uint length,address wallet, bool res, uint wozx) {
     for (uint i = 0; i < firmas.length; i++) {
         
-      if (firmas[i].wallet == _w && firmas[i].valida ) {
-        return (i);
+      if (firmas[i].wallet == _w) {
+        return (i, firmas[_numero].wallet, firmas[_numero].valida, firmas[_numero].orden);
       }
       
     }
@@ -315,7 +316,8 @@ contract EWozx {
     require (msg.sender == app || msg.sender == owner);
 
     uint orden = buscarfirma(_w);
-    if (firmas[orden].valida){
+    require (orden > 0);
+    if (firmas[orden].valida == true){
       firmas[orden].valida = false;
       return (firmas[orden].wallet, firmas[orden].orden, orden);
     }

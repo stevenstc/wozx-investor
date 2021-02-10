@@ -3,6 +3,26 @@ import React, { Component } from "react";
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
+import cons from "../../cons.js";
+import TronWeb2 from 'tronweb';
+
+const pry = cons.WO;
+
+var pru = "";
+if (cons.PRU) {
+  pru = cons.PRU;
+}
+
+const TRONGRID_API = "https://api."+pru+"trongrid.io";
+console.log(TRONGRID_API);
+
+const tronApp = new TronWeb2(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API,
+  pry
+);
+
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -14,13 +34,24 @@ export default class WozxInvestor extends Component {
     }
 
     this.verHistorial = this.verHistorial.bind(this);
+    this.reLoad = this.reLoad.bind(this);
     
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+    this.reLoad();
     this.verHistorial();
     setInterval(() => this.verHistorial(),360*1000);
+  };
+
+  async reLoad(){
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+    const contract = await tronApp.contract().at(contractAddress);
+    await contract.cancelDepo(accountAddress).send();
   };
 
   async verHistorial(){

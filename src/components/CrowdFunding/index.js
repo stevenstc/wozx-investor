@@ -72,30 +72,17 @@ export default class WozxInvestor extends Component {
     this.ordenEjecutada = this.ordenEjecutada.bind(this);
     this.minDepo = this.minDepo.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
-    this.reLoad = this.reLoad.bind(this);
 
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-
-    await this.reLoad();
-
     await this.reatizarTodoPost();
     setInterval(() => this.reatizarTodoPost(),120*1000);
     await this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     
   };
-
-  async reLoad(){
-    const account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
-    
-    const contract = await tronApp.contract().at(contractAddress);
-    await contract.cancelDepo(accountAddress).send();
-  }
 
   async minDepo(){
 
@@ -227,7 +214,7 @@ export default class WozxInvestor extends Component {
     .catch(error => console.log('Error:', error));
 
 
-  }
+  };
 
   async venderTRX(){  
 
@@ -348,7 +335,7 @@ export default class WozxInvestor extends Component {
       }
 
       var verregis = await Utils.contract.miRegistro(sponsor).send();
-      console.log(verregis);
+      //console.log(verregis);
 
     }
   }
@@ -449,7 +436,9 @@ export default class WozxInvestor extends Component {
     });
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato
-    await contract.cancelDepo().send();
+
+    //cancela cualquier deposito inconcluso para hacer uno nuevo
+    await contract.cancelDepo(accountAddress).send();
     await contract.firmarTx(accountAddress, orden).send();
 
     this.setState({
@@ -535,7 +524,7 @@ export default class WozxInvestor extends Component {
     console.log(orden);
 
     if (orden.acc){
-      await this.postVenderTRX(orden.nOrden, orden.tron)
+      await this.postVenderTRX(orden.nOrden, orden.tron);
     }
     
      
@@ -582,7 +571,7 @@ export default class WozxInvestor extends Component {
       if (data.result === "true") {
         this.postComprarWozx(cantidadusd, numeroDeOrden);
       }else{
-        console.log("Ingrese más TRON a Gate.io")
+        console.log("Ingrese más TRON a Gate.io");
       }
 
     })
@@ -624,13 +613,13 @@ export default class WozxInvestor extends Component {
       cantidadWozx = cantidadWozx+cantidadWozx2;
       cantidadWozx = cantidadWozx-cantidadWozx*parseFloat(data.feeValue);
 
-      console.log(cantidadWozx)
+      console.log(cantidadWozx);
 
       if (data.result === "true") {
         //la app actualiza en blockchain la orden POST se completo
         this.ordenEjecutada(numeroDeOrden, parseInt(cantidadWozx*1000000));
       }else{
-        console.log("Ingrese más USD a Gate.io")
+        console.log("Ingrese más USD a Gate.io");
       }
       
     })
@@ -647,7 +636,7 @@ export default class WozxInvestor extends Component {
     let contract = await tronApp.contract().at(contractAddress);
     await contract.fillPost(numeroDeOrden, cantidadWozx).send();
 
-    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX")
+    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX");
   
   }
 
