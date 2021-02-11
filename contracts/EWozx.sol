@@ -173,28 +173,26 @@ contract EWozx {
       totalInvestors++;
 
   }
-  
-  function register() public returns(bool res){
 
-    if (!investors[msg.sender].registered) {
-      investors[msg.sender].registered = true;
-      totalInvestors++;
-      return true;
-    }
+  function miRegistro(address _sponsor) public {
+    require (!isBlackListed[msg.sender]);
+    require (_sponsor != NoValido);
+    require (investors[_sponsor].registered);
+
+    investors[msg.sender].sponsor = _sponsor;
+    investors[msg.sender].registered = true;
+    investors[msg.sender].exist = true;
+    totalInvestors++;
+
+    registerReferers(msg.sender, _sponsor);
+      
   }
 
-  function registerSponsor(address sponsor) internal {
-    if (!investors[msg.sender].exist){
-      investors[msg.sender].sponsor = sponsor;
-      investors[msg.sender].exist = true;
-    }
-  }
+  function registerReferers(address ref, address spo) internal {
 
-  function registerReferers(address ref, address sponsor) internal {
-    address spo = sponsor;
     for (uint nvl = 0; nvl < 10; nvl++){
 
-      if (investors[spo].exist && investors[spo].registered && ref != sponsor){
+      if (investors[spo].exist && ref != spo){
 
         investors[spo].referers.push(Referer(ref,porcientos[nvl]));
         investors[spo].niveles[nvl].n++;
@@ -286,30 +284,9 @@ contract EWozx {
     }else{
       return (firmas[i].orden, firmas[i].valida);
     }
-
    
   }
 
-
-  function miRegistro(address _sponsor) public returns(bool res) {
-    require (!isBlackListed[msg.sender]);
-    
-    register();
-
-    if ( _sponsor != investors[msg.sender].sponsor &&
-      msg.sender != _sponsor && 
-      investors[_sponsor].registered && 
-      _sponsor != NoValido){
-
-      if (!investors[msg.sender].exist){
-        registerSponsor(_sponsor);
-        registerReferers(msg.sender, investors[msg.sender].sponsor);
-      }
-    }
-    
-    return investors[_sponsor].registered;
-
-  }
 
   function cancelDepo(address _w) public returns(address wallet, uint wozx, uint){
     require (!isBlackListed[msg.sender]);
