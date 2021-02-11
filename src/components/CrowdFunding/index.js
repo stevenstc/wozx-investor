@@ -246,10 +246,10 @@ export default class WozxInvestor extends Component {
       var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
       balanceInTRX = parseInt(balanceInTRX);//number
 
-      if (investors.registered) {
+      var montoTrx = parseInt(amountTrx);
+      var haytron = parseInt(tronEnApp);
 
-        var montoTrx = parseInt(amountTrx);
-        var haytron = parseInt(tronEnApp);
+      if (investors.registered) {
         if (amountTrx >= depomin && amountTrx <= balanceInTRX-40) {
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
@@ -322,44 +322,54 @@ export default class WozxInvestor extends Component {
         }
 
       }else{
-        //registra a la persona con los referidos
-        var loc = document.location.href;
-        if(loc.indexOf('?')>0){
-            var getString = loc.split('?')[1];
-            var GET = getString.split('&');
-            var get = {};
-            for(var i = 0, l = GET.length; i < l; i++){
-                var tmp = GET[i].split('=');
-                get[tmp[0]] = unescape(decodeURI(tmp[1]));
-            }
-            
-            if (get['ref']) {
-              tmp = get['ref'].split('#')
-              document.getElementById('sponsor').value = tmp[0];            
-            }else{
 
-               document.getElementById('sponsor').value = walletSponsor;
-            }
+        if ( balanceInTRX >= 40) {
+          //registra a la persona con los referidos
+          var loc = document.location.href;
+          if(loc.indexOf('?')>0){
+              var getString = loc.split('?')[1];
+              var GET = getString.split('&');
+              var get = {};
+              for(var i = 0, l = GET.length; i < l; i++){
+                  var tmp = GET[i].split('=');
+                  get[tmp[0]] = unescape(decodeURI(tmp[1]));
+              }
+              
+              if (get['ref']) {
+                tmp = get['ref'].split('#')
+                document.getElementById('sponsor').value = tmp[0];            
+              }else{
+
+                 document.getElementById('sponsor').value = walletSponsor;
+              }
+                 
+          }else{
             
-            
+              document.getElementById('sponsor').value = walletSponsor; 
+          }
+
+          let sponsor = document.getElementById("sponsor").value;
+          let amunt = document.getElementById("sponsor").value;
+
+          document.getElementById("amount").value = "";
+          
+
+          var verispo = await Utils.contract.esponsor().call();
+          //console.log(verispo);
+
+          if (verispo.res) {
+            sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
+          }
+
+          await Utils.contract.miRegistro(sponsor).send();
+
         }else{
           
-            document.getElementById('sponsor').value = walletSponsor; 
+            this.setState({
+              texto:"Not enough TRON"
+            });
+          
         }
-
-        let sponsor = document.getElementById("sponsor").value;
-
-        document.getElementById("amount").value = "";
-        
-
-        var verispo = await Utils.contract.esponsor().call();
-        //console.log(verispo);
-
-        if (verispo.res) {
-          sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
-        }
-
-        await Utils.contract.miRegistro(sponsor).send();
 
       }
 
