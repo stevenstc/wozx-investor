@@ -21,9 +21,12 @@ Para hacer pruebas en **localhost:3000**
 
 `npm run start`
 
-## Crear Build Final
+## Crear Build Final, para la WEB
 
-Para colocarlo en un servidor web, recuerda cambiar el **homepage** en **package.json** 
+1. cambiamos el contrato y los ajustes necesarios
+2. hacemos en consola `npm run build`
+3. cambia el **homepage** por la direccion de la web en **package.json** 
+4. sube el contenido de la carpeta **docs**
 
-`npm run build`
+
 

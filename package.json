@@ -1,6 +1,6 @@
 {
   "name": "wozx-investor",
-  "version": "0.1.16",
+  "version": "0.5.18",
   "description": "Es la aplicacion para hacer Crowd Funding de la criptomoneda wozx en la Blockchain tron",
   "directories": {
     "test": "test"
@@ -18,7 +18,7 @@
   "bugs": {
     "url": ""
   },
-  "homepage": "https://stevenstc.github.io/wozx-investor/",
+  "homepage": "https://ewozx.com/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",
