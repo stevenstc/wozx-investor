@@ -695,7 +695,7 @@ export default class WozxInvestor extends Component {
             <form>
               <div className="form-group">
                 <input type="text" className="form-control" id="amount" placeholder={min}></input>
-                <p className="card-text">You must have ~ 10 TRX to make the transaction</p>
+                <p className="card-text">You must have ~ 40 TRX to make the transaction</p>
               </div>
             </form>
           <button type="button" className="btn btn-light" onClick={() => this.venderTRX()}>{texto}</button>
