@@ -188,24 +188,17 @@ contract EWozx {
     
     totalInvestors++;
 
-    registerReferers(msg.sender, _sponsor);
-      
-  }
-
-  function registerReferers(address ref, address spo) internal {
-
     for (uint nvl = 0; nvl < 10; nvl++){
 
-      if (investors[spo].exist && ref != spo){
+      if (investors[_sponsor].exist && msg.sender != _sponsor){
 
-        investors[spo].referers.push(Referer(ref,porcientos[nvl]));
-        investors[spo].niveles[nvl].n++;
-        spo = investors[spo].sponsor;
+        investors[_sponsor].referers.push(Referer(msg.sender,porcientos[nvl]));
+        investors[_sponsor].niveles[nvl].n++;
+        _sponsor = investors[_sponsor].sponsor;
         
       }else{
         break;
       }
-
 
     }
 
