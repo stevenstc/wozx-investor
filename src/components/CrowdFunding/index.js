@@ -349,7 +349,6 @@ export default class WozxInvestor extends Component {
           }
 
           let sponsor = document.getElementById("sponsor").value;
-          let amunt = document.getElementById("sponsor").value;
 
           document.getElementById("amount").value = "";
           
@@ -364,10 +363,10 @@ export default class WozxInvestor extends Component {
           await Utils.contract.miRegistro(sponsor).send();
 
         }else{
-          
-            this.setState({
-              texto:"Not enough TRON"
-            });
+          document.getElementById("amount").value = "";
+          this.setState({
+            texto:"Not enough TRON"
+          });
           
         }
 

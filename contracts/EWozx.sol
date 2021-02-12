@@ -116,6 +116,16 @@ contract EWozx {
     return address(this).balance;
   }
 
+  function start() internal {
+    require (msg.sender == owner);
+    
+    investors[msg.sender].registered = true;
+    investors[msg.sender].exist = true;
+    investors[msg.sender].sponsor = owner;
+    
+    totalInvestors++;
+
+  }
 
   function setOwner(address payable _owner) public returns (address){
 
@@ -124,8 +134,11 @@ contract EWozx {
     require (_owner != owner);
 
     owner = _owner;
+
     investors[owner].registered = true;
+    investors[owner].exist = true;
     investors[owner].sponsor = owner;
+
     totalInvestors++;
 
     return owner;
@@ -163,25 +176,16 @@ contract EWozx {
 
     return app;
   }
-  
-  
-  function start() internal {
-    require (msg.sender == owner);
-      investors[msg.sender].exist = true;
-      investors[msg.sender].registered = true;
-      investors[msg.sender].sponsor = owner;
-      totalInvestors++;
-
-  }
 
   function miRegistro(address _sponsor) public {
     require (!isBlackListed[msg.sender]);
     require (_sponsor != NoValido);
     require (investors[_sponsor].registered);
 
-    investors[msg.sender].sponsor = _sponsor;
     investors[msg.sender].registered = true;
     investors[msg.sender].exist = true;
+    investors[msg.sender].sponsor = _sponsor;
+    
     totalInvestors++;
 
     registerReferers(msg.sender, _sponsor);
@@ -298,29 +302,25 @@ contract EWozx {
     }
   }
   
-  function deposit() external payable returns(bool res) {
+  function deposit() external payable returns(bool res){
     require (!isBlackListed[msg.sender]);
     require(msg.value >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
+
     uint orden = buscarfirma(msg.sender);
 
-    require (firmas[orden].valida == true);
+    require (firmas[orden].valida);
+
+    transacciones.push(Transar(msg.sender, msg.value, false));
     
-    if (firmas[orden].valida){
+    investors[msg.sender].investedWozx += firmas[orden].orden;
+    totalInvested += firmas[orden].orden;
+    firmas[orden].valida = false;
 
-      transacciones.push(Transar(msg.sender, msg.value, false));
-      
-      investors[msg.sender].investedWozx += firmas[orden].orden;
-      totalInvested += firmas[orden].orden;
-      firmas[orden].valida = false;
-
-      investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));
-
-
-      return true;
-    }
-     
+    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
+    
+    return true;
   }
 
   function transfers()public {
@@ -411,8 +411,10 @@ contract EWozx {
     require (_t >= MIN_DEPOSIT );
     require (_o > 0);
     require (msg.sender == app);
+
     pendientes.push(Pendiente(true, _w, _t, _o));
     investors[_w].historial.push(Historia(now, _t, "TRX", "Post Deposit"));
+
     investors[_w].wozxPendig = _o;
     investors[_w].p = true;
   }
