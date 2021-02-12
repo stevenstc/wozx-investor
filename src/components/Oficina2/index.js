@@ -136,22 +136,29 @@ export default class WozxInvestor extends Component {
 
     header.KEY = KEY;
     header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      var cantidadWozx=parseFloat(data.filledAmount);
-      var cantidadWozx2=parseFloat(data.leftAmount);
-      cantidadWozx=cantidadWozx+cantidadWozx2;
-      var precioWozx=parseFloat(data.filledRate);
-      var cantidadusd = precioWozx*cantidadWozx;
-      cantidadusd = cantidadusd-parseFloat(data.feeValue);
-      if (data.result === "true") {
-        console.log(cantidadusd)
-        this.comprarTRX(cantidadusd);
-      }
-    })
-    .catch(error => console.log('Error:', error));
+
+    const result = window.confirm("You are sure you want to SELL all your available Wozx?, remember that this action cannot be reversed");
+
+    if (result){
+      await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+        var cantidadWozx=parseFloat(data.filledAmount);
+        var cantidadWozx2=parseFloat(data.leftAmount);
+        cantidadWozx=cantidadWozx+cantidadWozx2;
+        var precioWozx=parseFloat(data.filledRate);
+        var cantidadusd = precioWozx*cantidadWozx;
+        cantidadusd = cantidadusd-parseFloat(data.feeValue);
+        if (data.result === "true") {
+          console.log(cantidadusd)
+          this.comprarTRX(cantidadusd);
+        }
+      })
+      .catch(error => console.log('Error:', error));
+
+    }
+    
     
 
   }
@@ -323,6 +330,11 @@ export default class WozxInvestor extends Component {
     }
     
     const { funcion, investedWozx, fee } = this.state;
+
+    const result = window.confirm("you are sure that you want to WITHDRAW all your available Wozx?, remember that this action cannot be reversed");
+
+    if (result){
+
     if (funcion) {
       if (investedWozx > fee) {
         let amount = investedWozx-fee+3.6;
@@ -375,6 +387,7 @@ export default class WozxInvestor extends Component {
         });
       //No tienes billetera de Ethereum registrada
     }
+  }
     
   };
 
