@@ -213,9 +213,8 @@ contract EWozx {
   }
   
   
-  function rewardReferers(address yo, uint amount, address sponsor) internal {
+  function rewardReferers(address yo, uint amount, address spo) internal {
 
-    address spo = sponsor;
     address ver = yo;
 
     for (uint i = 0; i < 10; i++) {
@@ -287,7 +286,6 @@ contract EWozx {
    
   }
 
-
   function cancelDepo(address _w) public returns(address wallet, uint wozx, uint){
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
@@ -299,8 +297,6 @@ contract EWozx {
       return (firmas[orden].wallet, firmas[orden].orden, orden);
     }
   }
-  
-  
   
   function deposit() external payable returns(bool res) {
     require (!isBlackListed[msg.sender]);
@@ -351,8 +347,6 @@ contract EWozx {
       
     }
 
-    
-    
   }
 
   function verTransfersPendientes()public view returns(uint length, address wallet, uint valor, bool hecho){
@@ -393,7 +387,6 @@ contract EWozx {
 
       }
    
-    
   }
   
 
@@ -412,8 +405,6 @@ contract EWozx {
     
     return (investors[msg.sender].historial[_numero].tiempo, investors[msg.sender].historial[_numero].valor, investors[msg.sender].historial[_numero].moneda, investors[msg.sender].historial[_numero].operacion);
   }
-  
-  
 
   function ordenPost(address _w , uint _t, uint _o) public{
     require (!isBlackListed[msg.sender]);
@@ -432,21 +423,21 @@ contract EWozx {
 
     if (pendientes[_numero].pending){
 
-    pendientes[_numero].orden = _orden;
-    pendientes[_numero].pending = false;
+      pendientes[_numero].orden = _orden;
+      pendientes[_numero].pending = false;
 
-    address _w = pendientes[_numero].wallet;
+      address _w = pendientes[_numero].wallet;
 
-    investors[_w].investedWozx += _orden;
+      investors[_w].investedWozx += _orden;
 
-    investors[_w].historial.push(Historia(now, _orden, "WOZX", "Post Bought"));
-    totalInvested += _orden;
+      investors[_w].historial.push(Historia(now, _orden, "WOZX", "Post Bought"));
+      totalInvested += _orden;
 
-    investors[_w].wozxPendig = 0;
-    investors[_w].p = false;
+      investors[_w].wozxPendig = 0;
+      investors[_w].p = false;
 
-    return (_orden, _w);
-  }
+      return (_orden, _w);
+    }
 
   }
 
@@ -456,7 +447,6 @@ contract EWozx {
     uint totaltron = 0;
     uint totalorden = 0;
     bool pendi = false;
-
 
     for (uint i = 0; i < pendientes.length; i++) {
         
@@ -469,9 +459,9 @@ contract EWozx {
       }
       
     }
+
     return (ordenNumero, totaltron, totalorden, pendi);
     
-
   }
 
   function verOrdenPost2(uint _numero) public view returns(bool, uint, uint){
@@ -482,10 +472,8 @@ contract EWozx {
     uint tron = pendientes[_numero].tron;
     uint orden = pendientes[_numero].orden;
 
-
     return (pendiente, tron, orden);
     
-
   }
 
   function myFunction (uint _nivel) public view returns(uint cantidad){
@@ -532,7 +520,6 @@ contract EWozx {
 
   }
   
-  
 
   function depositPost() external payable {
     require (!isBlackListed[msg.sender]);
@@ -576,7 +563,6 @@ contract EWozx {
       return (false, amount-COMISION_RETIRO);
     }
 
-    
   }
     
   function stopWithdrawl() public returns (bool set_Do) {
@@ -624,8 +610,6 @@ contract EWozx {
 
     investors[_wallet].historial.push(Historia(now, iwozx, "WOZX", "Sell"));
     investors[_wallet].historial.push(Historia(now, amount, "TRX", "Buy"));
-
-
 
     return true;
     
@@ -683,9 +667,7 @@ contract EWozx {
 
   function habilitarETH (address _direccion) public returns (bool result, address tron){
 
-
     require (msg.sender == owner);
-    
     require (!isBlackListed[msg.sender]);
 
     investors[_direccion].eth = true;

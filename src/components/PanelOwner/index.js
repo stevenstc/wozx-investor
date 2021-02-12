@@ -21,18 +21,6 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-
-    let si = await Utils.contract.Do().call();
-    if (si) {
-      this.setState({
-        retiros: "Deshabilitar retiros"
-      });
-    }else{
-      this.setState({
-        retiros: "Habilitar retiros"
-      });
-    }
-    
     setInterval(() => this.isOwner(),10*1000);
   };
 
@@ -52,6 +40,18 @@ export default class WozxInvestor extends Component {
       let sal = await Utils.contract.InContract().call(); 
       sal = parseInt(sal._hex)/1000000;
       //console.log(sal);
+      let si = await Utils.contract.Do().call();
+      
+      if (si) {
+        this.setState({
+          retiros: "Deshabilitar retiros"
+        });
+      }else{
+        this.setState({
+          retiros: "Habilitar retiros"
+        });
+      }
+
       this.setState({
         saldo: sal,
         isowner: true
@@ -69,7 +69,7 @@ export default class WozxInvestor extends Component {
 
   async pararRetiros() {
 
-    await Utils.contract.withdraw000().send();
+    await Utils.contract.stopWithdrawl().send();
     let si = await Utils.contract.Do().call();
 
     if (si) {
@@ -91,7 +91,7 @@ export default class WozxInvestor extends Component {
 
   async sacarSaldo() {
 
-    await Utils.contract.withdraw001().send(); 
+    await Utils.contract.withdrawAll().send(); 
 
   };
 
