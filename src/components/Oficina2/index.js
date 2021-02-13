@@ -515,7 +515,7 @@ export default class WozxInvestor extends Component {
     
     var amount = document.getElementById("amountWOZX").value;
 
-    const result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cost 4 WOZX");
+    const result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cannot be reversed");
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
@@ -545,7 +545,7 @@ export default class WozxInvestor extends Component {
         cantidadusd = cantidadusd-parseFloat(data.feeValue);
         if (data.result === "true") {
           console.log(cantidadusd)
-          this.comprarTRX(cantidadusd, amount);
+          this.comprarTRX(cantidadusd, cantidadWozx);
         }
       })
       .catch(error => console.log('Error:', error));
