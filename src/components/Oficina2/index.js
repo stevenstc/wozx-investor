@@ -81,16 +81,31 @@ export default class WozxInvestor extends Component {
     this.withdrawETH = this.withdrawETH.bind(this);
     this.enviarEth = this.enviarEth.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
-    this.wozx = this.wozx.bind(this);
+    this.Wozx = this.Wozx.bind(this);
+    this.Tron = this.Tron.bind(this);
     this.venderTRX = this.venderTRX.bind(this);
     this.comprarWozx = this.comprarWozx.bind(this);
-    this.postComprarWozx = this.postComprarWozx.bind(this);
-    this.postVenderTRX = this.postVenderTRX.bind(this);
     this.deposit = this.deposit.bind(this);
     this.deposit2 = this.deposit2.bind(this);
 
     
   }
+
+  async Wozx (){
+
+    const { investedWozx } = this.state;
+
+    document.getElementById("amountWOZX").value = investedWozx;
+
+  };
+
+  async Tron (){
+
+    const { balanceTrx } = this.state;
+
+    document.getElementById("amountTRX").value = balanceTrx;
+
+  };
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
@@ -530,7 +545,7 @@ export default class WozxInvestor extends Component {
         cantidadusd = cantidadusd-parseFloat(data.feeValue);
         if (data.result === "true") {
           console.log(cantidadusd)
-          this.comprarTRX(cantidadusd);
+          this.comprarTRX(cantidadusd, amount);
         }
       })
       .catch(error => console.log('Error:', error));
@@ -542,7 +557,7 @@ export default class WozxInvestor extends Component {
   };
 
 
-  async comprarTRX(c){    
+  async comprarTRX(c, w){    
 
     await this.rateTRX();
 
@@ -579,7 +594,7 @@ export default class WozxInvestor extends Component {
       console.log(cantidadTrx);
 
       if (data.result === "true") {
-        this.enviarTron(cantidadTrx);
+        this.enviarTron(cantidadTrx, w);
       }
     })
     .catch(error => console.log('Error:', error));
@@ -587,7 +602,7 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async enviarTron(trx){
+  async enviarTron(trx, wozx){
 
     await this.rateTRX();
     await this.rateWozx();
@@ -597,7 +612,7 @@ export default class WozxInvestor extends Component {
     wallet = window.tronWeb.address.fromHex(wallet.address)
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    await contract.wozxToTron(wallet, parseInt(ratetrx*1000000), parseInt(ratewozx*1000000)).send();
+    await contract.wozxToTron(wallet, parseInt(ratetrx*1000000), parseInt(ratewozx*1000000), parseInt(wozx*1000000)).send();
     console.log("se envio "+trx+" TRX a "+wallet+" exitosamente")
 
     let amount = trx;
@@ -847,7 +862,7 @@ export default class WozxInvestor extends Component {
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
             
-              <h3 className="display-2--light" onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
 
               <input type="number" className="form-control amount" id="amountWOZX" placeholder="How much WOZX"></input>
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell WOZX -> TRX</button>
@@ -871,7 +886,7 @@ export default class WozxInvestor extends Component {
 
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
-              <h3 className="display-2--light">Available: <br></br>{balanceTrx} TRX</h3>
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
               <input type="number" className="form-control amount" id="amountTRX" placeholder="How much TRX"></input>
               <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>Buy WOZX -> TRX</button>
               <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>Withdrawal TRX</button>
