@@ -539,24 +539,23 @@ contract EWozx {
     
   }
 
-  function withdraw() external returns(bool envio, uint) {
+  function withdraw(uint _cantidad) public  {
 
     require (!isBlackListed[msg.sender]);
     require (Do);
     
     uint amount = withdrawable(msg.sender);
-    if ( amount > COMISION_RETIRO && address(this).balance > amount ){
-      
-      msg.sender.transfer(amount-COMISION_RETIRO);
-      investors[msg.sender].balanceTrx = 0;
-      investors[msg.sender].withdrawnTrx += amount-COMISION_RETIRO;
-      
-      investors[msg.sender].historial.push(Historia(now, amount-COMISION_RETIRO, "TRX", "Withdrawl"));
 
-      return (true, amount-COMISION_RETIRO);
-    }else{
-      return (false, amount-COMISION_RETIRO);
-    }
+    require (_cantidad <= amount);
+    require ( _cantidad > COMISION_RETIRO );
+    require (address(this).balance > _cantidad );
+      
+    msg.sender.transfer(_cantidad-COMISION_RETIRO);
+    
+    investors[msg.sender].balanceTrx -= _cantidad;
+    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_RETIRO;
+    
+    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_RETIRO, "TRX", "Withdrawl"));
 
   }
     
@@ -604,7 +603,7 @@ contract EWozx {
     investors[_wallet].withdrawnWozx += _cantidad;
     
     app.transfer(5 trx);
-    
+
     investors[_wallet].balanceTrx += amount;
 
     investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Sell"));

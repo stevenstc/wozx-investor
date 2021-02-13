@@ -456,6 +456,14 @@ th:last-child, td:last-child {
     -webkit-overflow-scrolling: touch;
 }
 
+#invested_wozx2 {
+    text-align: center;
+}
+
+.card-body {
+    text-align: center;
+}
+
 
 /* ------------------------------------------------------------------- 
  * ## Spacing 
@@ -616,6 +624,7 @@ input[type="url"],
 input[type="password"],
 textarea,
 select {
+    text-align: center;
     display: block;
     height: 6rem;
     padding: 1.5rem 0;
@@ -623,7 +632,7 @@ select {
     outline: none;
     color: #333333;
     font-family: "montserrat-light", sans-serif;
-    font-size: 1.4rem;
+    font-size: 2.3rem;
     line-height: 3rem;
     max-width: 100%;
     background: transparent;
@@ -3130,7 +3139,7 @@ html.no-csstransitions .home-content__main {
     border-bottom: 4px solid #39b54a;
 }
 
-#amount {
+.amount {
     
     font-size: 20px;
 }

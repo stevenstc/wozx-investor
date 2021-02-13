@@ -693,7 +693,7 @@ export default class WozxInvestor extends Component {
           </header>
             <form>
               <div className="form-group">
-                <input type="text" className="form-control" id="amount" placeholder={min}></input>
+                <input type="number" className="form-control amount" id="amount" placeholder={min}></input>
                 <p className="card-text">You must have ~ 40 TRX to make the transaction</p>
               </div>
             </form>

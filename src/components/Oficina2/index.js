@@ -307,14 +307,26 @@ export default class WozxInvestor extends Component {
     var hay = await Utils.contract.MYwithdrawable().call();
     var minre = await Utils.contract.COMISION_RETIRO().call();
 
-    hay = parseInt(hay.amount._hex);
-    minre = parseInt(minre._hex);
+    var amount = document.getElementById("amountTRX").value;
+
+    
+
+    hay = parseInt(hay.amount._hex)/1000000;
+    minre = parseInt(minre._hex)/1000000;
 
     console.log(hay);
-    //console.log(minre);
+    console.log(minre);
 
-    if (hay > minre) {
-      await Utils.contract.withdraw().send();
+    const result = window.confirm("you are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+minre+" TRX");
+
+    if (result){
+
+      if (hay > minre && amount <= hay) {
+
+        amount = parseInt(amount*1000000);
+        
+        await Utils.contract.withdraw(amount).send();
+      }
     }
     
   };
@@ -331,13 +343,15 @@ export default class WozxInvestor extends Component {
     
     const { funcion, investedWozx, fee } = this.state;
 
-    const result = window.confirm("you are sure that you want to WITHDRAW all your available Wozx?, remember that this action cannot be reversed");
+    var amount = document.getElementById("amountWOZX").value;
+
+    const result = window.confirm("you are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
 
     if (result){
 
     if (funcion) {
-      if (investedWozx > fee) {
-        let amount = investedWozx-fee+3.6;
+      if (amount <= investedWozx && investedWozx > fee) {
+        amount = amount-fee+3.6;
         amount = amount.toString();
         let currency = "wozx";
 
@@ -388,6 +402,8 @@ export default class WozxInvestor extends Component {
       //No tienes billetera de Ethereum registrada
     }
   }
+
+  document.getElementById("amountWOZX").value = "";
     
   };
 
@@ -474,8 +490,9 @@ export default class WozxInvestor extends Component {
             <div className="box">
             
               <h3 className="display-2--light">Available: <br></br>{investedWozx} WOZX</h3>
-  
-              <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell all WOZX (TRX)</button>
+
+              <input type="number" className="form-control amount" id="amountWOZX" placeholder="How much WOZX"></input>
+              <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell WOZX -> TRX</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
               <p>to: <a href={dirwozx} rel="noopener noreferrer" target="_blank">{walleteth}</a></p>
               <p>Fee {fee} WOZX</p>
@@ -497,7 +514,9 @@ export default class WozxInvestor extends Component {
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
               <h3 className="display-2--light">Available: <br></br>{balanceTrx} TRX</h3>
-              <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>withdrawal TRX</button>
+              <input type="number" className="form-control amount" id="amountTRX" placeholder="How much TRX"></input>
+              <button type="button" className="btn btn-info" onClick={() => this.buyWozxTRX()}>Buy WOZX -> TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>Withdrawal TRX</button>
               <p>Fee {feetrx} TRX</p>
               <hr></hr>
             </div>
