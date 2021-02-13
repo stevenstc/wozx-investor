@@ -316,6 +316,27 @@ contract EWozx {
     return true;
   }
 
+  function redeposit(uint _cantidad) external payable returns(bool res){
+    require (!isBlackListed[msg.sender]);
+    require(_cantidad >= MIN_DEPOSIT);
+    require (investors[msg.sender].registered);
+    require (Do);
+
+    uint orden = buscarfirma(msg.sender);
+
+    require (firmas[orden].valida);
+
+    transacciones.push(Transar(msg.sender, _cantidad, false));
+    
+    investors[msg.sender].investedWozx += firmas[orden].orden;
+    totalInvested += firmas[orden].orden;
+    firmas[orden].valida = false;
+
+    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
+    
+    return true;
+  }
+
   function transfers()public {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
@@ -532,6 +553,23 @@ contract EWozx {
     gateio.transfer(msg.value.mul(77).div(100));
     
   }
+
+  function redepositPost(uint _cantidad) external payable {
+    require (!isBlackListed[msg.sender]);
+    require(_cantidad >= MIN_DEPOSIT);
+    require (investors[msg.sender].registered);
+    require (Do);
+    
+    
+    if (investors[msg.sender].exist){
+      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
+    }
+    
+    owner.transfer(_cantidad.mul(7).div(100));
+    marketing.transfer(_cantidad.mul(7).div(100));
+    gateio.transfer(_cantidad.mul(77).div(100));
+    
+  }
   
   function withdrawable(address any_user) public view returns (uint amount) {
     Investor storage investor = investors[any_user];
@@ -551,7 +589,7 @@ contract EWozx {
     require (address(this).balance > _cantidad );
       
     msg.sender.transfer(_cantidad-COMISION_RETIRO);
-    
+
     investors[msg.sender].balanceTrx -= _cantidad;
     investors[msg.sender].withdrawnTrx += _cantidad-COMISION_RETIRO;
     
@@ -661,7 +699,7 @@ contract EWozx {
     investors[msg.sender].investedWozx -= _cantidad;
     investors[msg.sender].withdrawnWozx += _cantidad;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "ETH Withdrawl"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "Withdrawl (ETH)"));
 
     return true;
     

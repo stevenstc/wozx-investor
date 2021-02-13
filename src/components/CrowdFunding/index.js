@@ -9,18 +9,18 @@ import querystring from 'querystring';
 import sha512 from 'sha512';
 import TronWeb2 from 'tronweb';
 
-var amountTrx;
-var ratetrx = "";
-var ratetrx_usd = "";
-var ratewozx = "";
-var cantidadusd = "";
+var amountTrx = 0;
+var ratetrx = 0;
+var ratetrx_usd = 0;
+var ratewozx = 0;
+var cantidadusd = 0;
 
-var descuento = 0.002; //+ 0.30;// + 0.30|<- se resta para comprar el 70% en wozx para los usuarios
+var descuento = cons.descuento; //+ 0.23;// <- se resta para comprar el 77% en wozx para los usuarios
 var tantoTrx = 0.02;// para que el TRX se Venda de inmediato
 var tantoWozx = 0.06;// para que el WOZX se Compre de inmediato
 var minimo_usd = 1;// (100) para dolares (100 USD)
 var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
-var walletSponsor = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb
+var walletSponsor = cons.WS;//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb
 var proxyUrl = cons.proxy;
 
 //console.log(contractAddress);
