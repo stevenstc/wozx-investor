@@ -11,7 +11,10 @@ const PRU = "shasta.";
 const WS = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";
 // descuento para la aplicacion  0.23 <- se resta para comprar el 77% en wozx para los usuarios
 const descuento = 0.002;
+// porcentajes para la operacion en Gate.io para que las ordenes se ejecuten de inmediato
+const WOZX = 0.06;
+const TRX = 0.02;
 // direccion del contrato desplegado
-const SC = "THH3MS8uA3xrR8BWpJj1s2xiRC4tS3c4VS";
+const SC = "TRpg2HA76DCzNyEtfV4rVuHVsxkhzA9TuA";
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, SC};
+export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC};

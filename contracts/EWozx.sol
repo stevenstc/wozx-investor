@@ -321,10 +321,14 @@ contract EWozx {
     require(_cantidad >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
-
+    require (_cantidad <= investors[msg.sender].balanceTrx);
+    
     uint orden = buscarfirma(msg.sender);
 
     require (firmas[orden].valida);
+
+    investors[msg.sender].balanceTrx -= _cantidad;
+    investors[msg.sender].withdrawnTrx += _cantidad;
 
     transacciones.push(Transar(msg.sender, _cantidad, false));
     
@@ -332,7 +336,8 @@ contract EWozx {
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
+    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
     
     return true;
   }
@@ -427,7 +432,7 @@ contract EWozx {
     require (msg.sender == app);
 
     pendientes.push(Pendiente(true, _w, _t, _o));
-    investors[_w].historial.push(Historia(now, _t, "TRX", "Post Deposit"));
+    investors[_w].historial.push(Historia(now, _t, "TRX", "Deposit | POST"));
 
     investors[_w].wozxPendig = _o;
     investors[_w].p = true;
@@ -446,7 +451,7 @@ contract EWozx {
 
       investors[_w].investedWozx += _orden;
 
-      investors[_w].historial.push(Historia(now, _orden, "WOZX", "Post Bought"));
+      investors[_w].historial.push(Historia(now, _orden, "WOZX", "Bought | POST"));
       totalInvested += _orden;
 
       investors[_w].wozxPendig = 0;
@@ -521,7 +526,7 @@ contract EWozx {
         investors[pendientes[i].wallet].wozxPendig = 0;
         investors[pendientes[i].wallet].p = false;
 
-        investors[pendientes[i].wallet].historial.push(Historia(now, pendientes[i].orden, "WOZX", "Post Bought"));
+        investors[pendientes[i].wallet].historial.push(Historia(now, pendientes[i].orden, "WOZX", "Bought | POST"));
         
       }
       
@@ -559,11 +564,17 @@ contract EWozx {
     require(_cantidad >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
+    require (_cantidad <= investors[msg.sender].balanceTrx);
     
     
     if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
+      rewardReferers(msg.sender, _cantidad, investors[msg.sender].sponsor);
     }
+ 
+    investors[msg.sender].balanceTrx -= _cantidad;
+    investors[msg.sender].withdrawnTrx += _cantidad;
+
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
     owner.transfer(_cantidad.mul(7).div(100));
     marketing.transfer(_cantidad.mul(7).div(100));
@@ -642,34 +653,10 @@ contract EWozx {
     
     app.transfer(5 trx);
 
-    investors[_wallet].balanceTrx += amount;
+    investors[_wallet].balanceTrx += amount-COMISION_RETIRO;
 
     investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Sell"));
-    investors[_wallet].historial.push(Historia(now, amount, "TRX", "Buy"));
-
-    return true;
-    
-  }
-
-  function tronToWozx (address _wallet, uint _rt, uint _rw, uint _cantidad) external  returns(bool res) {
-
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == app);
-
-    uint itron = investors[_wallet].balanceTrx;
-    require ( _cantidad <= itron );
-    
-    uint amount = _cantidad.mul(_rt).div(_rw);
-    investors[_wallet].balanceTrx -= _cantidad;
-    investors[_wallet].withdrawnTrx += _cantidad;
-    
-    app.transfer(5 trx);
-    
-    investors[_wallet].investedWozx += amount;
-
-    
-    investors[_wallet].historial.push(Historia(now, _cantidad, "TRX", "Sell"));
-    investors[_wallet].historial.push(Historia(now, amount, "WOZX", "Buy"));
+    investors[_wallet].historial.push(Historia(now, amount-COMISION_RETIRO, "TRX", "Buy"));
 
     return true;
     
