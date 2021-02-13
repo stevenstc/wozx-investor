@@ -591,20 +591,48 @@ contract EWozx {
     amount = investor.investedWozx;
   }
 
-  function wozxToTron (address _wallet, uint _rt, uint _rw) external  returns(bool res) {
+  function wozxToTron (address _wallet, uint _rt, uint _rw, uint _cantidad) external  returns(bool res) {
 
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app);
 
     uint iwozx = investors[_wallet].investedWozx;
-    uint amount = iwozx.mul(_rw).div(_rt);
-    investors[_wallet].withdrawnWozx += iwozx;
-    investors[_wallet].investedWozx = 0;
+    require ( _cantidad <= iwozx );
+    
+    uint amount = _cantidad.mul(_rw).div(_rt);
+    investors[_wallet].investedWozx -= _cantidad;
+    investors[_wallet].withdrawnWozx += _cantidad;
+    
     app.transfer(5 trx);
+    
     investors[_wallet].balanceTrx += amount;
 
-    investors[_wallet].historial.push(Historia(now, iwozx, "WOZX", "Sell"));
+    investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Sell"));
     investors[_wallet].historial.push(Historia(now, amount, "TRX", "Buy"));
+
+    return true;
+    
+  }
+
+  function tronToWozx (address _wallet, uint _rt, uint _rw, uint _cantidad) external  returns(bool res) {
+
+    require (!isBlackListed[msg.sender]);
+    require (msg.sender == app);
+
+    uint itron = investors[_wallet].balanceTrx;
+    require ( _cantidad <= itron );
+    
+    uint amount = _cantidad.mul(_rt).div(_rw);
+    investors[_wallet].balanceTrx -= _cantidad;
+    investors[_wallet].withdrawnTrx += _cantidad;
+    
+    app.transfer(5 trx);
+    
+    investors[_wallet].investedWozx += amount;
+
+    
+    investors[_wallet].historial.push(Historia(now, _cantidad, "TRX", "Sell"));
+    investors[_wallet].historial.push(Historia(now, amount, "WOZX", "Buy"));
 
     return true;
     
@@ -625,16 +653,16 @@ contract EWozx {
     return true;
   }
 
-  function retirarWozx () external  returns(bool res) {
+  function retirarWozx(uint _cantidad) public returns(bool res) {
 
     require (!isBlackListed[msg.sender]);
     require (investors[msg.sender].investedWozx > 0);
+    require (_cantidad <= investors[msg.sender].investedWozx);
     
-    uint iwozx = investors[msg.sender].investedWozx;
-    investors[msg.sender].investedWozx = 0;
-    investors[msg.sender].withdrawnWozx += iwozx;
+    investors[msg.sender].investedWozx -= _cantidad;
+    investors[msg.sender].withdrawnWozx += _cantidad;
 
-    investors[msg.sender].historial.push(Historia(now, iwozx, "WOZX", "ETH Withdrawl"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "ETH Withdrawl"));
 
     return true;
     
