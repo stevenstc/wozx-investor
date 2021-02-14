@@ -302,6 +302,9 @@ export default class WozxInvestor extends Component {
 
           }else{
             console.log("Entro POST");
+            this.setState({
+              texto:"Processing..."
+            });
             // cantidad muy alta de TRX pendiente se ejecuta post recepcion de fondos
             this.deposit2();
           }

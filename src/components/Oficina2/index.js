@@ -523,7 +523,15 @@ export default class WozxInvestor extends Component {
     
     var amount = document.getElementById("amountWOZX").value;
 
-    const result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cannot be reversed");
+    var result = false;
+
+    if (amount <= 0) {
+      window.alert("Please enter a correct amount")
+
+    }else{
+      result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cannot be reversed");
+
+    }
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
@@ -694,7 +702,14 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+minre+" TRX");
+    if (amount <= 0) {
+      window.alert("Please enter a correct amount")
+
+    }else{
+      result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+minre+" TRX");
+
+    }
+
 
     if (result && amount > 0){
 
