@@ -389,6 +389,10 @@ export default class WozxInvestor extends Component {
 
     }
 
+    this.setState({
+      texto:"BUY WOZX"
+    });
+
 
   };
 
