@@ -234,7 +234,11 @@ export default class WozxInvestor extends Component {
 
     if (amountTrx <= 0) {
 
-      window.alert("Please enter a correct amount")
+      window.alert("Please enter a correct amount");
+      document.getElementById("amount").value = "";
+      this.setState({
+        texto:"BUY WOZX"
+      });
 
     }else{
       result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
@@ -388,10 +392,6 @@ export default class WozxInvestor extends Component {
       }
 
     }
-
-    this.setState({
-      texto:"BUY WOZX"
-    });
 
 
   };
