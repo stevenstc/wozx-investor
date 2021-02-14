@@ -188,7 +188,15 @@ export default class WozxInvestor extends Component {
     // verifica el monto sea mayor a minimo
     amountTrx = document.getElementById("amountTRX").value;
 
-    var result = window.confirm("You are sure you want to reinvest "+amountTrx+" TRX?")
+    var result = false;
+
+    if (amountTrx <= 0 || amountTrx == "") {
+      window.alert("Please enter a correct amount")
+
+    }else{
+      var result = window.confirm("You are sure you want to reinvest "+amountTrx+" TRX?");
+    }
+    
 
     if (result && amountTrx > 0) {
 
@@ -334,6 +342,10 @@ export default class WozxInvestor extends Component {
 
     }
 
+    this.setState({
+      texto3:"Buy WOZX -> TRX"
+    });
+
 
   };
 
@@ -473,33 +485,38 @@ export default class WozxInvestor extends Component {
     await this.rateTRX();
 
     let amount = document.getElementById("amountTRX").value;
-    
 
     this.setState({
       texto3:"Don't close the window"
     });
+    
+    if (amount <= 0 || amount == "") {
+      window.alert("Please enter a correct amount")
+    }else{
 
-    await Utils.contract.redepositPost(amount * 1000000).send();
+      await Utils.contract.redepositPost(amount * 1000000).send();
 
-    var orden = amount*ratetrx-ratetrx*tantoTrx;
-    orden = orden-orden*descuento;
-    orden = orden / ratewozx+ratewozx*tantoWozx;
-    orden = parseInt(orden*1000000);
-    console.log(orden);
-    console.log(amount);
-    const account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
-    console.log(accountAddress);
+      var orden = amount*ratetrx-ratetrx*tantoTrx;
+      orden = orden-orden*descuento;
+      orden = orden / ratewozx+ratewozx*tantoWozx;
+      orden = parseInt(orden*1000000);
+      console.log(orden);
+      console.log(amount);
+      const account =  await window.tronWeb.trx.getAccount();
+      var accountAddress = account.address;
+      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+      console.log(accountAddress);
 
-    var am = parseInt(amount*1000000);
-    console.log(am);
+      var am = parseInt(amount*1000000);
+      console.log(am);
 
-    this.setState({
-      texto3:"Saving order"
-    });
-    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    await contract.ordenPost(accountAddress, am, orden).send();
+      this.setState({
+        texto3:"Saving order"
+      });
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.ordenPost(accountAddress, am, orden).send();
+
+    }
 
     this.setState({
       texto3:"Buy WOZX"
@@ -525,7 +542,7 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    if (amount <= 0) {
+    if (amount <= 0 || amount == "") {
       window.alert("Please enter a correct amount")
 
     }else{
@@ -702,7 +719,7 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    if (amount <= 0) {
+    if (amount <= 0 || amount == "") {
       window.alert("Please enter a correct amount")
 
     }else{

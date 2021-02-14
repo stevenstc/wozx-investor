@@ -230,9 +230,21 @@ export default class WozxInvestor extends Component {
     // verifica el monto sea mayor a minimo
     amountTrx = document.getElementById("amount").value;
 
-    let depomin = await Utils.contract.MIN_DEPOSIT().call();
+    var result = false;
 
+    if (amountTrx <= 0) {
+
+      window.alert("Please enter a correct amount")
+
+    }else{
+      result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
+
+    }
     
+
+    if (result) {
+
+    let depomin = await Utils.contract.MIN_DEPOSIT().call();
 
       // verifica si ya esta registrado
       const account =  await window.tronWeb.trx.getAccount();
@@ -374,6 +386,8 @@ export default class WozxInvestor extends Component {
         }
 
       }
+
+    }
 
 
   };
