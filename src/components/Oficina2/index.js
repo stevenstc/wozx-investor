@@ -655,7 +655,7 @@ export default class WozxInvestor extends Component {
   async withdraw(){
     var hay = await Utils.contract.MYwithdrawable().call();
     var minre = await Utils.contract.COMISION_RETIRO().call();
-    var balanceContract = Utils.contract.InContract().call();
+    var balanceContract = await Utils.contract.InContract().call();
 
     var amount = document.getElementById("amountTRX").value;
     
@@ -668,10 +668,11 @@ export default class WozxInvestor extends Component {
     accountAddress = window.tronWeb.address.fromHex(accountAddress);
     var investors = await Utils.contract.investors(accountAddress).call();
     var balanceTrxYo = parseInt(investors.balanceTrx._hex)/1000000;
-    console.log(balanceTrxYo);
 
-    //console.log(hay);
-    //console.log(minre);
+    console.log(balanceTrxYo);
+    console.log(balanceContract);
+    console.log(hay);
+    console.log(minre);
 
     var result = false;
 
@@ -694,7 +695,7 @@ export default class WozxInvestor extends Component {
         await Utils.contract.withdraw(amount).send();
       }else{
 
-        if (hay < minre ) {
+        if (hay <= minre ) {
           window.alert("Youn no have TRX aviable, Try again Later, the action cost "+minre+" TRX");
         }
 
