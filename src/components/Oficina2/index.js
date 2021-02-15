@@ -481,23 +481,28 @@ export default class WozxInvestor extends Component {
     ratewozx = parseFloat(ratewozx);
     console.log(ratewozx);
     ratewozx = ratewozx-ratewozx*tantoWozx*4;
+    console.log(tantoWozx);
     console.log(ratewozx);
-
-    ratewozx = ratewozx.toString();
 
     const {investedWozx} = this.state;
     
     var amount = document.getElementById("amountWOZX").value;
 
     var result = false;
+    if ( amount >= 1.02/ratewozx ) {
 
-    if (amount <= 0 || amount === "" || amount > investedWozx) {
-      window.alert("Please enter a correct amount")
+      if (amount <= 0 || amount === "" || amount > investedWozx) {
+        window.alert("Please enter a correct amount");
 
+      }else{
+        result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cannot be reversed");
+
+      }
     }else{
-      result = window.confirm("You are sure you want to SELL "+amount+" Wozx?, remember that this action cannot be reversed");
-
+      window.alert("The minimum to operate is "+1.02/ratewozx+" WOZX");
     }
+
+    ratewozx = ratewozx.toString();
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
@@ -731,75 +736,81 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    var amount = document.getElementById("amountWOZX").value;
-
-    if (amount <= 0 || amount === "" || amount > investedWozx) {
-      window.alert("Please enter a correct amount");
-      document.getElementById("amountWOZX").value = "";
-
-    }else{
-
-      result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
-    
-    }
-
-    if (result && investedWozx > 0){
-
     if (funcion) {
-      if (amount <= investedWozx && investedWozx > fee) {
-        amount = amount-fee+3.6;
-        amount = amount.toString();
-        let currency = "wozx";
 
-        let direccion = await window.tronWeb.trx.getAccount();
-        var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
-        address = address.ethdireccion;
-        //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+      var amount = document.getElementById("amountWOZX").value;
 
-        let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+      if (amount <= 0 || amount === "" || amount > investedWozx) {
+        window.alert("Please enter a correct amount");
+        document.getElementById("amountWOZX").value = "";
 
-        let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+      }else{
 
-        var hasher = sha512.hmac(SECRET);
-        var hash = hasher.finalize(body);
-        var firma = hash.toString('hex');
+        result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
+      
+      }
 
-        header.KEY = KEY;
-        header.SIGN = firma;
-        await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data);
+      if (result && investedWozx > 0){
+
+      if (funcion) {
+        if (amount <= investedWozx && investedWozx > fee) {
+          amount = amount-fee+3.6;
+          amount = amount.toString();
+          let currency = "wozx";
+
+          let direccion = await window.tronWeb.trx.getAccount();
+          var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
+          address = address.ethdireccion;
+          //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+
+          let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+
+          let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+
+          var hasher = sha512.hmac(SECRET);
+          var hash = hasher.finalize(body);
+          var firma = hash.toString('hex');
+
+          header.KEY = KEY;
+          header.SIGN = firma;
+          await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
+          .then(res => res.json())
+          .then(data => {
+            console.log(data);
+            
+            if (data.result === "true") {
+              this.setState({
+                texto: "Sendig WOZX"
+              });
+              sacarwozx(amount);
+              this.setState({
+                texto: "WOZX Sended"
+              });
+            }else{
+              this.setState({
+                texto: "Error: SW-Of2-814"
+              });
+              //no hay saldo de WOZX en gate.io
+            }
+          })
+          .catch(error => console.log('Error:', error));
+
+
           
-          if (data.result === "true") {
-            this.setState({
-              texto: "Sendig WOZX"
-            });
-            sacarwozx(amount);
-            this.setState({
-              texto: "WOZX Sended"
-            });
-          }else{
-            this.setState({
-              texto: "Error: SW-Of2-814"
-            });
-            //no hay saldo de WOZX en gate.io
-          }
-        })
-        .catch(error => console.log('Error:', error));
-
+        }
+        
 
         
+      }else{
+        this.setState({
+            texto:"Error: ETH-Of2-829"
+          });
+        //No tienes billetera de Ethereum registrada
       }
-      
-
-      
-    }else{
-      this.setState({
-          texto:"Error: ETH-Of2-829"
-        });
-      //No tienes billetera de Ethereum registrada
     }
+
+  }else{
+    window.alert("First register your wozx wallet and then wait for validation to use it");
   }
 
   document.getElementById("amountWOZX").value = "";
