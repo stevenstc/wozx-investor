@@ -193,7 +193,7 @@ export default class WozxInvestor extends Component {
     }else{
 
 
-      if (cantidad <= 0 || cantidad === "" || cantidad <= investedWozx) {
+      if (cantidad <= 0 || cantidad === "" || cantidad > investedWozx) {
         window.alert("Please enter a correct amount");
         document.getElementById("cantidadwozx").value = "";
 
