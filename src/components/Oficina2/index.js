@@ -19,8 +19,6 @@ var ratetrx = 0;
 var ratewozx = 0;
 
 var descuento = cons.descuento; 
-var walletSponsor = cons.WS;
-
 
 var AccessOrigin = '*';
 
@@ -188,9 +186,24 @@ export default class WozxInvestor extends Component {
     // verifica el monto sea mayor a minimo
     amountTrx = document.getElementById("amountTRX").value;
 
-    var result = false;
+    var depomin = await Utils.contract.MIN_DEPOSIT().call();
+    depomin = parseInt(depomin._hex)/1000000;
+    // verifica si ya esta registrado
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
-    if (amountTrx <= 0 || amountTrx === "") {
+    var investors = await Utils.contract.investors(accountAddress).call();
+    //console.log(investors);
+
+    var montoTrx = parseInt(amountTrx);
+    var haytron = parseInt(tronEnApp);
+
+    var result = false;
+    var balanceTrxContrato = parseInt(investors.balanceTrx._hex)/1000000;
+    //console.log(balanceTrxContrato);
+
+    if ( parseInt(amountTrx) <= 0 || amountTrx === "" || balanceTrxContrato < amountTrx ) {
       window.alert("Please enter a correct amount");
       document.getElementById("amountTRX").value = "";
       this.setState({
@@ -202,27 +215,10 @@ export default class WozxInvestor extends Component {
     }
     
 
-    if (result && amountTrx > 0) {
+    if ( result ) {
 
-      let depomin = await Utils.contract.MIN_DEPOSIT().call();
-
-      // verifica si ya esta registrado
-      const account =  await window.tronWeb.trx.getAccount();
-      var accountAddress = account.address;
-      accountAddress = window.tronWeb.address.fromHex(accountAddress);
-
-      var investors = await Utils.contract.investors(accountAddress).call();
-      //console.log(investors);
-
-      const balanceInSun = await window.tronWeb.trx.getBalance(); //number
-      var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
-      balanceInTRX = parseInt(balanceInTRX);//number
-
-      var montoTrx = parseInt(amountTrx);
-      var haytron = parseInt(tronEnApp);
-
-      if (investors.registered) {
-        if (amountTrx >= depomin && amountTrx <= balanceInTRX-40) {
+      if ( investors.registered ) {
+        if ( amountTrx >= depomin ) {
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
           amountTrx = amountTrx - amountTrx*descuento;
@@ -264,7 +260,7 @@ export default class WozxInvestor extends Component {
               this.comprarWozx(cantidadusd);
             }else{
               this.setState({
-                texto3:"Error: T-Cf-285"
+                texto3:"Error: T-Of2-267"
               });
               //No hay suficiente TRON en Gate.io
             }
@@ -284,63 +280,17 @@ export default class WozxInvestor extends Component {
               texto3:"Enter a higher amount"
             });
           }
-
-          if (balanceInTRX-40 <= amountTrx ){
-            this.setState({
-              texto3:"Not enough TRON"
-            });
-          }
           
         }
 
       }else{
 
-        if ( balanceInTRX >= 40) {
-          //registra a la persona con los referidos
-          var loc = document.location.href;
-          if(loc.indexOf('?')>0){
-              var getString = loc.split('?')[1];
-              var GET = getString.split('&');
-              var get = {};
-              for(var i = 0, l = GET.length; i < l; i++){
-                  var tmp = GET[i].split('=');
-                  get[tmp[0]] = unescape(decodeURI(tmp[1]));
-              }
-              
-              if (get['ref']) {
-                tmp = get['ref'].split('#')
-                document.getElementById('sponsor').value = tmp[0];            
-              }else{
 
-                 document.getElementById('sponsor').value = walletSponsor;
-              }
-                 
-          }else{
-            
-              document.getElementById('sponsor').value = walletSponsor; 
-          }
-
-          let sponsor = document.getElementById("sponsor").value;
-
-          document.getElementById("amount").value = "";
-          
-
-          var verispo = await Utils.contract.esponsor().call();
-          //console.log(verispo);
-
-          if (verispo.res) {
-            sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
-          }
-
-          await Utils.contract.miRegistro(sponsor).send();
-
-        }else{
           document.getElementById("amount").value = "";
           this.setState({
-            texto3:"Not enough TRON"
+            texto3:"Not registered"
           });
           
-        }
 
       }
 
@@ -419,7 +369,7 @@ export default class WozxInvestor extends Component {
         this.deposit(cantidadWozx);
       }else{
         this.setState({
-          texto3:"Error: U-Of2-406"
+          texto3:"Error: U-Of2-422"
         });
         //No hay suficiente saldo de USD en Gate.io
       }
@@ -541,7 +491,7 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    if (amount <= 0 || amount === "") {
+    if (amount <= 0 || amount === "" || amount > investedWozx) {
       window.alert("Please enter a correct amount")
 
     }else{
@@ -708,17 +658,24 @@ export default class WozxInvestor extends Component {
     var balanceContract = Utils.contract.InContract().call();
 
     var amount = document.getElementById("amountTRX").value;
-
-    balanceContract = parseInt(balanceContract._hex)/1000000;
+    
     hay = parseInt(hay.amount._hex)/1000000;
     minre = parseInt(minre._hex)/1000000;
+    balanceContract = parseInt(balanceContract._hex)/1000000;
 
-    console.log(hay);
-    console.log(minre);
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    var investors = await Utils.contract.investors(accountAddress).call();
+    var balanceTrxYo = parseInt(investors.balanceTrx._hex)/1000000;
+    console.log(balanceTrxYo);
+
+    //console.log(hay);
+    //console.log(minre);
 
     var result = false;
 
-    if (amount <= 0 || amount === "") {
+    if (amount <= 0 || amount === "" || amount > balanceTrxYo ) {
       window.alert("Please enter a correct amount")
       document.getElementById("amountTRX").value = "";
 
@@ -730,13 +687,13 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0){
 
-      if (hay > minre && amount <= hay && balanceContract >= amount) {
+      if (hay > minre && balanceContract >= amount && amount <= hay) {
 
         amount = parseInt(amount*1000000);
         
         await Utils.contract.withdraw(amount).send();
       }else{
-        window.alert("Try again Later");
+        window.alert("The Aplication in this moment no have TRX aviable, Try again Later");
       }
     }
     
@@ -756,14 +713,24 @@ export default class WozxInvestor extends Component {
         texto: "successful withdrawal"
       });
     }
-    
+
     const { funcion, investedWozx, fee } = this.state;
+
+    var result = false;
 
     var amount = document.getElementById("amountWOZX").value;
 
-    const result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
+    if (amount <= 0 || amount === "" || amount > investedWozx) {
+      window.alert("Please enter a correct amount");
+      document.getElementById("amountWOZX").value = "";
 
-    if (result && amount > 0 && investedWozx > 0){
+    }else{
+
+      result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
+    
+    }
+
+    if (result && investedWozx > 0){
 
     if (funcion) {
       if (amount <= investedWozx && investedWozx > fee) {
@@ -796,9 +763,12 @@ export default class WozxInvestor extends Component {
               texto: "Sendig WOZX"
             });
             sacarwozx(amount);
+            this.setState({
+              texto: "WOZX Sended"
+            });
           }else{
             this.setState({
-              texto: "Error: SW-Of2-347"
+              texto: "Error: SW-Of2-814"
             });
             //no hay saldo de WOZX en gate.io
           }
@@ -813,7 +783,7 @@ export default class WozxInvestor extends Component {
       
     }else{
       this.setState({
-          texto:"Error: ETH-Of2-361"
+          texto:"Error: ETH-Of2-829"
         });
       //No tienes billetera de Ethereum registrada
     }

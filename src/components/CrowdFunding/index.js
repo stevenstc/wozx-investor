@@ -248,7 +248,9 @@ export default class WozxInvestor extends Component {
 
     if (result) {
 
-    let depomin = await Utils.contract.MIN_DEPOSIT().call();
+    var depomin = await Utils.contract.MIN_DEPOSIT().call();
+    depomin = parseInt(depomin._hex)/1000000;
+    console.log(depomin);
 
       // verifica si ya esta registrado
       const account =  await window.tronWeb.trx.getAccount();

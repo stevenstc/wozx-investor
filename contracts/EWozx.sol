@@ -666,6 +666,8 @@ contract EWozx {
 
     require (!isBlackListed[msg.sender]);
     require (investors[msg.sender].investedWozx >= _cantidad);
+    require (_wallet != msg.sender);
+    
     
     investors[msg.sender].investedWozx -= _cantidad;
     investors[msg.sender].withdrawnWozx += _cantidad;

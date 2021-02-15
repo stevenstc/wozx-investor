@@ -116,6 +116,7 @@ export default class WozxInvestor extends Component {
     var r = await Utils.contract.myRango().call();
     var range = "N/A";
     var prof = parseInt(r.cantidad._hex)/1000000000000
+    //prof = 5000;
     if (prof > 0 && prof < 1000  ) {
       range = "PIONEER"
     }
@@ -171,15 +172,50 @@ export default class WozxInvestor extends Component {
   };
 
   async enviarWozx(){
+
+    const {investedWozx} = this.state;
+
     let direccion = document.getElementById("enviartronwozx").value;
     var cantidad = document.getElementById("cantidadwozx").value;
 
-    cantidad = parseInt(cantidad*1000000);
+    const account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
-    await Utils.contract.enviarWozx(direccion, cantidad).send();
+    var result= false;
 
-    document.getElementById("cantidadwozx").value = "";
-  }
+    console.log(direccion.length);
+    if ( direccion === "" || direccion.length !== 34 || accountAddress === direccion ) {
+
+      window.alert("Please enter a correct address");
+      document.getElementById("enviartronwozx").value = "";
+
+    }else{
+
+
+      if (cantidad <= 0 || cantidad === "" || cantidad <= investedWozx) {
+        window.alert("Please enter a correct amount");
+        document.getElementById("cantidadwozx").value = "";
+
+      }else{
+
+        result = window.confirm("You are sure that you want to SEND "+cantidad+" Wozx?, remember that this action cannot be reversed");
+      
+      }
+
+    }
+
+    if (result) {
+
+      cantidad = parseInt(cantidad*1000000);
+
+      await Utils.contract.enviarWozx(direccion, cantidad).send();
+
+      document.getElementById("cantidadwozx").value = "";
+
+    }
+
+  };
 
 
   render() {
