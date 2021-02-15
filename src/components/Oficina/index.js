@@ -5,10 +5,6 @@ import contractAddress from "../Contract";
 
 import cons from "../../cons.js";
 
-require('dotenv').config();
-
-console.log (process.env);
-
 var proxyUrl = cons.proxy;
 
 var AccessOrigin = '*';
