@@ -18,7 +18,7 @@
   "bugs": {
     "url": ""
   },
-  "homepage": "https://ewozx.com/",
+  "homepage": "https://stevenstc.github.io/wozx-investor/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",
@@ -42,7 +42,7 @@
     "crypto": "^1.0.1",
     "css-loader": "^3.4.2",
     "decodeuricomponent": "^0.3.1",
-    "dotenv": "8.2.0",
+    "dotenv": "^8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.2.1",
