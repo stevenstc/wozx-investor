@@ -299,7 +299,7 @@ export default class WozxInvestor extends Component {
         </div>
         <div className="row centrartexto">
 
-          <div className="col-eight">
+          <div className="col-seven">
             
               <h3 className="display-2--light"> Send WOZX to USER:</h3>
               <input type="text" className="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="Tron wallet Member" />
@@ -308,7 +308,7 @@ export default class WozxInvestor extends Component {
             
           </div>
 
-          <div className="col-four">
+          <div className="col-five">
 
               <h3 className="display-2--light"> Available {investedWozx} WOZX</h3>
               <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
