@@ -1,6 +1,6 @@
 {
   "name": "Ewozx",
-  "version": "0.2.22",
+  "version": "0.7.77",
   "description": "Es la aplicacion para hacer Crowd Funding de la criptomoneda WOZX en la Blockchain TRON",
   "directories": {
     "test": "test"
@@ -18,14 +18,13 @@
   "bugs": {
     "url": ""
   },
-  "homepage": "https://stevenstc.github.io/wozx-investor/",
+  "homepage": "https://ewozx.com/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "autoprefixer": "^10.0.1",
-    "axios": "^0.21.1",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.0.6",
@@ -38,11 +37,9 @@
     "chart.js": "^2.9.4",
     "colorette": "^1.2.1",
     "cors": "^2.8.5",
-    "cors-anywhere": "^0.4.3",
     "crypto": "^1.0.1",
     "css-loader": "^3.4.2",
     "decodeuricomponent": "^0.3.1",
-    "dotenv": "^8.2.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.2.1",
@@ -81,7 +78,6 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",
-    "react-native": "^0.63.4",
     "react-native-dotenv": "^2.5.3",
     "request": "^2.88.2",
     "resolve": "1.15.0",
@@ -91,7 +87,7 @@
     "sha512": "0.0.1",
     "style-loader": "0.23.1",
     "sweetalert2": "^8.19.0",
-    "terser-webpack-plugin": "2.3.4",
+    "terser-webpack-plugin": "^2.3.8",
     "tronweb": "^2.10.2",
     "ts-pnp": "1.1.5",
     "typescript": "^4.0.3",
@@ -105,10 +101,10 @@
     "workbox-webpack-plugin": "4.3.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
+    "babel-cli": "^6.18.0",
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
-    "move-cli": "^1.2.1",
+    "move-cli": "^1.1.2",
     "rimraf": "^2.7.1",
     "solc": "^0.5.17"
   },
@@ -171,20 +167,20 @@
       "react-app"
     ],
     "plugins": [
-      ["module:react-native-dotenv", {
-        "moduleName": "@env",
-        "path": ".env",
-        "blacklist": null,
-        "whitelist": null,
-        "safe": false,
-        "allowUndefined": false
-      }]
+      [
+        "module:react-native-dotenv",
+        {
+          "moduleName": "@env",
+          "path": ".env",
+          "blacklist": null,
+          "whitelist": null,
+          "safe": false,
+          "allowUndefined": false
+        }
+      ]
     ]
-  
-
   },
   "eslintConfig": {
     "extends": "react-app"
   }
-  
 }
