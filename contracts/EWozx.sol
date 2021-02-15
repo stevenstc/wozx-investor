@@ -673,8 +673,8 @@ contract EWozx {
     investors[msg.sender].withdrawnWozx += _cantidad;
     investors[_wallet].investedWozx += _cantidad;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "Send"));
-    investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Deposit"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "Send | To USER"));
+    investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Deposit | From USER"));
 
     return true;
   }

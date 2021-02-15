@@ -859,17 +859,37 @@ export default class WozxInvestor extends Component {
         texto: "Withdrawal WOZX",
         walleteth: eth.ethdireccion
       });
-    }else{      
-      this.setState({
-        alerta: "alerta1",
-        funcion:false,
-        auth: "#alert",
-        texto:"Enable WOZX",
-        texto2:'Enter your address to receive WOZX',
-        value: wallet,
-        boton: "Check address",
-        walleteth: "Undefined address"
-      });
+    }else{   
+
+      if ( web3.utils.isAddress(eth.ethdireccion) ){
+
+        this.setState({
+          alerta: "alerta1",
+          funcion:false,
+          auth: "#alert",
+          texto:"Pending to approval",
+          texto2:'Your WOZX wallet then wait the validation  to use it',
+          value: eth.ethdireccion,
+          boton: "Change address",
+          walleteth: eth.ethdireccion
+        });
+
+
+      }else{
+
+        this.setState({
+          alerta: "alerta1",
+          funcion:false,
+          auth: "#alert",
+          texto:"Register WOZX wallet",
+          texto2:'Enter your address to receive WOZX',
+          value: wallet,
+          boton: "Check address",
+          walleteth: "Undefined address"
+        });
+
+      }
+        
     }
   }
 
