@@ -695,8 +695,12 @@ export default class WozxInvestor extends Component {
         await Utils.contract.withdraw(amount).send();
       }else{
 
-        if (hay < minre*2 ) {
+        if ( hay < minre*2 ) {
           window.alert("Youn no have TRX aviable, minimum of withdraw is "+minre*2+" TRX");
+        }
+
+        if ( amount < minre*2 ) {
+          window.alert("Minimum of withdraw is "+minre*2+" TRX");
         }
 
         if ( balanceContract < amount ){
