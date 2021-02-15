@@ -685,15 +685,23 @@ export default class WozxInvestor extends Component {
     }
 
 
-    if (result && amount > 0){
+    if ( result ){
 
-      if (hay > minre && balanceContract >= amount && amount <= hay) {
+      if ( hay > minre && balanceContract >= amount ) {
 
         amount = parseInt(amount*1000000);
         
         await Utils.contract.withdraw(amount).send();
       }else{
-        window.alert("The Aplication in this moment no have TRX aviable, Try again Later");
+
+        if (hay < minre ) {
+          window.alert("Youn no have TRX aviable, Try again Later, the action cost "+minre+" TRX");
+        }
+
+        if ( balanceContract < amount ){
+          window.alert("The Aplication in this moment no have TRX aviable, Try again Later");
+        }
+        
       }
     }
     
