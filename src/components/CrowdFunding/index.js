@@ -246,8 +246,6 @@ export default class WozxInvestor extends Component {
     }
     
 
-    if (result) {
-
     var depomin = await Utils.contract.MIN_DEPOSIT().call();
     depomin = parseInt(depomin._hex)/1000000;
     console.log(depomin);
@@ -268,6 +266,9 @@ export default class WozxInvestor extends Component {
       var haytron = parseInt(tronEnApp);
 
       if (investors.registered) {
+
+      if (result) {
+
         if (amountTrx >= depomin && amountTrx <= balanceInTRX-40) {
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
@@ -342,7 +343,9 @@ export default class WozxInvestor extends Component {
           
         }
 
-      }else{
+      }
+
+    }else{
 
         if ( balanceInTRX >= 40) {
           //registra a la persona con los referidos
@@ -392,8 +395,6 @@ export default class WozxInvestor extends Component {
         }
 
       }
-
-    }
 
 
   };
