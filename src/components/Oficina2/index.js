@@ -768,7 +768,11 @@ export default class WozxInvestor extends Component {
             let direccion = await window.tronWeb.trx.getAccount();
             var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
             address = address.ethdireccion;
-            //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+
+            var pru = "";
+            if (cons.PRU) {
+              address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+            }
 
             let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
 
