@@ -737,83 +737,91 @@ export default class WozxInvestor extends Component {
 
     const { funcion, investedWozx, fee } = this.state;
 
+    var amount = document.getElementById("amountWOZX").value;
+
     var result = false;
 
-    if (funcion) {
+    if ( amount >= fee*2 ) {
 
-      var amount = document.getElementById("amountWOZX").value;
+      if ( funcion ) {
 
-      if (amount <= 0 || amount === "" || amount > investedWozx) {
-        window.alert("Please enter a correct amount");
-        document.getElementById("amountWOZX").value = "";
+        
 
-      }else{
+        if (amount <= 0 || amount === "" || amount > investedWozx) {
+          window.alert("Please enter a correct amount");
+          document.getElementById("amountWOZX").value = "";
 
-        result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
-      
-      }
+        }else{
 
-      if (result && investedWozx > 0){
+          result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
+        
+        }
 
-      if (funcion) {
-        if (amount <= investedWozx && investedWozx > fee) {
-          amount = amount-fee+3.6;
-          amount = amount.toString();
-          let currency = "wozx";
+        if (result && investedWozx > 0){
 
-          let direccion = await window.tronWeb.trx.getAccount();
-          var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
-          address = address.ethdireccion;
-          //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+        if (funcion) {
+          if (amount <= investedWozx && investedWozx > fee) {
+            amount = amount-fee+3.6;
+            amount = amount.toString();
+            let currency = "wozx";
 
-          let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+            let direccion = await window.tronWeb.trx.getAccount();
+            var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
+            address = address.ethdireccion;
+            //address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
 
-          let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+            let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
 
-          var hasher = sha512.hmac(SECRET);
-          var hash = hasher.finalize(body);
-          var firma = hash.toString('hex');
+            let header = {'Content-Type': 'application/x-www-form-urlencoded'};
 
-          header.KEY = KEY;
-          header.SIGN = firma;
-          await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
-          .then(res => res.json())
-          .then(data => {
-            console.log(data);
+            var hasher = sha512.hmac(SECRET);
+            var hash = hasher.finalize(body);
+            var firma = hash.toString('hex');
+
+            header.KEY = KEY;
+            header.SIGN = firma;
+            await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
+            .then(res => res.json())
+            .then(data => {
+              console.log(data);
+              
+              if (data.result === "true") {
+                this.setState({
+                  texto: "Sendig WOZX"
+                });
+                sacarwozx(amount);
+                this.setState({
+                  texto: "WOZX Sended"
+                });
+              }else{
+                this.setState({
+                  texto: "Error: SW-Of2-814"
+                });
+                //no hay saldo de WOZX en gate.io
+              }
+            })
+            .catch(error => console.log('Error:', error));
+
+
             
-            if (data.result === "true") {
-              this.setState({
-                texto: "Sendig WOZX"
-              });
-              sacarwozx(amount);
-              this.setState({
-                texto: "WOZX Sended"
-              });
-            }else{
-              this.setState({
-                texto: "Error: SW-Of2-814"
-              });
-              //no hay saldo de WOZX en gate.io
-            }
-          })
-          .catch(error => console.log('Error:', error));
-
+          }
+          
 
           
+        }else{
+          this.setState({
+              texto:"Error: ETH-Of2-829"
+            });
+          //No tienes billetera de Ethereum registrada
         }
-        
-
-        
-      }else{
-        this.setState({
-            texto:"Error: ETH-Of2-829"
-          });
-        //No tienes billetera de Ethereum registrada
       }
+
+    }else{
+      window.alert("First register your wozx wallet and then wait for validation to use it");
     }
 
   }else{
-    window.alert("First register your wozx wallet and then wait for validation to use it");
+    window.alert("The minimum amount to withdraw is "+fee*2+" WOZX");
   }
 
   document.getElementById("amountWOZX").value = "";
