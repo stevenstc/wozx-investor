@@ -34,7 +34,8 @@ export default class WozxInvestor extends Component {
     this.Investors = this.Investors.bind(this);
     this.enviarWozx = this.enviarWozx.bind(this);
     this.Link = this.Link.bind(this);
-    this.rateWozx = this.rateWozx.bind(this);    
+    this.rateWozx = this.rateWozx.bind(this);
+    this.Wozx = this.Wozx.bind(this); 
     
   }
 
@@ -45,6 +46,14 @@ export default class WozxInvestor extends Component {
     this.rateWozx();
     this.Investors();
     setInterval(() => this.Investors(),10000);
+  };
+
+  async Wozx (){
+
+    const { investedWozx } = this.state;
+
+    document.getElementById("cantidadwozx").value = investedWozx;
+
   };
 
   async rateWozx(){
@@ -310,7 +319,7 @@ export default class WozxInvestor extends Component {
 
           <div className="col-five">
 
-              <h3 className="display-2--light"> Available {investedWozx} WOZX</h3>
+              <h3 className="display-2--light" onClick={() => this.Wozx()}> Available {investedWozx} WOZX</h3>
               <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
               <a className="btn btn-light"  href="#enviartronwozx" onClick={() => this.enviarWozx()}>send WOZX</a>
             

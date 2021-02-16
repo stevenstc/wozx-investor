@@ -236,87 +236,88 @@ export default class WozxInvestor extends Component {
     depomin = parseInt(depomin._hex)/1000000;
     console.log(depomin);
 
-      // verifica si ya esta registrado
-      var account =  await window.tronWeb.trx.getAccount();
-      var accountAddress = account.address;
-      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    // verifica si ya esta registrado
+    var account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
-      var investors = await Utils.contract.investors(accountAddress).call();
-      //console.log(investors);
+    var investors = await Utils.contract.investors(accountAddress).call();
+    //console.log(investors);
 
-      const balanceInSun = await window.tronWeb.trx.getBalance(); //number
-      var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
-      balanceInTRX = parseInt(balanceInTRX);//number
+    const balanceInSun = await window.tronWeb.trx.getBalance(); //number
+    var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
+    balanceInTRX = parseInt(balanceInTRX);//number
 
-      var montoTrx = parseInt(amountTrx);
-      var haytron = parseInt(tronEnApp);
+    var montoTrx = parseInt(amountTrx);
+    var haytron = parseInt(tronEnApp);
 
-      if (investors.registered) {
+    if (investors.registered) {
 
-        if (amountTrx <= 0) {
+      if (amountTrx <= 0) {
 
-          window.alert("Please enter a correct amount");
-          document.getElementById("amount").value = "";
-          this.setState({
-            texto:"BUY WOZX"
-          });
+        window.alert("Please enter a correct amount");
+        document.getElementById("amount").value = "";
+        this.setState({
+          texto:"BUY WOZX"
+        });
 
-        }else{
-          result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
+      }else{
+        result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
 
-        }
+      }
 
       if (result) {
 
         if (amountTrx >= depomin && amountTrx <= balanceInTRX-40) {
+
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
-          amountTrx = amountTrx - amountTrx*descuento;
-          amountTrx = amountTrx.toString();
+            amountTrx = amountTrx - amountTrx*descuento;
+            amountTrx = amountTrx.toString();
 
-          let currencyPair = "trx_usdt";
+            let currencyPair = "trx_usdt";
 
-          let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amountTrx});
+            let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amountTrx});
 
-          let header = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          };
+            let header = {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            };
 
-          var hasher = sha512.hmac(SECRET);
-          var hash = hasher.finalize(body);
-          var firma = hash.toString('hex');
+            var hasher = sha512.hmac(SECRET);
+            var hash = hasher.finalize(body);
+            var firma = hash.toString('hex');
 
-          header.KEY = KEY;
-          header.SIGN = firma;
+            header.KEY = KEY;
+            header.SIGN = firma;
 
-          await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body})
-          .then(res => res.json())
-          .then(data => {
-            //console.log(data);
-            var cantidadTrx=parseFloat(data.filledAmount);
-            var cantidadTrx2=parseFloat(data.leftAmount);
-            cantidadTrx = cantidadTrx+cantidadTrx2;
+            await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body})
+            .then(res => res.json())
+            .then(data => {
+              //console.log(data);
+              var cantidadTrx=parseFloat(data.filledAmount);
+              var cantidadTrx2=parseFloat(data.leftAmount);
+              cantidadTrx = cantidadTrx+cantidadTrx2;
 
-            var precioTrx=parseFloat(data.filledRate);
-            cantidadusd = precioTrx*cantidadTrx;
-            cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
-            
-            console.log(cantidadusd);
+              var precioTrx=parseFloat(data.filledRate);
+              cantidadusd = precioTrx*cantidadTrx;
+              cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
+              
+              console.log(cantidadusd);
 
-            if (data.result === "true") {
-              this.setState({
-                texto:"Buying WOZX"
-              });
-              this.comprarWozx(cantidadusd);
-            }else{
-              this.setState({
-                texto:"Error: T-Cf-285"
-              });
-              //No hay suficiente TRON en Gate.io
-            }
+              if (data.result === "true") {
+                this.setState({
+                  texto:"Buying WOZX"
+                });
+                this.comprarWozx(cantidadusd);
+              }else{
+                this.setState({
+                  texto:"Error: T-Cf-285"
+                });
+                //No hay suficiente TRON en Gate.io
+              }
 
-          })
-          .catch(error => console.log('Error:', error));
+            })
+            .catch(error => console.log('Error:', error));
 
           }else{
             console.log("Entro POST");
@@ -339,7 +340,7 @@ export default class WozxInvestor extends Component {
               texto:"Not enough TRON"
             });
           }
-          
+        
         }
 
       }
@@ -393,7 +394,7 @@ export default class WozxInvestor extends Component {
           
         }
 
-      }
+    }
 
 
   };

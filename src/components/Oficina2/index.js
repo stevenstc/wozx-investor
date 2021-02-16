@@ -52,7 +52,8 @@ export default class WozxInvestor extends Component {
       tipo: "button",
       auth: "/auth.html",
       texto: "Loading...",
-      texto3: "Buy WOZX -> TRX",
+      texto3: "Buy WOZX <- TRX",
+      texto4:"Sell WOZX -> TRX",
       value: "",
       fee: 4,
       feetrx: 10,
@@ -207,7 +208,7 @@ export default class WozxInvestor extends Component {
       window.alert("Please enter a correct amount");
       document.getElementById("amountTRX").value = "";
       this.setState({
-        texto3:"Buy WOZX -> TRX"
+        texto3:"Buy WOZX <- TRX"
       });
 
     }else{
@@ -297,7 +298,7 @@ export default class WozxInvestor extends Component {
     }
 
     this.setState({
-      texto3:"Buy WOZX -> TRX"
+      texto3:"Buy WOZX <- TRX"
     });
 
 
@@ -468,7 +469,7 @@ export default class WozxInvestor extends Component {
     await contract.ordenPost(accountAddress, am, orden).send();
 
     this.setState({
-      texto3:"Buy WOZX"
+      texto3:"Buy WOZX <- TRX"
     });
 
     document.getElementById("amountTRX").value = "";
@@ -476,6 +477,11 @@ export default class WozxInvestor extends Component {
   };
 
   async venderWozx(){   
+
+    this.setState({
+      texto4:"Please wait..."
+    });
+
     await this.rateWozx();
 
     ratewozx = parseFloat(ratewozx);
@@ -543,6 +549,10 @@ export default class WozxInvestor extends Component {
     }
     
     document.getElementById("amountWOZX").value = "";
+
+    this.setState({
+      texto4:"Sell WOZX -> TRX"
+    });
 
   };
 
@@ -922,7 +932,7 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, alerta, value, tipo, boton, fee, feetrx} = this.state;
+    const { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, texto4, alerta, value, tipo, boton, fee, feetrx} = this.state;
 
     var dirwozx = "https://etherscan.io/token/0x34950ff2b487d9e5282c5ab342d08a2f712eb79f?a="+walleteth;
 
@@ -938,7 +948,7 @@ export default class WozxInvestor extends Component {
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
 
               <input type="number" className="form-control amount" id="amountWOZX" placeholder="Min 8 WOZX"></input>
-              <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell WOZX -> TRX</button>
+              <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>{texto4}</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
               <p>to: <a href={dirwozx} rel="noopener noreferrer" target="_blank">{walleteth}</a></p>
               <p>Fee {fee} WOZX</p>

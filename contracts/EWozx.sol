@@ -161,6 +161,7 @@ contract EWozx {
   function miRegistro(address _sponsor) public {
     require (!isBlackListed[msg.sender]);
     require (_sponsor != NoValido);
+    require (!investors[msg.sender].registered);
     require (investors[_sponsor].registered);
     require (investors[_sponsor].exist);
     require (msg.sender != _sponsor);
