@@ -237,7 +237,7 @@ export default class WozxInvestor extends Component {
     console.log(depomin);
 
       // verifica si ya esta registrado
-      const account =  await window.tronWeb.trx.getAccount();
+      var account =  await window.tronWeb.trx.getAccount();
       var accountAddress = account.address;
       accountAddress = window.tronWeb.address.fromHex(accountAddress);
 

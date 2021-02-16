@@ -175,8 +175,11 @@ contract EWozx {
     address[10] memory referi = column(msg.sender);
 
     for (uint i = 0; i < 10; i++) {
-      if (investors[referi[i]].exist && referi[i] != owner && referi[i] != NoValido) {
+      if (investors[referi[i]].exist && referi[i] != owner ) {
         investors[referi[i]].niveles[i].n++;
+      }else{
+        investors[referi[i]].niveles[i].n++;
+        break;
       }
     }
   }
@@ -213,18 +216,26 @@ contract EWozx {
 
     address ver = yo;
     address[10] memory referi = column(yo);
+    uint a;
+    uint b;
 
     for (uint i = 0; i < 10; i++) {
-      if (investors[referi[i]].exist && referi[i] != owner && referi[i] != NoValido) {
+      if (investors[referi[i]].exist && referi[i] != owner ) {
 
-        uint b = porcientos[i];
-        uint a = amount.mul(b).div(1000);
+        b = porcientos[i];
+        a = amount.mul(b).div(1000);
         investors[referi[i]].balanceTrx += a;
         investors[referi[i]].historial.push(Historia(now, a, "TRX", "Reward Referer"));
         totalRefRewards += a;
         investors[referi[i]].rango += a.mul(rateTRON);
             
       }else{
+        b = porcientos[i];
+        a = amount.mul(b).div(1000);
+        investors[referi[i]].balanceTrx += a;
+        investors[referi[i]].historial.push(Historia(now, a, "TRX", "Reward Referer"));
+        totalRefRewards += a;
+        investors[referi[i]].rango += a.mul(rateTRON);
         break;
       }
     }

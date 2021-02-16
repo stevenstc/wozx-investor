@@ -741,25 +741,22 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    if ( amount >= fee*2 ) {
+    
 
-      if ( funcion ) {
+    if ( funcion ) {
 
-        
+      if ( amount >= fee*2 ) {
 
         if (amount <= 0 || amount === "" || amount > investedWozx) {
           window.alert("Please enter a correct amount");
           document.getElementById("amountWOZX").value = "";
-
         }else{
 
           result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
-        
         }
 
         if (result && investedWozx > 0){
 
-        if (funcion) {
           if (amount <= investedWozx && investedWozx > fee) {
             amount = amount-fee+3.6;
             amount = amount.toString();
@@ -816,26 +813,23 @@ export default class WozxInvestor extends Component {
 
             
           }
-          
-
-          
         }else{
           this.setState({
               texto:"Error: ETH-Of2-829"
             });
           //No tienes billetera de Ethereum registrada
         }
+
+      }else{
+        window.alert("The minimum amount to withdraw is "+fee*2+" WOZX");
       }
 
     }else{
       window.alert("First register your wozx wallet and then wait for validation to use it");
+      
     }
 
-  }else{
-    window.alert("The minimum amount to withdraw is "+fee*2+" WOZX");
-  }
-
-  document.getElementById("amountWOZX").value = "";
+    document.getElementById("amountWOZX").value = "";
     
   };
 
@@ -943,7 +937,7 @@ export default class WozxInvestor extends Component {
             
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
 
-              <input type="number" className="form-control amount" id="amountWOZX" placeholder="How much WOZX"></input>
+              <input type="number" className="form-control amount" id="amountWOZX" placeholder="Min 8 WOZX"></input>
               <button type="button" className="btn btn-info" onClick={() => this.venderWozx()}>Sell WOZX -> TRX</button>
               <a className="btn btn-light"  href={auth} onClick={() => this.withdrawETH()}>{texto}</a>
               <p>to: <a href={dirwozx} rel="noopener noreferrer" target="_blank">{walleteth}</a></p>
@@ -966,7 +960,7 @@ export default class WozxInvestor extends Component {
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
-              <input type="number" className="form-control amount" id="amountTRX" placeholder="How much TRX"></input>
+              <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
               <button type="button" className="btn btn-info" onClick={() => this.venderTRX()}>{texto3}</button>
               <button type="button" className="btn btn-info" onClick={() => this.withdraw()}>Withdrawal TRX</button>
               <p>Fee {feetrx} TRX</p>
