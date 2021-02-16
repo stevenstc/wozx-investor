@@ -28,12 +28,13 @@ const SECRET  = cons.SK;
 const pry = cons.WO;
 
 var pru = "";
-if (cons.PRU) {
+if (cons.PRU === "shasta.") {
   pru = cons.PRU;
 }
 
 const TRONGRID_API = "https://api."+pru+"trongrid.io";
 console.log(TRONGRID_API);
+console.log(cons);
 
 const tronApp = new TronWeb2(
   TRONGRID_API,
@@ -769,9 +770,16 @@ export default class WozxInvestor extends Component {
             var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
             address = address.ethdireccion;
 
-            var pru = "";
-            if (cons.PRU) {
-              address ="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+            if (cons.PRU  === "shasta.") {
+              var owner = await Utils.contract.owner().call();
+              address = await Utils.contract.miETH(window.tronWeb.address.fromHex(owner)).call()
+
+              if (web3.utils.isAddress(address.ethdireccion)) {
+                address = address.ethdireccion;
+              }else{
+                address = "0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d";
+              }
+              
             }
 
             let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});

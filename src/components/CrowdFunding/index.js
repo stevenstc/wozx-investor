@@ -32,7 +32,7 @@ const SECRET  = cons.SK;
 const pry = cons.WO;
 
 var pru = "";
-if (cons.PRU) {
+if (cons.PRU === "shasta.") {
   pru = cons.PRU;
 }
 
