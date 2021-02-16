@@ -488,8 +488,11 @@ export default class WozxInvestor extends Component {
     
     var amount = document.getElementById("amountWOZX").value;
 
+    var ope = 1.02/ratewozx;
+    ope = ope.toFixed(6);
+
     var result = false;
-    if ( amount >= 1.02/ratewozx ) {
+    if ( amount >= ope ) {
 
       if (amount <= 0 || amount === "" || amount > investedWozx) {
         window.alert("Please enter a correct amount");
@@ -499,7 +502,7 @@ export default class WozxInvestor extends Component {
 
       }
     }else{
-      window.alert("The minimum to operate is "+1.02/ratewozx+" WOZX");
+      window.alert("The minimum to operate is "+ope+" WOZX");
     }
 
     ratewozx = ratewozx.toString();
