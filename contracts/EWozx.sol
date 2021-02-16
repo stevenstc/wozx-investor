@@ -36,17 +36,11 @@ contract EWozx {
     uint n;
 
   }
-
-  struct Referer {
-    address myReferer;
-    uint porciento;
-  }
   
   struct Investor {
     bool registered;
     address sponsor;
     bool exist;
-    Referer[] referers;
     string ethereum;
     bool eth;
     uint rango;
@@ -66,9 +60,8 @@ contract EWozx {
   uint public rateTRON = 28677;
   
   address payable public owner;
-  address payable public marketing;
-  address payable public gateio;
   address payable public app;
+  address payable public gateio;
   
   address public NoValido;
   bool public Do;
@@ -88,22 +81,21 @@ contract EWozx {
   
   constructor() public payable {
     owner = msg.sender;
-    marketing = msg.sender;
-    gateio = msg.sender;
     app = msg.sender;
+    gateio = msg.sender;
     start();
     Do = true;
 
-    porcientos[0] = 5000;
-    porcientos[1] = 1000;
-    porcientos[2] = 1000;
-    porcientos[3] = 500;
-    porcientos[4] = 500;
-    porcientos[5] = 250;
-    porcientos[6] = 250;
-    porcientos[7] = 250;
-    porcientos[8] = 125;
-    porcientos[9] = 125;
+    porcientos[0] = 50;
+    porcientos[1] = 10;
+    porcientos[2] = 10;
+    porcientos[3] = 5;
+    porcientos[4] = 4;
+    porcientos[5] = 3;
+    porcientos[6] = 3;
+    porcientos[7] = 2;
+    porcientos[8] = 2;
+    porcientos[9] = 1;
 
   }
 
@@ -144,17 +136,6 @@ contract EWozx {
     return owner;
   }
   
-  function setMarketing(address payable _marketing) public returns (address){
-
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == owner);
-    require (_marketing != marketing);
-
-    marketing = _marketing;
-    
-    return marketing;
-  }
-  
   function setGateio(address payable _gateio) public returns (address){
 
     require (!isBlackListed[msg.sender]);
@@ -181,55 +162,66 @@ contract EWozx {
     require (!isBlackListed[msg.sender]);
     require (_sponsor != NoValido);
     require (investors[_sponsor].registered);
+    require (investors[_sponsor].exist);
+    require (msg.sender != _sponsor);
+    
 
     investors[msg.sender].registered = true;
     investors[msg.sender].exist = true;
     investors[msg.sender].sponsor = _sponsor;
     
-    totalInvestors++;
-
-    for (uint nvl = 0; nvl < 10; nvl++){
-
-      if (investors[_sponsor].exist && msg.sender != _sponsor){
-
-        investors[_sponsor].referers.push(Referer(msg.sender,porcientos[nvl]));
-        investors[_sponsor].niveles[nvl].n++;
-        _sponsor = investors[_sponsor].sponsor;
-        
-      }else{
-        break;
-      }
-
-    }
-
+    totalInvestors++;    
     
-  }
-
-  function verporciento (address yo,uint numer) public view returns(uint res) {
-    return investors[yo].referers[numer].porciento;
-  }
-  
-  
-  function rewardReferers(address yo, uint amount, address spo) internal {
-
-    address ver = yo;
+    address[10] memory referi = column(msg.sender);
 
     for (uint i = 0; i < 10; i++) {
-      if (investors[spo].exist && investors[spo].sponsor != ver) {
-        for (uint e = 0; e < investors[spo].referers.length; e++) {
-          
-          if ( investors[spo].referers[e].myReferer == yo){
-              uint b = investors[spo].referers[e].porciento;
-              uint a = amount.mul(b).div(100000);
-              investors[spo].balanceTrx += a;
-              investors[spo].historial.push(Historia(now, a, "TRX", "Reward Referer"));
-              totalRefRewards += a;
-              investors[spo].rango += a.mul(rateTRON);
-              break; 
-          }
-        }
+      investors[referi[i]].niveles[i].n++;
+    }
+  }
+  
 
-        spo = investors[spo].sponsor;
+
+  function column (address yo) public view returns(address[10] memory res) {
+
+    res[0] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[1] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[2] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[3] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[4] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[5] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[6] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[7] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[8] = investors[yo].sponsor;
+    yo = investors[yo].sponsor;
+    res[9] = investors[yo].sponsor;
+
+    return res;
+  }
+  
+  
+  function rewardReferers(address yo, uint amount) internal {
+
+    address ver = yo;
+    address[10] memory referi = column(yo);
+
+    for (uint i = 0; i < 10; i++) {
+      if (investors[referi[i]].exist && referi[i] != owner && referi[i] != NoValido) {
+
+        uint b = porcientos[i];
+        uint a = amount.mul(b).div(1000);
+        investors[referi[i]].balanceTrx += a;
+        investors[referi[i]].historial.push(Historia(now, a, "TRX", "Reward Referer"));
+        totalRefRewards += a;
+        investors[referi[i]].rango += a.mul(rateTRON);
+            
       }else{
         break;
       }
@@ -342,7 +334,7 @@ contract EWozx {
     return true;
   }
 
-  function transfers()public {
+  function transfers()public returns(bool res){
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
 
@@ -351,13 +343,14 @@ contract EWozx {
       if (!transacciones[i].hecho){
 
         if (investors[transacciones[i].wallet].exist){
-          rewardReferers(transacciones[i].wallet, transacciones[i].monto, investors[transacciones[i].wallet].sponsor);
+          rewardReferers(transacciones[i].wallet, transacciones[i].monto);
         }
 
         transacciones[i].hecho = true;
+        res = true;
 
         owner.transfer(transacciones[i].monto.mul(7).div(100));
-        marketing.transfer(transacciones[i].monto.mul(7).div(100));
+        app.transfer(transacciones[i].monto.mul(7).div(100));
         gateio.transfer(transacciones[i].monto.mul(77).div(100));
 
         break;
@@ -393,13 +386,13 @@ contract EWozx {
       if (!transacciones[_numero].hecho){
 
         if (investors[transacciones[_numero].wallet].exist){
-          rewardReferers(transacciones[_numero].wallet, transacciones[_numero].monto, investors[transacciones[_numero].wallet].sponsor);
+          rewardReferers(transacciones[_numero].wallet, transacciones[_numero].monto);
         }
 
         transacciones[_numero].hecho = true;
 
         owner.transfer(transacciones[_numero].monto.mul(7).div(100));
-        marketing.transfer(transacciones[_numero].monto.mul(7).div(100));
+        app.transfer(transacciones[_numero].monto.mul(7).div(100));
         gateio.transfer(transacciones[_numero].monto.mul(77).div(100));
 
         return transacciones[_numero].hecho;
@@ -550,11 +543,11 @@ contract EWozx {
     
     
     if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
+      rewardReferers(msg.sender, msg.value);
     }
     
     owner.transfer(msg.value.mul(7).div(100));
-    marketing.transfer(msg.value.mul(7).div(100));
+    app.transfer(msg.value.mul(7).div(100));
     gateio.transfer(msg.value.mul(77).div(100));
     
   }
@@ -568,7 +561,7 @@ contract EWozx {
     
     
     if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, _cantidad, investors[msg.sender].sponsor);
+      rewardReferers(msg.sender, _cantidad);
     }
  
     investors[msg.sender].balanceTrx -= _cantidad;
@@ -577,7 +570,7 @@ contract EWozx {
     investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
     owner.transfer(_cantidad.mul(7).div(100));
-    marketing.transfer(_cantidad.mul(7).div(100));
+    app.transfer(_cantidad.mul(7).div(100));
     gateio.transfer(_cantidad.mul(77).div(100));
     
   }
