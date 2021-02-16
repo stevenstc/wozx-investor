@@ -34,7 +34,6 @@ if (cons.PRU === "shasta.") {
 
 const TRONGRID_API = "https://api."+pru+"trongrid.io";
 console.log(TRONGRID_API);
-console.log(cons);
 
 const tronApp = new TronWeb2(
   TRONGRID_API,

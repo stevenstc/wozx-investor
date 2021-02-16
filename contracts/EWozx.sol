@@ -175,7 +175,9 @@ contract EWozx {
     address[10] memory referi = column(msg.sender);
 
     for (uint i = 0; i < 10; i++) {
-      investors[referi[i]].niveles[i].n++;
+      if (investors[referi[i]].exist && referi[i] != owner && referi[i] != NoValido) {
+        investors[referi[i]].niveles[i].n++;
+      }
     }
   }
   

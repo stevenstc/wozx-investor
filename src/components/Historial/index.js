@@ -26,43 +26,52 @@ export default class WozxInvestor extends Component {
   async verHistorial(){
 
     var {historial} = this.state;
+
+    var account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+    var investors = await Utils.contract.investors(accountAddress).call();
     
-    var cont = await Utils.contract.contadorHistorial().call();
-    //console.log(cont);
-    //console.log(parseInt(cont.cantidad._hex));
-    if (cont.res) {
-      historial.splice(0);
-      var o = 0
-      if (parseInt(cont.cantidad._hex) > 10) {
-        o = parseInt(cont.cantidad._hex)-10;
+    if ( investors.registered ) {
+
+      var cont = await Utils.contract.contadorHistorial().call();
+      //console.log(cont);
+      //console.log(parseInt(cont.cantidad._hex));
+      if (cont.res && parseInt(cont.cantidad._hex) > 0 ) {
+        historial.splice(0);
+        var o = 0
+        if (parseInt(cont.cantidad._hex) > 10) {
+          o = parseInt(cont.cantidad._hex)-10;
+        }
+        for (var i = o; i < parseInt(cont.cantidad._hex); i++) {
+
+          var ver = await Utils.contract.miHistorial(i).call();
+          //console.log(ver);
+          ver.valor = parseInt(ver.valor._hex)/1000000;
+          ver.tiempo = Date(parseInt(ver.tiempo._hex));
+          //console.log(ver);
+
+          let evento = (
+            <div className="col-full" key={i.toString()}>
+              <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.operacion} </span>
+            </div>
+          );
+          historial.splice(0,0,evento);
+          this.setState({
+            historial: historial
+          });
+          
+        }
+
       }
-      for (var i = o; i < parseInt(cont.cantidad._hex); i++) {
-
-        var ver = await Utils.contract.miHistorial(i).call();
-        //console.log(ver);
-        ver.valor = parseInt(ver.valor._hex)/1000000;
-        ver.tiempo = Date(parseInt(ver.tiempo._hex));
-        //console.log(ver);
-
-        let evento = (
-          <div className="col-full" key={i.toString()}>
-            <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.operacion} </span>
-          </div>
-        );
-        historial.splice(0,0,evento);
-        this.setState({
-          historial: historial
-        });
-        
-      }
-
     }
     
     
 
     
 
-  }
+  };
 
   render() {
     var { historial } = this.state;

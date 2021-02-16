@@ -232,20 +232,6 @@ export default class WozxInvestor extends Component {
 
     var result = false;
 
-    if (amountTrx <= 0) {
-
-      window.alert("Please enter a correct amount");
-      document.getElementById("amount").value = "";
-      this.setState({
-        texto:"BUY WOZX"
-      });
-
-    }else{
-      result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
-
-    }
-    
-
     var depomin = await Utils.contract.MIN_DEPOSIT().call();
     depomin = parseInt(depomin._hex)/1000000;
     console.log(depomin);
@@ -266,6 +252,19 @@ export default class WozxInvestor extends Component {
       var haytron = parseInt(tronEnApp);
 
       if (investors.registered) {
+
+        if (amountTrx <= 0) {
+
+          window.alert("Please enter a correct amount");
+          document.getElementById("amount").value = "";
+          this.setState({
+            texto:"BUY WOZX"
+          });
+
+        }else{
+          result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
+
+        }
 
       if (result) {
 
