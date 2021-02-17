@@ -15,12 +15,12 @@ var ratetrx_usd = 0;
 var ratewozx = 0;
 var cantidadusd = 0;
 
-var descuento = cons.descuento; //+ 0.23;// <- se resta para comprar el 77% en wozx para los usuarios
-var tantoTrx = cons.TRX;// para que el TRX se Venda de inmediato
-var tantoWozx = cons.WOZX;// para que el WOZX se Compre de inmediato
-var minimo_usd = 1;// (100) para dolares (100 USD)
-var rango_minimo = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
-var walletSponsor = cons.WS;//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb
+var descuento = cons.descuento; 
+var tantoTrx = cons.TRX;
+var tantoWozx = cons.WOZX;
+var minimo_usd = cons.USD;
+var rango_minimo = cons.SD; 
+var walletSponsor = cons.WS;
 var proxyUrl = cons.proxy;
 
 //console.log(contractAddress);
@@ -587,15 +587,26 @@ export default class WozxInvestor extends Component {
 
   async reatizarTodoPost(){
 
+    await this.saldoApp();
+
+    var { tronEnApp } = this.state;
+
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
     var orden = await contract.verOrdenPost().call();
     //console.log(orden);
 
     orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[2]._hex)/1000000, acc: orden[3] }
-    console.log(orden);
+    //console.log(orden);
 
-    if (orden.acc){
+    if ( orden.acc && tronEnApp >= orden.tron ){
       await this.postVenderTRX(orden.nOrden, orden.tron);
+    }else{
+      if (orden.acc) {
+        console.log("Ingrese almenos "+orden.tron+" TRON a Gate.io para ejecutar las ordenes pendientes");
+      }else{
+        console.log("No hay ordenes pendientes");
+      }
+      
     }
     
      
@@ -607,8 +618,9 @@ export default class WozxInvestor extends Component {
 
     ratetrx = ratetrx-ratetrx*tantoTrx;
 
-    amountTrx = _amountTrx*ratetrx;
-    amountTrx = amountTrx-amountTrx*descuento;
+    amountTrx = _amountTrx-_amountTrx*descuento;
+
+    console.log(amountTrx);
 
     ratetrx = ratetrx.toString();
     amountTrx = amountTrx.toString();
@@ -641,8 +653,6 @@ export default class WozxInvestor extends Component {
 
       if (data.result === "true") {
         this.postComprarWozx(cantidadusd, numeroDeOrden);
-      }else{
-        console.log("Ingrese más TRON a Gate.io");
       }
 
     })
