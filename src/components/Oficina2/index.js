@@ -109,10 +109,9 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    this.Investors();
-    
-    this.vereth();
-    this.enviarEth();
+    await this.Investors();
+    await this.vereth();
+    await this.enviarEth();
     setInterval(() => this.Investors(),10*1000);
     setInterval(() => this.vereth(),10*1000);
     setInterval(() => this.enviarEth(),3*1000);

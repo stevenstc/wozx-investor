@@ -45,6 +45,7 @@ contract EWozx {
     string ethereum;
     bool eth;
     uint rango;
+    bool recompensa;
     Nivel[10] niveles;
     uint balanceTrx;
     uint withdrawnTrx;
@@ -223,13 +224,15 @@ contract EWozx {
     for (uint i = 0; i < 10; i++) {
       if (investors[referi[i]].exist && referi[i] != owner ) {
 
-        b[i] = porcientos[i];
-        a[i] = amount.mul(b[i]).div(1000);
-        investors[referi[i]].balanceTrx += a[i];
-        investors[referi[i]].historial.push(Historia(now, a[i], "TRX", "Reward Referer"));
-        totalRefRewards += a[i];
-        investors[referi[i]].rango += a[i].mul(rateTRON);
-            
+        if(investors[msg.sender].recompensa){
+          b[i] = porcientos[i];
+          a[i] = amount.mul(b[i]).div(1000);
+          investors[referi[i]].balanceTrx += a[i];
+          investors[referi[i]].historial.push(Historia(now, a[i], "TRX", "Reward Referer"));
+          totalRefRewards += a[i];
+          investors[referi[i]].rango += a[i].mul(rateTRON);
+        }
+     
       }else{
         b[i] = porcientos[i];
         a[i] = amount.mul(b[i]).div(1000);
@@ -311,6 +314,10 @@ contract EWozx {
 
     require (firmas[orden].valida);
 
+    if(!investors[msg.sender].recompensa){
+      investors[msg.sender].recompensa = true;
+    }
+    
     transacciones.push(Transar(msg.sender, msg.value, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
@@ -588,6 +595,10 @@ contract EWozx {
     require(msg.value >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
+
+    if(!investors[msg.sender].recompensa){
+      investors[msg.sender].recompensa = true;
+    }
     
     transacciones.push(Transar(msg.sender, msg.value, false, false));
     

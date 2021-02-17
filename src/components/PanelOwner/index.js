@@ -26,10 +26,10 @@ export default class WozxInvestor extends Component {
 
   async isOwner() {
 
-    let ownerContrato = await Utils.contract.owner().call();
+    var ownerContrato = await Utils.contract.owner().call();
     ownerContrato = window.tronWeb.address.fromHex(ownerContrato);
 
-    let ownerTronlink = await window.tronWeb.trx.getAccount();
+    var ownerTronlink = await window.tronWeb.trx.getAccount();
     ownerTronlink = ownerTronlink.address;
     ownerTronlink = window.tronWeb.address.fromHex(ownerTronlink);
 

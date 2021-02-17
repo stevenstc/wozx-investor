@@ -41,11 +41,11 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    this.Link();
-    setInterval(() => this.Link(),10000);
+    await this.Link();
+    setInterval(() => this.Link(),3*1000);
     this.rateWozx();
-    this.Investors();
-    setInterval(() => this.Investors(),10000);
+    await this.Investors();
+    setInterval(() => this.Investors(),10*1000);
   };
 
   async Wozx (){
@@ -109,7 +109,7 @@ export default class WozxInvestor extends Component {
     const {investedWozx, ratewozx} = this.state;
 
     let direccion = await window.tronWeb.trx.getAccount();
-    let esto = await Utils.contract.investors(direccion.address).call();
+    var esto = await Utils.contract.investors(direccion.address).call();
     var refe = [];
     for (var i = 0; i < 10; i++) {
       var a = await Utils.contract.myFunction(i).call();
@@ -151,9 +151,10 @@ export default class WozxInvestor extends Component {
       range = "DIAMANTE CORONA"
     }
     //console.log(prof);
+    
     var wozxPe = await Utils.contract.wozxP().call();
 
-    //console.log(wozxPe.res);
+    //console.log(wozxPe);
     //console.log("(~ "+parseInt(wozxPe.cantidad._hex)/1000000+" WOZX)")
 
     if (wozxPe.res) {
