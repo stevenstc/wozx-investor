@@ -253,9 +253,13 @@ export default class WozxInvestor extends Component {
 
     if (investors.registered) {
 
-      if (amountTrx <= 0) {
+      if (amountTrx <= 0 || amountTrx > balanceInTRX-40) {
 
         window.alert("Please enter a correct amount");
+        if (amountTrx > balanceInTRX-40) {
+          window.alert("Not enough TRON");
+        }
+          
         document.getElementById("amount").value = "";
         this.setState({
           texto:"BUY WOZX"
