@@ -390,6 +390,10 @@ export default class WozxInvestor extends Component {
 
           await Utils.contract.miRegistro(sponsor).send();
 
+          this.setState({
+            texto:"Registration completed"
+          });
+
         }else{
           document.getElementById("amount").value = "";
           this.setState({
