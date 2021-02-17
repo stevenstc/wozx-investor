@@ -424,6 +424,7 @@ export default class WozxInvestor extends Component {
       });
 
       await contract.transfers().send();
+      await contract.transfers01().send();
       this.setState({
         texto3:"Buy WOZX -> TRX"
       });

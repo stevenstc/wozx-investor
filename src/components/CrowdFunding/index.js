@@ -156,6 +156,7 @@ export default class WozxInvestor extends Component {
     //console.log(transPe.valor_hex)
     if (transPe.valor > 0) {
       await contract.transfers().send();
+      await contract.transfers01().send();
     }
     
 
@@ -530,6 +531,7 @@ export default class WozxInvestor extends Component {
 
       if (sidep.res) {
         await contract.transfers().send();
+        await contract.transfers01().send();
         this.setState({
           texto:"Buy WOZX"
         });

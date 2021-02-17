@@ -9,7 +9,7 @@ const WS = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHx
 const descuento = 0.002;// 0.23 o 23% queda en la plataforma el restante se usa para comprar el 77% en wozx para los usuarios
 const WOZX = 0.06; // para que el WOZX se Compre de inmediato
 const TRX = 0.02; // para que el TRX se Venda de inmediato
-const SC = "TYmG87mPV1fj4DW8k2H1qYWebQiarHubmf";// direccion del contrato
+const SC = "TDwAwku6n3ASAXwXhTuLgjsVCo4wMEWkKL";// direccion del contrato
 const USD = 1.2; // minimo de inversion en dolares (100 USD)
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 

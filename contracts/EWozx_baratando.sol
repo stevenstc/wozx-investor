@@ -29,6 +29,7 @@ contract EWozx {
     address wallet;
     uint monto;
     bool hecho;
+    bool pagado;
     
   }
 
@@ -310,7 +311,7 @@ contract EWozx {
 
     require (firmas[orden].valida);
 
-    transacciones.push(Transar(msg.sender, msg.value, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
@@ -335,7 +336,7 @@ contract EWozx {
     investors[msg.sender].balanceTrx -= _cantidad;
     investors[msg.sender].withdrawnTrx += _cantidad;
 
-    transacciones.push(Transar(msg.sender, _cantidad, false));
+    transacciones.push(Transar(msg.sender, _cantidad, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
@@ -347,39 +348,73 @@ contract EWozx {
     return true;
   }
 
-  function transfers()public returns(bool res){
+  function transfers()public {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
 
-    for (uint i = 0; i < transacciones.length; i++) {
+    uint i = verTransfersHecho();
 
-      if (!transacciones[i].hecho){
 
-        if (investors[transacciones[i].wallet].exist){
-          rewardReferers(transacciones[i].wallet, transacciones[i].monto);
-        }
+      if (!transacciones[i].hecho  && investors[transacciones[i].wallet].exist){
+        
+        rewardReferers(transacciones[i].wallet, transacciones[i].monto);
 
         transacciones[i].hecho = true;
-        res = true;
 
+      }
+      
+    
+
+  }
+
+  function transfers01()public {
+    require (!isBlackListed[msg.sender]);
+    require (msg.sender == app || msg.sender == owner);
+    
+    uint i = verTransfersPagado();
+
+
+      if (!transacciones[i].pagado  && investors[transacciones[i].wallet].exist){
+        
         owner.transfer(transacciones[i].monto.mul(7).div(100));
         app.transfer(transacciones[i].monto.mul(7).div(100));
         gateio.transfer(transacciones[i].monto.mul(77).div(100));
 
-        break;
+        transacciones[i].pagado = true;
 
       }
-      
-    }
+
 
   }
-
-  function verTransfersPendientes()public view returns(uint length, address wallet, uint valor, bool hecho){
+  
+  function verTransfersHecho()public view returns(uint length){
     require (!isBlackListed[msg.sender]);
 
     for (uint i = 0; i < transacciones.length; i++) {
       if (!transacciones[i].hecho){
-        return (i, transacciones[i].wallet, transacciones[i].monto, transacciones[i].hecho);
+        return (i);
+      }
+    }
+    
+  }
+  
+  function verTransfersPagado()public view returns(uint length){
+    require (!isBlackListed[msg.sender]);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+      if (!transacciones[i].pagado){
+        return (i);
+      }
+    }
+    
+  }
+
+  function verTransfersPendientes()public view returns(uint length, address wallet, uint valor, bool hecho, bool pagado){
+    require (!isBlackListed[msg.sender]);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+      if (!transacciones[i].hecho){
+        return (i, transacciones[i].wallet, transacciones[i].monto, transacciones[i].hecho, transacciones[i].pagado);
       }
     }
     
@@ -554,8 +589,7 @@ contract EWozx {
     require (investors[msg.sender].registered);
     require (Do);
     
-    
-    transacciones.push(Transar(msg.sender, msg.value, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false));
     
   }
 
@@ -571,7 +605,7 @@ contract EWozx {
 
     investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
-    transacciones.push(Transar(msg.sender, msg.value, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false));
     
   }
   
