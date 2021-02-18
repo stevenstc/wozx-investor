@@ -77,9 +77,9 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    await this.reatizarTodoPost();
+    this.reatizarTodoPost();
     setInterval(() => this.reatizarTodoPost(),120*1000);
-    await this.minDepo();
+    this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     
   };
