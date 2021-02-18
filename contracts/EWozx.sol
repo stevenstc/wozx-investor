@@ -224,7 +224,7 @@ contract EWozx {
     for (uint i = 0; i < 10; i++) {
       if (investors[referi[i]].exist && referi[i] != owner ) {
 
-        if(investors[msg.sender].recompensa){
+        if(investors[referi[i]].recompensa){
           b[i] = porcientos[i];
           a[i] = amount.mul(b[i]).div(1000);
           investors[referi[i]].balanceTrx += a[i];
