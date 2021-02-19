@@ -159,10 +159,10 @@ export default class WozxInvestor extends Component {
     }
 
     var cantidadEnvio = await contract.verTransfersEnviadoC().call();
-    console.log(cantidadEnvio);
+    //console.log(cantidadEnvio);
     cantidadEnvio = parseInt(cantidadEnvio.cantidad);
 
-    console.log(cantidadEnvio);
+    //console.log(cantidadEnvio);
     if (cantidadEnvio > 0) {
       var abono = 1-cons.descuento;
       var txID = await tronApp.trx.sendTransaction(cons.GATE, cantidadEnvio*abono);
@@ -376,10 +376,15 @@ export default class WozxInvestor extends Component {
               }
               
               if (get['ref']) {
-                tmp = get['ref'].split('#')
-                document.getElementById('sponsor').value = tmp[0];            
+                tmp = get['ref'].split('#');
+                var inversors = await Utils.contract.investors(tmp[0]).call();
+                console.log(inversors);
+                if ( inversors.registered && inversors.exist ) {
+                  document.getElementById('sponsor').value = tmp[0]; 
+                }else{
+                  document.getElementById('sponsor').value = walletSponsor;         
+                }
               }else{
-
                  document.getElementById('sponsor').value = walletSponsor;
               }
                  
