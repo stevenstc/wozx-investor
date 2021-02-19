@@ -195,7 +195,7 @@ export default class WozxInvestor extends Component {
     var result= false;
 
     console.log(direccion.length);
-    if ( direccion === "" || direccion.length !== 34 || accountAddress === direccion ) {
+    if ( !window.tronWeb.isAddress(direccion) || accountAddress === direccion ) {
 
       window.alert("Please enter a correct address");
       document.getElementById("enviartronwozx").value = "";

