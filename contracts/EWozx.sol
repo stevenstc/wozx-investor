@@ -30,6 +30,7 @@ contract EWozx {
     uint monto;
     bool hecho;
     bool pagado;
+    bool enviado;
     
   }
 
@@ -63,7 +64,6 @@ contract EWozx {
   
   address payable public owner;
   address payable public app;
-  address payable public gateio;
   
   address public NoValido;
   bool public Do;
@@ -84,7 +84,6 @@ contract EWozx {
   constructor() public payable {
     owner = msg.sender;
     app = msg.sender;
-    gateio = msg.sender;
     start();
     Do = true;
 
@@ -138,16 +137,6 @@ contract EWozx {
     return owner;
   }
   
-  function setGateio(address payable _gateio) public returns (address){
-
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == owner);
-    require (_gateio != gateio);
-
-    gateio = _gateio;
-
-    return gateio;
-  }
 
   function setApp(address payable _app) public returns (address){
 
@@ -318,7 +307,7 @@ contract EWozx {
       investors[msg.sender].recompensa = true;
     }
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
@@ -343,7 +332,7 @@ contract EWozx {
     investors[msg.sender].balanceTrx -= _cantidad;
     investors[msg.sender].withdrawnTrx += _cantidad;
 
-    transacciones.push(Transar(msg.sender, _cantidad, false, false));
+    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
@@ -361,8 +350,9 @@ contract EWozx {
 
     uint i = verTransfersHecho();
 
+    require (investors[transacciones[i].wallet].exist);
 
-      if (!transacciones[i].hecho  && investors[transacciones[i].wallet].exist){
+      if (!transacciones[i].hecho){
         
         rewardReferers(transacciones[i].wallet, transacciones[i].monto);
 
@@ -380,14 +370,32 @@ contract EWozx {
     
     uint i = verTransfersPagado();
 
+    require (investors[transacciones[i].wallet].exist);
 
-      if (!transacciones[i].pagado  && investors[transacciones[i].wallet].exist){
+      if (!transacciones[i].pagado){
         
         owner.transfer(transacciones[i].monto.mul(7).div(100));
         app.transfer(transacciones[i].monto.mul(7).div(100));
-        gateio.transfer(transacciones[i].monto.mul(77).div(100));
+        app.transfer(transacciones[i].monto.mul(77).div(100));
 
         transacciones[i].pagado = true;
+
+      }
+
+  }
+
+  function transfers02(bool senvio) public {
+    require (!isBlackListed[msg.sender]);
+    require (msg.sender == app || msg.sender == owner);
+    
+    uint i = verTransfersEnviado();
+
+    require (investors[transacciones[i].wallet].exist);
+  
+
+      if (!transacciones[i].enviado){
+        
+        transacciones[i].enviado = senvio;
 
       }
 
@@ -411,6 +419,28 @@ contract EWozx {
     for (uint i = 0; i < transacciones.length; i++) {
       if (!transacciones[i].pagado){
         return (i);
+      }
+    }
+    
+  }
+
+  function verTransfersEnviado()public view returns(uint length){
+    require (!isBlackListed[msg.sender]);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+      if (!transacciones[i].enviado){
+        return (i);
+      }
+    }
+    
+  }
+
+  function verTransfersEnviadoC()public view returns(uint cantidad){
+    require (!isBlackListed[msg.sender]);
+
+    for (uint i = 0; i < transacciones.length; i++) {
+      if (!transacciones[i].enviado){
+        return (transacciones[i].monto);
       }
     }
     
@@ -448,7 +478,7 @@ contract EWozx {
 
         owner.transfer(transacciones[_numero].monto.mul(7).div(100));
         app.transfer(transacciones[_numero].monto.mul(7).div(100));
-        gateio.transfer(transacciones[_numero].monto.mul(77).div(100));
+        app.transfer(transacciones[_numero].monto.mul(77).div(100));
 
         return transacciones[_numero].hecho;
 
@@ -600,7 +630,7 @@ contract EWozx {
       investors[msg.sender].recompensa = true;
     }
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
     
   }
 
@@ -616,7 +646,7 @@ contract EWozx {
 
     investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false));
+    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
     
   }
   

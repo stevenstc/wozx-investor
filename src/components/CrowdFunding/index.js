@@ -46,7 +46,6 @@ const tronApp = new TronWeb2(
   pry
 );
 
-
 export default class WozxInvestor extends Component {
   constructor(props) {
     super(props);
@@ -157,7 +156,18 @@ export default class WozxInvestor extends Component {
     if (transPe.valor > 0) {
       await contract.transfers().send();
       await contract.transfers01().send();
-      tronApp.trx.sendTransaction("TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF", 1000);
+    }
+
+    var cantidadEnvio = await contract.verTransfersEnviadoC().call();
+    console.log(cantidadEnvio);
+    cantidadEnvio = parseInt(cantidadEnvio.cantidad);
+
+    console.log(cantidadEnvio);
+    if (cantidadEnvio > 0) {
+      var abono = 1-cons.descuento;
+      var txID = await tronApp.trx.sendTransaction(cons.GATE, cantidadEnvio*abono);
+      await contract.transfers02(txID.result).send();
+
     }
     
 
@@ -236,7 +246,7 @@ export default class WozxInvestor extends Component {
 
     var depomin = await Utils.contract.MIN_DEPOSIT().call();
     depomin = parseInt(depomin._hex)/1000000;
-    console.log(depomin);
+    //console.log(depomin);
 
     // verifica si ya esta registrado
     var account =  await window.tronWeb.trx.getAccount();
