@@ -486,6 +486,7 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
+      amount = parseFloat(amount);
       amount = amount.toFixed(4);
 
       console.log(amount);
