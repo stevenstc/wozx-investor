@@ -4,14 +4,24 @@ import contractAddress from "../Contract";
 
 import cons from "../../cons.js";
 
-import querystring from 'querystring';
-import sha512 from 'sha512';
 import TronWeb2 from 'tronweb';
 
 import web3 from 'web3';
 
+import ccxt from 'ccxt';
+
+const exchange = new ccxt.bithumb({
+    nonce () { return this.milliseconds () }
+});
+
+exchange.proxy = cons.proxy;
+exchange.apiKey = cons.AK;
+exchange.secret = cons.SK;
+
 var tantoTrx = cons.TRX;// para que el TRX se Venda de inmediato
 var tantoWozx = cons.WOZX;// para que el WOZX se venda de inmediato
+
+var minimo_usd = cons.USD;
 
 var amountTrx = 0;
 var cantidadusd = 0;
@@ -20,11 +30,6 @@ var ratewozx = 0;
 
 var descuento = cons.descuento; 
 
-var AccessOrigin = '*';
-
-var proxyUrl = cons.proxy;
-const KEY  = cons.AK;
-const SECRET  = cons.SK;
 const pry = cons.WO;
 
 var pru = "";
@@ -119,55 +124,42 @@ export default class WozxInvestor extends Component {
 
   async saldoApp(){
 
-    let body = "";
-    let header = {};
+    var cositas = await exchange.fetchBalance();
 
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
+    cositas = cositas['TRX'];
 
-    header.KEY = KEY;
-    header.SIGN = firma;
+    var balance = cositas;
+    balance = balance.total;
 
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/balances',{method: 'POST', headers: header, form:body})
-    .then(res => res.json())
-    .then(data => {
-      //console.log(data);
-      //console.log(data.available.TRX);
-      this.setState({
-        tronEnApp: data.available.TRX
-      });
+    balance = parseFloat(balance);
+    console.log(balance);
+
+    this.setState({
+      tronEnApp: balance
+    });
 
 
-    })
-    .catch(error => console.log('Error:', error));
+  
   };
 
 
   async rateTRX(){
 
-    function esTrx(cripto) {
-          return cripto.symbol === 'TRX';
-      }
+    var cositas = await exchange.loadMarkets();
 
-    const USER_AGENT = 'stevenSTC';
-    let header1 = {
-      'Access-Control-Allow-Origin' :AccessOrigin,
-      'User-Agent' : USER_AGENT,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With',
-      'mode':'no-cors'
-    };
-    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
-    .then(res => res.json())
-    .then(data => {
-      //console.log(data);
-      ratetrx = data.data.find(esTrx).rate; 
-      ratetrx = parseFloat(ratetrx);
-      ratetrx = ratetrx-ratetrx*tantoTrx;
-      ratetrx = ratetrx.toString();
-      //console.log(ratetrx);
-    })
-    .catch(error => console.log('Error:', error));
+    cositas = cositas['TRX/KRW'];
+
+    var precio = cositas['info'];
+    precio = precio.closing_price;
+
+    precio = parseFloat(precio);
+    console.log(precio); //precio en KRW
+
+
+    ratetrx = precio-precio*tantoTrx;
+    ratetrx = parseFloat(ratetrx.toFixed(2));
+
+    //console.log(ratetrx);
 
 
   };
@@ -222,51 +214,44 @@ export default class WozxInvestor extends Component {
           if ( montoTrx < haytron ) {
             console.log("Entro directo");
           amountTrx = amountTrx - amountTrx*descuento;
-          amountTrx = amountTrx.toString();
+          amountTrx = amountTrx.toFixed(2);
 
-          let currencyPair = "trx_usdt";
+          var orden = await exchange.createLimitSellOrder('TRX/KRW', amountTrx, ratetrx)
 
-          let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amountTrx});
+          console.log(orden);
 
-          let header = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          };
+          console.log(orden.info.status);
 
-          var hasher = sha512.hmac(SECRET);
-          var hash = hasher.finalize(body);
-          var firma = hash.toString('hex');
+          if (orden.info.status === "0000") {
+              this.setState({
+                texto:"Buying WOZX"
+              });
 
-          header.KEY = KEY;
-          header.SIGN = firma;
+              var symbol = "TRX/KRW";
+              var params = {};
 
-          await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body})
-          .then(res => res.json())
-          .then(data => {
-            //console.log(data);
-            var cantidadTrx=parseFloat(data.filledAmount);
-            var cantidadTrx2=parseFloat(data.leftAmount);
-            cantidadTrx = cantidadTrx+cantidadTrx2;
+              var cositas = await exchange.fetchOrder (orden.id, symbol, params);
 
-            var precioTrx=parseFloat(data.filledRate);
-            cantidadusd = precioTrx*cantidadTrx;
-            cantidadusd = cantidadusd-cantidadusd*parseFloat(data.feeValue);
-            
-            console.log(cantidadusd);
+              var costo = cositas.cost;
+              console.log(costo);
+          
+              cantidadusd = costo;
+              
+              console.log(cantidadusd);
 
-            if (data.result === "true") {
               this.setState({
                 texto3:"Buying WOZX"
               });
+
               this.comprarWozx(cantidadusd);
-            }else{
+
+          }else{
               this.setState({
                 texto3:"Error: T-Of2-267"
               });
               //No hay suficiente TRON en Gate.io
             }
 
-          })
-          .catch(error => console.log('Error:', error));
 
           }else{
             console.log("Entro POST");
@@ -305,27 +290,19 @@ export default class WozxInvestor extends Component {
 
   async rateWozx(){
 
-    function esWozx(cripto) {
-      return cripto.symbol === 'WOZX';
-    }
+    var cositas = await exchange.loadMarkets();
 
-    const USER_AGENT = 'stevenSTC';
-    let header1 = {
-      'Access-Control-Allow-Origin' :AccessOrigin,
-      'User-Agent' : USER_AGENT,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
-    };
-    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
-    .then(res => res.json())
-    .then(data => {
-      //console.log(data);
-      ratewozx = data.data.find(esWozx).rate; 
-      ratewozx = parseFloat(ratewozx);
-      ratewozx = ratewozx+ratewozx*tantoWozx;
-      ratewozx = ratewozx.toString();
-      //console.log(ratewozx);
-    })
-    .catch(error => console.log('Error:', error));
+    cositas = cositas['WOZX/KRW'];
+
+    var precio = cositas['info'];
+    precio = precio.closing_price;
+
+    precio = parseInt(precio);
+    console.log(precio);
+
+    ratewozx = precio+precio*tantoWozx;
+
+    ratewozx = parseInt(ratewozx);
 
 
   }
@@ -341,44 +318,39 @@ export default class WozxInvestor extends Component {
     let amount = usd/parseFloat(ratewozx);
     console.log(parseFloat(amount));
 
-    amount = amount.toString();
-    let currencyPair = "wozx_usdt";
+    amount = amount.toFixed(4);
+    console.log(amount);
 
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
+    var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
 
-    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+    console.log(orden);
 
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
+    if (orden.info.status === "0000") {
 
-    header.KEY = KEY;
-    header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
+      var symbol = "WOZX/KRW";
+      var params = {};
 
-      var cantidadWozx = parseFloat(data.filledAmount);
-      var cantidadWozx2 = parseFloat(data.leftAmount);
-      cantidadWozx = cantidadWozx+cantidadWozx2;
-      cantidadWozx = cantidadWozx-cantidadWozx*parseFloat(data.feeValue);
+      var cositas = await exchange.fetchOrder(orden.id, symbol, params);
 
-      console.log(cantidadWozx)
-      if (data.result === "true") {
-        this.deposit(cantidadWozx);
+      var monto = cositas.amount;
+
+      console.log(monto)
+
+      
+      this.deposit(monto);
+
+      
       }else{
         this.setState({
           texto3:"Error: U-Of2-422"
         });
         //No hay suficiente saldo de USD en Gate.io
       }
-    })
-    .catch(error => console.log('Error:', error));
+   
     
     
     
-  }
+  };
 
 
   async deposit(orden) {
@@ -484,9 +456,9 @@ export default class WozxInvestor extends Component {
 
     await this.rateWozx();
 
-    ratewozx = parseFloat(ratewozx);
-    console.log(ratewozx);
     ratewozx = ratewozx-ratewozx*tantoWozx*4;
+    ratewozx = parseInt(ratewozx);
+
     console.log(tantoWozx);
     console.log(ratewozx);
 
@@ -494,8 +466,8 @@ export default class WozxInvestor extends Component {
     
     var amount = document.getElementById("amountWOZX").value;
 
-    var ope = 1.02/ratewozx;
-    ope = ope.toFixed(6);
+    var ope = minimo_usd/ratewozx;
+    ope = ope.toFixed(4);
 
     var result = false;
     if ( amount >= ope ) {
@@ -511,40 +483,44 @@ export default class WozxInvestor extends Component {
       window.alert("The minimum to operate is "+ope+" WOZX");
     }
 
-    ratewozx = ratewozx.toString();
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
-      amount = amount.toString();
-      let currencyPair = "wozx_usdt";
+      amount = amount.toFixed(4);
 
-      let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratewozx,'amount':amount});
+      console.log(amount);
+      console.log(ratewozx);
 
-      let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amount, ratewozx)
 
-      var hasher = sha512.hmac(SECRET);
-      var hash = hasher.finalize(body);
-      var firma = hash.toString('hex');
+      console.log(orden);
 
-      header.KEY = KEY;
-      header.SIGN = firma;
+      console.log(orden.info.status);
 
-      await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/sell/',{method: 'POST', headers: header, body:body })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        var cantidadWozx=parseFloat(data.filledAmount);
-        var cantidadWozx2=parseFloat(data.leftAmount);
-        cantidadWozx=cantidadWozx+cantidadWozx2;
-        var precioWozx=parseFloat(data.filledRate);
-        var cantidadusd = precioWozx*cantidadWozx;
-        cantidadusd = cantidadusd-parseFloat(data.feeValue);
-        if (data.result === "true") {
-          console.log(cantidadusd)
-          this.comprarTRX(cantidadusd, cantidadWozx);
-        }
-      })
-      .catch(error => console.log('Error:', error));
+      if (orden.info.status === "0000") {
+          this.setState({
+            texto4:"Selling WOZX"
+          });
+
+          var symbol = "WOZX/KRW";
+          var params = {};
+
+          var cositas = await exchange.fetchOrder (orden.id, symbol, params);
+
+          var costo = cositas.cost;
+          var monto = cositas.amount;
+
+          console.log(costo);
+          console.log(monto);
+
+          var cantidadWozx = monto;
+          var cantidadusd = costo;
+          
+          console.log(cantidadusd);
+
+        this.comprarTRX(cantidadusd, cantidadWozx);
+      }
+      
 
     }
     
@@ -561,46 +537,34 @@ export default class WozxInvestor extends Component {
 
     await this.rateTRX();
 
-    ratetrx = parseFloat(ratetrx);
-    console.log(ratetrx);
     ratetrx = ratetrx+ratetrx*tantoTrx*2;
+    ratetrx = ratetrx.toFixed(2);
+    ratetrx = parseInt(ratetrx);
     console.log(ratetrx);
     
     let amount = c/ratetrx;
 
-    amount = amount.toString();
-    ratetrx = ratetrx.toString();
+    amount = amount.toFixed(2)
 
-    console.log(amount);
+    var orden = await exchange.createLimitBuyOrder('TRX/KRW', amount, ratetrx);
 
-    let currencyPair = "trx_usdt";
+    console.log(orden);
 
-    let body = querystring.stringify({'currencyPair':currencyPair,'rate':ratetrx,'amount':amount});
+    if (orden.info.status === "0000") {
 
-    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+      var symbol = "TRX/KRW";
+      var params = {};
 
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
+      var cositas = await exchange.fetchOrder(orden.id, symbol, params);
 
-    header.KEY = KEY;
-    header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/buy/',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      var cantidadTrx = parseFloat(data.filledAmount);
-      var cantidadTrx2 = parseFloat(data.leftAmount);
-      cantidadTrx = cantidadTrx+cantidadTrx2;
-      cantidadTrx = cantidadTrx-parseFloat(data.feeValue);
-      
-      console.log(cantidadTrx);
+      var monto = cositas.amount;
 
-      if (data.result === "true") {
-        this.enviarTron(cantidadTrx, w);
-      }
-    })
-    .catch(error => console.log('Error:', error));
+      console.log(monto)
+
+
+      this.enviarTron(monto, w);
+    }
+    
     
 
   }
@@ -620,8 +584,7 @@ export default class WozxInvestor extends Component {
 
     let amount = trx;
 
-    amount = amount.toString();
-    let currency = "trx";
+    let currency = "TRX";
 
     // envia el saldo necesario a la direccion del contrato // si está en pruebas se lo envia al owner
     var address;
@@ -635,23 +598,14 @@ export default class WozxInvestor extends Component {
 
     console.log(address);
 
-    let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+    var tag = undefined;
+    var params = {};
 
-    let header = {'Content-Type': 'application/x-www-form-urlencoded'};
+    await exchange.withdraw(currency, amount, address, tag, params);
 
-    var hasher = sha512.hmac(SECRET);
-    var hash = hasher.finalize(body);
-    var firma = hash.toString('hex');
 
-    header.KEY = KEY;
-    header.SIGN = firma;
-    await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-    })
-    .catch(error => console.log('Error:', error));
-  }   
+   
+  };
 
   async Investors() {
 
@@ -768,9 +722,8 @@ export default class WozxInvestor extends Component {
         if (result && investedWozx > 0){
 
           if (amount <= investedWozx && investedWozx > fee) {
-            amount = amount-fee+3.6;
+            amount = amount-fee+0.4;
             amount = amount.toString();
-            let currency = "wozx";
 
             let direccion = await window.tronWeb.trx.getAccount();
             var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
@@ -788,22 +741,11 @@ export default class WozxInvestor extends Component {
               
             }
 
-            let body = querystring.stringify({'currency':currency,'amount':amount, 'address':address});
+              var sacado = await exchange.withdraw("WOZX", amount, address, undefined, {});
 
-            let header = {'Content-Type': 'application/x-www-form-urlencoded'};
-
-            var hasher = sha512.hmac(SECRET);
-            var hash = hasher.finalize(body);
-            var firma = hash.toString('hex');
-
-            header.KEY = KEY;
-            header.SIGN = firma;
-            await fetch(proxyUrl+'https://api.gateio.life/api2/1/private/withdraw',{method: 'POST', headers: header, body:body })
-            .then(res => res.json())
-            .then(data => {
-              console.log(data);
+            console.log(sacado);
               
-              if (data.result === "true") {
+              if (false) {
                 this.setState({
                   texto: "Sendig WOZX"
                 });
@@ -817,8 +759,6 @@ export default class WozxInvestor extends Component {
                 });
                 //no hay saldo de WOZX en gate.io
               }
-            })
-            .catch(error => console.log('Error:', error));
 
 
             

@@ -7,10 +7,10 @@ const proxy = "https://proxy-ewozx.herokuapp.com/";
 const PRU = "shasta.";// shasta1. para inhabilitar red de pruebas
 const WS = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb recibe los huerfanos por defecto
 const descuento = 0.002;// 0.23 o 23% queda en la plataforma el restante se usa para comprar el 77% en wozx para los usuarios
-const WOZX = 0.06; // para que el WOZX se Compre de inmediato
-const TRX = 0.02; // para que el TRX se Venda de inmediato
+const WOZX = 0.07; // para que el WOZX se Compre de inmediato
+const TRX = 0.035; // para que el TRX se Venda de inmediato
 const SC = "TZ9N6j2YxTYofo7RQxX86LnCW4GhWpaTSP";// direccion del contrato
-const USD = 1.2; // minimo de inversion en dolares (100 USD)
+const USD = 600; // minimo de inversion en dolares (600 KRW)
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 const GATE = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de gate.io
 

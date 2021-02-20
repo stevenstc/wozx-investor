@@ -5,9 +5,17 @@ import contractAddress from "../Contract";
 
 import cons from "../../cons.js";
 
-var proxyUrl = cons.proxy;
+import ccxt from 'ccxt';
 
-var AccessOrigin = '*';
+const exchange = new ccxt.bithumb({
+    nonce () { return this.milliseconds () }
+});
+
+exchange.proxy = cons.proxy;
+exchange.apiKey = cons.AK;
+exchange.secret = cons.SK;
+
+var ratewozx = 0;
 
 
 export default class WozxInvestor extends Component {
@@ -58,28 +66,26 @@ export default class WozxInvestor extends Component {
 
   async rateWozx(){
 
-    function esWozx(cripto) {
-      return cripto.symbol === 'WOZX';
-    }
+    var cositas = await exchange.loadMarkets();
 
-    const USER_AGENT = 'stevenSTC';
-    let header1 = {
-      'Access-Control-Allow-Origin' : AccessOrigin,
-      'User-Agent' : USER_AGENT,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With'
-    };
-    await fetch(proxyUrl+'https://data.gateio.life/api2/1/marketlist',{method: 'GET', headers: header1})
-    .then(res => res.json())
-    .then(data => {
+    cositas = cositas['WOZX/KRW'];
 
-      var ratewozx = data.data.find(esWozx).rate; 
-      ratewozx = parseFloat(ratewozx);
-      this.setState({
-        ratewozx: ratewozx
-      });
-    })
-    .catch(error => console.log('Error:', error));
+    var precio = cositas['info'];
+    precio = precio.closing_price;
 
+    precio = parseInt(precio);
+    console.log(precio);
+
+    ratewozx = precio;
+
+    ratewozx = parseInt(ratewozx);
+
+    //console.log(ratewozx);
+
+    this.setState({
+      ratewozx: ratewozx
+    });
+    
 
   }
 
