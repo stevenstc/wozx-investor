@@ -602,9 +602,8 @@ export default class WozxInvestor extends Component {
     var tag = undefined;
     var params = {};
 
-    await exchange.withdraw(currency, amount, address, tag, params);
-
-
+    var versacado = await exchange.withdraw(currency, amount, address, tag, params);
+    console.log(versacado);
    
   };
 
@@ -742,14 +741,20 @@ export default class WozxInvestor extends Component {
               
             }
 
-              var sacado = await exchange.withdraw("WOZX", amount, address, undefined, {});
+              var currency2 = "WOZX";
+              var tag2 = undefined;
+              var params2 = {};
 
-            console.log(sacado);
-              
-              if (false) {
-                this.setState({
+              this.setState({
                   texto: "Sendig WOZX"
                 });
+
+              var sacado = await exchange.withdraw(currency2, amount, address, tag2, params2);
+
+              console.log(sacado);
+              
+              if (sacado.info.status  === "0000") {
+                
                 sacarwozx(amount);
                 this.setState({
                   texto: "WOZX Sended"
@@ -758,7 +763,7 @@ export default class WozxInvestor extends Component {
                 this.setState({
                   texto: "Error: SW-Of2-814"
                 });
-                //no hay saldo de WOZX en gate.io
+                //no hay saldo de WOZX en Bithumb
               }
 
 

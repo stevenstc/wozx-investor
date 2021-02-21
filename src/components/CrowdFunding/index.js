@@ -96,7 +96,7 @@ export default class WozxInvestor extends Component {
     precio = precio.closing_price;
 
     precio = parseFloat(precio);
-    console.log(precio); //precio en KRW
+    //console.log(precio); //precio en KRW
  
     ratetrx_usd = precio;
 
@@ -610,6 +610,10 @@ export default class WozxInvestor extends Component {
 
     amountTrx = _amountTrx-_amountTrx*descuento;
 
+    amountTrx = amountTrx.toFixed(2);
+
+    amountTrx = parseFloat(amountTrx);
+
     console.log(amountTrx);
 
     var orden = await exchange.createLimitSellOrder('TRX/KRW', amountTrx, ratetrx)
@@ -645,7 +649,10 @@ export default class WozxInvestor extends Component {
     await this.rateWozx();
 
     ratewozx = ratewozx+ratewozx*tantoWozx
+    ratewozx = parseInt(ratewozx);
     var amount = usd/ratewozx;
+
+    amount = amount.toFixed(4);
 
     console.log(amount);
 
