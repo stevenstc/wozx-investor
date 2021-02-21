@@ -60,8 +60,8 @@ export default class WozxInvestor extends Component {
       texto3: "Buy WOZX <- TRX",
       texto4:"Sell WOZX -> TRX",
       value: "",
-      fee: 4,
-      feetrx: 10,
+      fee: cons.FEEW,
+      feetrx: cons.FEET,
       funcion: false,
       alerta: "alerta0",
       direccion: "",
@@ -316,9 +316,9 @@ export default class WozxInvestor extends Component {
     });
     
     let amount = usd/parseFloat(ratewozx);
-    console.log(parseFloat(amount));
 
     amount = amount.toFixed(4);
+    amount = parseFloat(amount);
     console.log(amount);
 
     var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
@@ -722,7 +722,7 @@ export default class WozxInvestor extends Component {
         if (result && investedWozx > 0){
 
           if (amount <= investedWozx && investedWozx > fee) {
-            amount = amount-fee+0.4;
+            amount = amount-fee;
             amount = amount.toString();
 
             var direccion = await window.tronWeb.trx.getAccount();

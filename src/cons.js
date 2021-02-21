@@ -14,4 +14,7 @@ const USD = 600; // minimo de inversion en dolares (600 KRW)
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 const GATE = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de gate.io
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, GATE};
+const FEEW = 4; //fee de retiro del wozx por la platafora de ethereum
+const FFET = 10; //fee de retiro del Tron por medio del contrato
+
+export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, GATE, FEEW, FFET};
