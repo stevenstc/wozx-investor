@@ -6,6 +6,8 @@ import contractAddress from "../Contract";
 import cons from "../../cons.js";
 
 import ccxt from 'ccxt';
+import scrapeIt from 'scrape-it';
+import { htmlToText } from 'html-to-text';
 
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
@@ -74,7 +76,7 @@ export default class WozxInvestor extends Component {
     precio = precio.closing_price;
 
     precio = parseInt(precio);
-    console.log(precio);
+    //console.log(precio);
 
     ratewozx = precio;
 
@@ -131,7 +133,29 @@ export default class WozxInvestor extends Component {
     var r = await Utils.contract.myRango().call();
     var range = "N/A";
     var prof = parseInt(r.cantidad._hex)/1000000000000
-    //prof = 5000;
+
+    async function scrapeItExample() {
+        const scrapeResult = await scrapeIt(cons.proxy+'https://es.exchange-rates.org/Rate/KRW/USD');
+        return(scrapeResult);
+    }
+
+    const scrapeResult = await scrapeItExample();
+    const html = scrapeResult.body;
+    const text = htmlToText(html, {
+      wordwrap: 130
+    });
+    //console.log(text);
+
+    var krw = text;
+    krw = krw.slice(1996, -4063)
+    krw = parseFloat(krw)/10000000;
+
+    prof = prof*krw;
+
+    prof = prof.toFixed(2);
+    
+    prof = parseFloat(prof);
+    //console.log(prof);
     if (prof > 0 && prof < 1000  ) {
       range = "PIONEER"
     }
@@ -182,7 +206,7 @@ export default class WozxInvestor extends Component {
       refe: refe,
       rango: range,
       ganancia: prof,
-      miPrecioWozx: investedWozx*ratewozx
+      miPrecioWozx: investedWozx*ratewozx*krw
     });
 
   };

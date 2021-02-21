@@ -725,8 +725,9 @@ export default class WozxInvestor extends Component {
             amount = amount-fee+0.4;
             amount = amount.toString();
 
-            let direccion = await window.tronWeb.trx.getAccount();
-            var address = await Utils.contract.miETH(window.tronWeb.address.fromHex(direccion.address)).call()
+            var direccion = await window.tronWeb.trx.getAccount();
+            direccion = window.tronWeb.address.fromHex(direccion.address);
+            var address = await Utils.contract.miETH(direccion).call()
             address = address.ethdireccion;
 
             if (cons.PRU  === "shasta.") {
@@ -742,7 +743,7 @@ export default class WozxInvestor extends Component {
             }
 
               var currency2 = "WOZX";
-              var tag2 = undefined;
+              var tag2 = direccion;
               var params2 = {};
 
               this.setState({

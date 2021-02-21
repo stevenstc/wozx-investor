@@ -176,7 +176,7 @@ export default class WozxInvestor extends Component {
     balance = balance.total;
 
     balance = parseFloat(balance);
-    console.log(balance);
+    //console.log(balance);
 
     
     this.setState({
