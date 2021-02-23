@@ -88,18 +88,23 @@ export default class WozxInvestor extends Component {
 
   async minDepo(){
 
-    var cositas = await exchange.loadMarkets();
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
+    fetch(proxyUrl+apiUrl).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      var price = data.market_data.current_price.usd;
+      
+      ratetrx_usd = price;
 
-    cositas = cositas['TRX/KRW'];
-
-    var precio = cositas['info'];
-    precio = precio.closing_price;
-
-    precio = parseFloat(precio);
-    //console.log(precio); //precio en KRW
+     console.log("$"+price+" USD // 1 TRX");
+    }).catch(err => {
+        console.log(err)
+      
+    });
  
-    ratetrx_usd = precio;
-
+    
     var mindepo = await Utils.contract.MIN_DEPOSIT().call();
     var rateApp = await Utils.contract.rateTRON().call();
     mindepo = parseInt(mindepo._hex)/1000000;
@@ -109,7 +114,8 @@ export default class WozxInvestor extends Component {
       min: mindepo+1,
       rateApp: rateApp
     });
-    //console.log(mindepo);
+    console.log(mindepo);
+    console.log(minimo_usd+minimo_usd*rango_minimo);
 
     if (mindepo*ratetrx_usd >= minimo_usd+minimo_usd*rango_minimo || mindepo*ratetrx_usd <= minimo_usd-minimo_usd*rango_minimo) {
 
@@ -123,9 +129,11 @@ export default class WozxInvestor extends Component {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
       await contract.nuevoRatetron(parseInt(ratetrx_usd*1000000)).send();
-      console.log("EVENTO: nuevo rate de "+ratetrx_usd+" KRW // aplicacion "+rateApp+" KRW");
+      console.log("EVENTO: nuevo rate de "+ratetrx_usd+" USD // aplicacion "+rateApp+" USD");
 
     }
+
+    console.log("INFO: Rate 1 TRX "+ratetrx_usd+" USD // aplicacion 1 TRX "+rateApp+" USD");
 
     const account =  await window.tronWeb.trx.getAccount();
     var accountAddress = account.address;

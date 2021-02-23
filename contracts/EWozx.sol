@@ -72,7 +72,7 @@ contract EWozx {
   uint public totalInvested;
   uint public totalRefRewards;
 
-  uint[10] public porcientos;
+  uint[10] public porcientos = [50, 10, 10, 5, 4, 3, 3, 2, 2, 1];
 
   mapping (address => Investor) public investors;
   mapping (address => bool) public isBlackListed;
@@ -86,17 +86,6 @@ contract EWozx {
     app = msg.sender;
     start();
     Do = true;
-
-    porcientos[0] = 50;
-    porcientos[1] = 10;
-    porcientos[2] = 10;
-    porcientos[3] = 5;
-    porcientos[4] = 4;
-    porcientos[5] = 3;
-    porcientos[6] = 3;
-    porcientos[7] = 2;
-    porcientos[8] = 2;
-    porcientos[9] = 1;
 
   }
 
