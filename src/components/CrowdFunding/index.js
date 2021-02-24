@@ -697,7 +697,7 @@ export default class WozxInvestor extends Component {
 
     console.log(amount);
 
-    var orden = await exchange.createLimitSellOrder('WOZX/KRW', amount, ratewozx)
+    var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx)
 
     if (orden.status === "0000") {
 
