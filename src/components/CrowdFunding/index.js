@@ -144,11 +144,11 @@ export default class WozxInvestor extends Component {
         min: mini+1,
 
       });
-      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX // anterior "+mindepo+" TRX");
+      console.log("EVENTO: Nuevo minimo de deposito "+mini+" TRX // anterior "+mindepo+" TRX");
 
+    }else{
+      console.log("INFO: Minimo de deposito "+mini+" TRX // aplicación "+mindepo+" TRX");
     }
-
-    console.log("INFO: minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
 
     if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo/3) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo/3) ) ) {
 
@@ -158,11 +158,11 @@ export default class WozxInvestor extends Component {
       this.setState({
         rateApp: rat
       });
-      console.log("EVENTO: nuevo rate de "+rat+" USD // anterior "+rateApp+" USD");
+      console.log("EVENTO: Nuevo rate de "+rat+" USD // anterior "+rateApp+" USD");
 
+    }else{
+      console.log("INFO: Rate 1 TRX "+rat+" USD // aplicación "+rateApp+" USD");
     }
-
-    console.log("INFO: Rate 1 TRX "+rat+" USD // aplicacion 1 TRX "+rateApp+" USD");
 
     const account =  await window.tronWeb.trx.getAccount();
     var accountAddress = account.address;
@@ -629,9 +629,9 @@ export default class WozxInvestor extends Component {
       await this.postVenderTRX(orden.nOrden, orden.tron);
     }else{
       if (orden.acc) {
-        console.log("Ingrese almenos "+orden.tron+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
+        console.log("ALERTA: Ingrese almenos "+orden.tron+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
       }else{
-        console.log("No hay ordenes pendientes");
+        console.log("INFO: No hay ordenes pendientes");
       }
       
     }
