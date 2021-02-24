@@ -135,7 +135,7 @@ export default class WozxInvestor extends Component {
     var rat = ratetrx_usd;
     console.log(rat);
 
-    if ( mini > 0 && ( (mindepo !== mini && mindepo >= mindepo+mindepo*rango_minimo) || ( mindepo !== mini &&  mindepo <= mindepo-mindepo*rango_minimo) ) ) {
+    if ( mini > 0 && ( (mindepo !== mini && mindepo >= mini+mini*rango_minimo) || ( mindepo !== mini &&  mindepo <= mini-mini*rango_minimo) ) ) {
 
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
