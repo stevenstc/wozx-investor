@@ -66,7 +66,7 @@ contract EWozx {
   address payable public app;
   
   address public NoValido;
-  bool public Do;
+  bool public Do = true;
   
   uint public totalInvestors;
   uint public totalInvested;
@@ -85,7 +85,6 @@ contract EWozx {
     owner = msg.sender;
     app = msg.sender;
     start();
-    Do = true;
 
   }
 
