@@ -150,7 +150,7 @@ export default class WozxInvestor extends Component {
       console.log("INFO: Minimo de deposito "+mini+" TRX // aplicación "+mindepo+" TRX");
     }
 
-    if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo/3) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo/3) ) ) {
+    if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo/4) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo/4) ) ) {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
       rat = parseInt(rat*1000000);
@@ -158,6 +158,7 @@ export default class WozxInvestor extends Component {
       this.setState({
         rateApp: rat
       });
+      rat = rat/1000000;
       console.log("EVENTO: Nuevo rate de "+rat+" USD // anterior "+rateApp+" USD");
 
     }else{
