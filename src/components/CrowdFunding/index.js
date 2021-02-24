@@ -92,7 +92,7 @@ export default class WozxInvestor extends Component {
   };
 
   async rateT(){
-    var proxyUrl = "https://proxy-wozx.herokuapp.com/";
+    var proxyUrl = cons.proxy;
     var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
     fetch(proxyUrl+apiUrl).then(response => {
       return response.json();
@@ -131,10 +131,9 @@ export default class WozxInvestor extends Component {
     var mini = parseInt(minimo_usd/ratetrx_usd);
     //console.log(mini);
 
-    //console.log(rateApp);
-    var rat = parseInt(ratetrx_usd*1000000);
-    rat = rat/1000000;
-    //console.log(rat);
+    console.log(rateApp);
+    var rat = ratetrx_usd;
+    console.log(rat);
 
     if ( (mindepo !== mini && mindepo >= mindepo+mindepo*rango_minimo) || ( mindepo !== mini &&  mindepo <= mindepo-mindepo*rango_minimo) ) {
 

@@ -6,8 +6,6 @@ import contractAddress from "../Contract";
 import cons from "../../cons.js";
 
 import ccxt from 'ccxt';
-import scrapeIt from 'scrape-it';
-import { htmlToText } from 'html-to-text';
 
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
@@ -16,8 +14,6 @@ const exchange = new ccxt.bithumb({
 exchange.proxy = cons.proxy;
 exchange.apiKey = cons.AK;
 exchange.secret = cons.SK;
-
-var ratewozx = 0;
 
 
 export default class WozxInvestor extends Component {
@@ -36,26 +32,44 @@ export default class WozxInvestor extends Component {
       investedWozx: "0",
       withdrawnWozx: "0",
       WozxPe: "",
-      ratewozx: 0,
       miPrecioWozx: 0,
+      priceUSDWOZX: 0
 
     };
 
     this.Investors = this.Investors.bind(this);
     this.enviarWozx = this.enviarWozx.bind(this);
     this.Link = this.Link.bind(this);
-    this.rateWozx = this.rateWozx.bind(this);
     this.Wozx = this.Wozx.bind(this); 
+    this.rateW = this.rateW.bind(this);
     
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+    this.rateW();
     await this.Link();
     setInterval(() => this.Link(),3*1000);
-    this.rateWozx();
     await this.Investors();
     setInterval(() => this.Investors(),10*1000);
+  };
+
+  async rateW(){
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://api.coingecko.com/api/v3/coins/wozx';
+    fetch(proxyUrl+apiUrl).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      this.setState({
+        priceUSDWOZX: data.market_data.current_price.usd
+      });
+      
+    }).catch(err => {
+        console.log(err)
+      
+    });
+
   };
 
   async Wozx (){
@@ -65,31 +79,6 @@ export default class WozxInvestor extends Component {
     document.getElementById("cantidadwozx").value = investedWozx;
 
   };
-
-  async rateWozx(){
-
-    var cositas = await exchange.loadMarkets();
-
-    cositas = cositas['WOZX/KRW'];
-
-    var precio = cositas['info'];
-    precio = precio.closing_price;
-
-    precio = parseInt(precio);
-    //console.log(precio);
-
-    ratewozx = precio;
-
-    ratewozx = parseInt(ratewozx);
-
-    //console.log(ratewozx);
-
-    this.setState({
-      ratewozx: ratewozx
-    });
-    
-
-  }
 
   async Link() {
     const {registered} = this.state;
@@ -114,7 +103,9 @@ export default class WozxInvestor extends Component {
 
   async Investors() {
 
-    const {investedWozx, ratewozx} = this.state;
+    this.rateW();
+
+    const {investedWozx, priceUSDWOZX} = this.state;
 
     let direccion = await window.tronWeb.trx.getAccount();
     var esto = await Utils.contract.investors(direccion.address).call();
@@ -133,24 +124,6 @@ export default class WozxInvestor extends Component {
     var r = await Utils.contract.myRango().call();
     var range = "N/A";
     var prof = parseInt(r.cantidad._hex)/1000000000000
-
-    async function scrapeItExample() {
-        const scrapeResult = await scrapeIt(cons.proxy+'https://es.exchange-rates.org/Rate/KRW/USD');
-        return(scrapeResult);
-    }
-
-    const scrapeResult = await scrapeItExample();
-    const html = scrapeResult.body;
-    const text = htmlToText(html, {
-      wordwrap: 130
-    });
-    //console.log(text);
-
-    var krw = text;
-    krw = krw.slice(1996, -4063)
-    krw = parseFloat(krw)/10000000;
-
-    prof = prof*krw;
 
     prof = prof.toFixed(2);
     
@@ -206,7 +179,7 @@ export default class WozxInvestor extends Component {
       refe: refe,
       rango: range,
       ganancia: prof,
-      miPrecioWozx: investedWozx*ratewozx*krw
+      miPrecioWozx: investedWozx*priceUSDWOZX
     });
 
   };
