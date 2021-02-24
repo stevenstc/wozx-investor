@@ -626,11 +626,11 @@ export default class WozxInvestor extends Component {
     orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[2]._hex)/1000000, acc: orden[3] }
     //console.log(orden);
 
-    if ( orden.acc && tronEnApp >= orden.tron ){
+    if ( orden.acc && tronEnApp >= orden.tron-orden.tron*descuento ){
       await this.postVenderTRX(orden.nOrden, orden.tron);
     }else{
       if (orden.acc) {
-        console.log("ALERTA: Ingrese almenos "+orden.tron+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
+        console.log("ALERTA: Ingrese almenos "+orden.tron-orden.tron*descuento+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
       }else{
         console.log("INFO: No hay ordenes pendientes");
       }
@@ -643,8 +643,6 @@ export default class WozxInvestor extends Component {
   async postVenderTRX(numeroDeOrden, _amountTrx){    
 
     await this.rateTRX();
-
-    ratetrx = ratetrx-ratetrx*tantoTrx;
 
     amountTrx = _amountTrx-_amountTrx*descuento;
 
@@ -686,11 +684,11 @@ export default class WozxInvestor extends Component {
     
     await this.rateWozx();
 
-    ratewozx = ratewozx+ratewozx*tantoWozx
-    ratewozx = parseInt(ratewozx);
     var amount = usd/ratewozx;
 
     amount = amount.toFixed(4);
+
+    amount = parseFloat(amount);
 
     console.log(amount);
 
