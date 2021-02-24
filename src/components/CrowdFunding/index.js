@@ -58,9 +58,10 @@ export default class WozxInvestor extends Component {
       usdtrx: "",
       min: 3000,
       texto: "Buy WOZX",
-      tronEnApp: 0
+      tronEnApp: 0,
+      priceUSDTRON: 0
 
-    }
+    };
 
     this.deposit = this.deposit.bind(this);
     this.deposit2 = this.deposit2.bind(this);
@@ -73,12 +74,16 @@ export default class WozxInvestor extends Component {
     this.reatizarTodoPost = this.reatizarTodoPost.bind(this);
     this.ordenEjecutada = this.ordenEjecutada.bind(this);
     this.minDepo = this.minDepo.bind(this);
+    this.rateT = this.rateT.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
+    
 
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
+    await this.rateT();
+    setInterval(() => this.rateT(),15*1000);
     this.reatizarTodoPost();
     setInterval(() => this.reatizarTodoPost(),120*1000);
     this.minDepo();
@@ -86,25 +91,28 @@ export default class WozxInvestor extends Component {
     
   };
 
-  async minDepo(){
-
-    var proxyUrl = cons.proxy;
+  async rateT(){
+    var proxyUrl = "https://proxy-wozx.herokuapp.com/";
     var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
     fetch(proxyUrl+apiUrl).then(response => {
       return response.json();
     }).then(data => {
       // Work with JSON data
-      var price = data.market_data.current_price.usd;
+      this.setState({
+        priceUSDTRON: data.market_data.current_price.usd
+      });
       
-      ratetrx_usd = price;
-
-     console.log("$"+price+" USD // 1 TRX");
     }).catch(err => {
         console.log(err)
       
     });
+
+  };
+
+  async minDepo(){
+
+    await this.rateT();
  
-    
     var mindepo = await Utils.contract.MIN_DEPOSIT().call();
     var rateApp = await Utils.contract.rateTRON().call();
     mindepo = parseInt(mindepo._hex)/1000000;
@@ -114,21 +122,43 @@ export default class WozxInvestor extends Component {
       min: mindepo+1,
       rateApp: rateApp
     });
-    console.log(mindepo);
-    console.log(minimo_usd+minimo_usd*rango_minimo);
 
-    if (mindepo*ratetrx_usd >= minimo_usd+minimo_usd*rango_minimo || mindepo*ratetrx_usd <= minimo_usd-minimo_usd*rango_minimo) {
+    var { priceUSDTRON } = this.state;
+
+    ratetrx_usd = priceUSDTRON;
+
+    //console.log(mindepo);
+    var mini = parseInt(minimo_usd/ratetrx_usd);
+    //console.log(mini);
+
+    //console.log(rateApp);
+    var rat = parseInt(ratetrx_usd*1000000);
+    rat = rat/1000000;
+    //console.log(rat);
+
+    if ( (mindepo !== mini && mindepo >= mindepo+mindepo*rango_minimo) || ( mindepo !== mini &&  mindepo <= mindepo-mindepo*rango_minimo) ) {
+
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-      await contract.nuevoMinDeposit(parseInt(minimo_usd/ratetrx_usd)).send();
-      console.log("EVENTO: nuevo minimo de deposito "+parseInt(minimo_usd/ratetrx_usd)+" TRX")
+      await contract.nuevoMinDeposit(mini).send();
+      this.setState({
+        min: mini+1,
+
+      });
+      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX");
 
     }
 
-    if (rateApp >= ratetrx_usd+ratetrx_usd*rango_minimo || rateApp <= ratetrx_usd-ratetrx_usd*rango_minimo) {
+    console.log("INFO: minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
+
+    if ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo) ) {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-      await contract.nuevoRatetron(parseInt(ratetrx_usd*1000000)).send();
+      rat = parseInt(rat*1000000);
+      await contract.nuevoRatetron(rat).send();
+      this.setState({
+        rateApp: rat
+      });
       console.log("EVENTO: nuevo rate de "+ratetrx_usd+" USD // aplicacion "+rateApp+" USD");
 
     }

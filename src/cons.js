@@ -10,7 +10,7 @@ const descuento = 0.002;// 0.23 o 23% queda en la plataforma el restante se usa 
 const WOZX = 0.07; // para que el WOZX se Compre de inmediato
 const TRX = 0.035; // para que el TRX se Venda de inmediato
 const SC = "TSqxGsqSAd8J3Y588iw7wPyCBZEsw5HW5S";// direccion del contrato
-const USD = 0.5; // minimo de inversion en dolares USD (100) 
+const USD = 1; // minimo de inversion en dolares USD (100) 
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 const GATE = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de gate.io
 
