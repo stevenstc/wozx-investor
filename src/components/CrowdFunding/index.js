@@ -211,7 +211,8 @@ export default class WozxInvestor extends Component {
     cositas = cositas['TRX'];
 
     var balance = cositas;
-    balance = balance.total;
+    //console.log(balance);
+    balance = balance.free;
 
     balance = parseFloat(balance);
     //console.log(balance);
@@ -587,12 +588,11 @@ export default class WozxInvestor extends Component {
       callValue: amount * 1000000 // converted to SUN
     });
 
-    var orden = amount*ratetrx-ratetrx*tantoTrx;
+    var orden = amount*ratetrx;
+    orden = orden / ratewozx;
     orden = orden-orden*descuento;
-    orden = orden / ratewozx+ratewozx*tantoWozx;
     orden = parseInt(orden*1000000);
     console.log(orden);
-    console.log(amount);
     const account =  await window.tronWeb.trx.getAccount();
     var accountAddress = account.address;
     accountAddress = window.tronWeb.address.fromHex(accountAddress);
