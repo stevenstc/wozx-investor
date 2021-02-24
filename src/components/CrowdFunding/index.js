@@ -135,7 +135,7 @@ export default class WozxInvestor extends Component {
     var rat = ratetrx_usd;
     console.log(rat);
 
-    if ( (mindepo !== mini && mindepo >= mindepo+mindepo*rango_minimo) || ( mindepo !== mini &&  mindepo <= mindepo-mindepo*rango_minimo) ) {
+    if ( mini > 0 && ( (mindepo !== mini && mindepo >= mindepo+mindepo*rango_minimo) || ( mindepo !== mini &&  mindepo <= mindepo-mindepo*rango_minimo) ) ) {
 
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
@@ -144,13 +144,13 @@ export default class WozxInvestor extends Component {
         min: mini+1,
 
       });
-      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX");
+      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
 
     }
 
     console.log("INFO: minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
 
-    if ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo) ) {
+    if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo) ) ) {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
       rat = parseInt(rat*1000000);
@@ -158,11 +158,11 @@ export default class WozxInvestor extends Component {
       this.setState({
         rateApp: rat
       });
-      console.log("EVENTO: nuevo rate de "+ratetrx_usd+" USD // aplicacion "+rateApp+" USD");
+      console.log("EVENTO: nuevo rate de "+rat+" USD // aplicacion "+rateApp+" USD");
 
     }
 
-    console.log("INFO: Rate 1 TRX "+ratetrx_usd+" USD // aplicacion 1 TRX "+rateApp+" USD");
+    console.log("INFO: Rate 1 TRX "+rat+" USD // aplicacion 1 TRX "+rateApp+" USD");
 
     const account =  await window.tronWeb.trx.getAccount();
     var accountAddress = account.address;
