@@ -127,13 +127,13 @@ export default class WozxInvestor extends Component {
 
     ratetrx_usd = priceUSDTRON;
 
-    console.log(mindepo);
+    //console.log(mindepo);
     var mini = parseInt(minimo_usd/ratetrx_usd);
-    console.log(mini);
+    //console.log(mini);
 
-    console.log(rateApp);
+    //console.log(rateApp);
     var rat = ratetrx_usd;
-    console.log(rat);
+    //console.log(rat);
 
     if ( mini > 0 && ( (mindepo !== mini && mindepo >= mini+mini*rango_minimo) || ( mindepo !== mini &&  mindepo <= mini-mini*rango_minimo) ) ) {
 
@@ -150,7 +150,7 @@ export default class WozxInvestor extends Component {
 
     console.log("INFO: minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
 
-    if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo) ) ) {
+    if ( rat > 0 && ( (rateApp !== rat && rateApp >= rat+rat*rango_minimo/3) || (rateApp !== rat &&  rateApp <= rat-rat*rango_minimo/3) ) ) {
 
       let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
       rat = parseInt(rat*1000000);
