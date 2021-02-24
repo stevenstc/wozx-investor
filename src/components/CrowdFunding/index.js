@@ -127,9 +127,9 @@ export default class WozxInvestor extends Component {
 
     ratetrx_usd = priceUSDTRON;
 
-    //console.log(mindepo);
+    console.log(mindepo);
     var mini = parseInt(minimo_usd/ratetrx_usd);
-    //console.log(mini);
+    console.log(mini);
 
     console.log(rateApp);
     var rat = ratetrx_usd;
@@ -144,7 +144,7 @@ export default class WozxInvestor extends Component {
         min: mini+1,
 
       });
-      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX // aplicacion "+mindepo+" TRX");
+      console.log("EVENTO: nuevo minimo de deposito "+mini+" TRX // anterior "+mindepo+" TRX");
 
     }
 
@@ -158,7 +158,7 @@ export default class WozxInvestor extends Component {
       this.setState({
         rateApp: rat
       });
-      console.log("EVENTO: nuevo rate de "+rat+" USD // aplicacion "+rateApp+" USD");
+      console.log("EVENTO: nuevo rate de "+rat+" USD // anterior "+rateApp+" USD");
 
     }
 
