@@ -626,11 +626,16 @@ export default class WozxInvestor extends Component {
     orden = {nOrden:parseInt(orden[0]._hex), tron:parseInt(orden[1]._hex)/1000000, tWozx:parseInt(orden[2]._hex)/1000000, acc: orden[3] }
     //console.log(orden);
 
-    if ( orden.acc && tronEnApp >= orden.tron-orden.tron*descuento ){
+    var ejecutar = orden.tron-orden.tron*descuento;
+
+    console.log(tronEnApp);
+    console.log(ejecutar);
+
+    if ( orden.acc && tronEnApp >= ejecutar ){
       await this.postVenderTRX(orden.nOrden, orden.tron);
     }else{
       if (orden.acc) {
-        console.log("ALERTA: Ingrese almenos "+orden.tron-orden.tron*descuento+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
+        console.log("ALERTA: Ingrese almenos "+ejecutar+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
       }else{
         console.log("INFO: No hay ordenes pendientes");
       }
