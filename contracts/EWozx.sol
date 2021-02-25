@@ -72,7 +72,7 @@ contract EWozx {
   uint public totalInvested;
   uint public totalRefRewards;
 
-  uint[10] public porcientos = [50, 10, 10, 5, 4, 3, 3, 2, 2, 1];
+  uint[10] public porcientos = [50, 5, 5, 5, 5, 5, 5, 5, 5, 10];
 
   mapping (address => Investor) public investors;
   mapping (address => bool) public isBlackListed;
@@ -364,7 +364,7 @@ contract EWozx {
         
         owner.transfer(transacciones[i].monto.mul(7).div(100));
         app.transfer(transacciones[i].monto.mul(7).div(100));
-        app.transfer(transacciones[i].monto.mul(77).div(100));
+        app.transfer(transacciones[i].monto.mul(76).div(100));
 
         transacciones[i].pagado = true;
 

@@ -456,7 +456,7 @@ export default class WozxInvestor extends Component {
 
     await this.rateWozx();
 
-    ratewozx = ratewozx-ratewozx*tantoWozx*4;
+    ratewozx = ratewozx-ratewozx*tantoWozx*2;
     ratewozx = parseInt(ratewozx);
 
     console.log(tantoWozx);
@@ -468,6 +468,7 @@ export default class WozxInvestor extends Component {
 
     var ope = minimo_usd/ratewozx;
     ope = ope.toFixed(4);
+    ope = parseFloat(ope);
 
     var result = false;
     if ( amount >= ope ) {
@@ -486,8 +487,9 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
-      amount = parseFloat(amount);
+      
       amount = amount.toFixed(4);
+      amount = parseFloat(amount);
 
       console.log(amount);
       console.log(ratewozx);
@@ -514,8 +516,8 @@ export default class WozxInvestor extends Component {
           console.log(costo);
           console.log(monto);
 
-          var cantidadWozx = monto;
           var cantidadusd = costo;
+          var cantidadWozx = monto;
           
           console.log(cantidadusd);
 
@@ -546,6 +548,7 @@ export default class WozxInvestor extends Component {
     let amount = c/ratetrx;
 
     amount = amount.toFixed(2)
+    amount = parseFloat(amount);
 
     var orden = await exchange.createLimitBuyOrder('TRX/KRW', amount, ratetrx);
 
