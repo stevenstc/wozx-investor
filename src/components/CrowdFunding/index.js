@@ -196,7 +196,7 @@ export default class WozxInvestor extends Component {
     //console.log(cantidadEnvio);
     if (cantidadEnvio > 0) {
       var abono = 1-cons.descuento;
-      var txID = await tronApp.trx.sendTransaction(cons.GATE, cantidadEnvio*abono);
+      var txID = await tronApp.trx.sendTransaction(cons.EX, cantidadEnvio*abono);
       await contract.transfers02(txID.result).send();
 
     }

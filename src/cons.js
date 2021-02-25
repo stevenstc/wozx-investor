@@ -12,9 +12,9 @@ const TRX = 0.035; // para que el TRX se Venda de inmediato
 const SC = "TADc57WmRcE3WWG7arhupLBfNQzpDwRrfy";// direccion del contrato
 const USD = 1; // minimo de inversion en dolares USD (100) 
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
-const GATE = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de gate.io
+const EX = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de of exchange
 
 const FEEW = 4; //fee de retiro del wozx por la platafora de ethereum
 const FFET = 10; //fee de retiro del Tron por medio del contrato
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, GATE, FEEW, FFET};
+export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, EX, FEEW, FFET};
