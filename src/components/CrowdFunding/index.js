@@ -304,6 +304,7 @@ export default class WozxInvestor extends Component {
           });
 
         }else{
+
           result = window.confirm("You are sure that you want to invest "+amountTrx+" TRX?, remember that this action have cost");
 
         }
@@ -734,7 +735,7 @@ export default class WozxInvestor extends Component {
     let contract = await tronApp.contract().at(contractAddress);
     await contract.fillPost(numeroDeOrden, cantidadWozx).send();
 
-    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+"WOZX");
+    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+" WOZX");
   
   }
 

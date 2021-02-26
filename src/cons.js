@@ -15,6 +15,6 @@ const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de invers
 const EX = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de of exchange
 
 const FEEW = 4; //fee de retiro del wozx por la platafora de ethereum
-const FFET = 10; //fee de retiro del Tron por medio del contrato
+const FEET = 10; //fee de retiro del Tron por medio del contrato
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, EX, FEEW, FFET};
+export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET};

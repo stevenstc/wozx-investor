@@ -203,7 +203,9 @@ export default class WozxInvestor extends Component {
       });
 
     }else{
-      result = window.confirm("You are sure you want to reinvest "+amountTrx+" TRX?");
+      var COMISION_RETIRO = await Utils.contract.COMISION_RETIRO().call();
+        COMISION_RETIRO = parseInt(COMISION_RETIRO._hex)/1000000;
+      result = window.confirm("You are sure you want to reinvest "+amountTrx+" TRX? this action cost "+COMISION_RETIRO+" TRX");
     }
     
 
@@ -684,7 +686,7 @@ export default class WozxInvestor extends Component {
         }
 
         if ( balanceContract < amount ){
-          window.alert("The Aplication in this moment no have TRX aviable, Try again Later");
+          window.alert("The Aplication in this moment no have TRX available, Try again Later");
         }
         
       }

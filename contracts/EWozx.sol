@@ -61,6 +61,7 @@ contract EWozx {
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
   uint public COMISION_OPERACION = 50 trx;
+  uint public COMISION_REDEPOSIT = 230 trx;
   uint public COMISION_WOZX = 2000000;
   uint public rateTRON = 28677;
   
@@ -310,6 +311,7 @@ contract EWozx {
 
   function redeposit(uint _cantidad) external payable returns(bool res){
     require (!isBlackListed[msg.sender]);
+
     require(_cantidad >= MIN_DEPOSIT);
     require (investors[msg.sender].registered);
     require (Do);
@@ -636,13 +638,13 @@ contract EWozx {
     require (_cantidad <= investors[msg.sender].balanceTrx);
  
     investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
+    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_REDEPOSIT;
 
-    app.transfer(COMISION_OPERACION);
+    app.transfer(COMISION_REDEPOSIT);
 
-    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
+    transacciones.push(Transar(msg.sender, _cantidad-COMISION_REDEPOSIT, false, false, false));
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_OPERACION, "TRX", "Sell to invest | POST"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_REDEPOSIT, "TRX", "Sell to invest | POST"));
     
     
   }
@@ -803,6 +805,12 @@ contract EWozx {
     require (msg.sender == owner || msg.sender == app);
     COMISION_WOZX = num*1000000;
   }
+
+  function nuevoComReDeposit(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COMISION_REDEPOSIT = num*1 trx;
+  }
+
 
   function nuevoRatetron(uint rate)public{
     require (msg.sender == owner || msg.sender == app);
