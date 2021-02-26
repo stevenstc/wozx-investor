@@ -713,10 +713,10 @@ contract EWozx {
     
     app.transfer(5 trx);
 
-    investors[_wallet].balanceTrx += _tron-50 trx;
+    investors[_wallet].balanceTrx += _tron - COMISION_OPERACION;
 
     investors[_wallet].historial.push(Historia(now, _wozx, "WOZX", "Sell"));
-    investors[_wallet].historial.push(Historia(now, _tron-50 trx, "TRX", "Buy"));
+    investors[_wallet].historial.push(Historia(now, _tron - COMISION_OPERACION, "TRX", "Buy"));
 
     return true;
     
