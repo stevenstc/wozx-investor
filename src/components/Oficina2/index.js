@@ -422,9 +422,9 @@ export default class WozxInvestor extends Component {
 
     await Utils.contract.redepositPost(amount * 1000000).send();
 
-    var orden = amount*ratetrx-ratetrx*tantoTrx;
+    var orden = amount*ratetrx;
+    orden = orden / ratewozx;
     orden = orden-orden*descuento;
-    orden = orden / ratewozx+ratewozx*tantoWozx;
     orden = parseInt(orden*1000000);
     console.log(orden);
     console.log(amount);
