@@ -323,6 +323,8 @@ contract EWozx {
     investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
 
     transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
+
+    app.transfer(COMISION_OPERACION);
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
@@ -636,9 +638,12 @@ contract EWozx {
     investors[msg.sender].balanceTrx -= _cantidad;
     investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
 
+    app.transfer(COMISION_OPERACION);
+
+    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
+
     investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_OPERACION, "TRX", "Sell to invest | POST"));
     
-    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
     
   }
   
@@ -711,7 +716,7 @@ contract EWozx {
     investors[_wallet].investedWozx -= _wozx;
     investors[_wallet].withdrawnWozx += _wozx;
     
-    app.transfer(5 trx);
+    app.transfer(COMISION_OPERACION);
 
     investors[_wallet].balanceTrx += _tron - COMISION_OPERACION;
 
