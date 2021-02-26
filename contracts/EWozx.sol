@@ -61,7 +61,7 @@ contract EWozx {
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
   uint public COMISION_OPERACION = 50 trx;
-  uint public COMISION_REDEPOSIT = 230 trx;
+  uint public COMISION_REDEPOSIT = 7;
   uint public COMISION_WOZX = 2000000;
   uint public rateTRON = 28677;
   
@@ -322,17 +322,19 @@ contract EWozx {
     require (firmas[orden].valida);
 
     investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
 
-    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
+    _cantidad = _cantidad-_cantidad.mul(COMISION_REDEPOSIT).div(100);
+    investors[msg.sender].withdrawnTrx += _cantidad;
 
-    app.transfer(COMISION_OPERACION);
+    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
+
+    app.transfer(_cantidad.mul(COMISION_REDEPOSIT).div(100));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_OPERACION, "TRX", "Sell to invest"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
     investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
     
     return true;
@@ -640,11 +642,13 @@ contract EWozx {
     investors[msg.sender].balanceTrx -= _cantidad;
     investors[msg.sender].withdrawnTrx += _cantidad-COMISION_REDEPOSIT;
 
-    app.transfer(COMISION_REDEPOSIT);
+    app.transfer(_cantidad.mul(COMISION_REDEPOSIT).div(100));
 
-    transacciones.push(Transar(msg.sender, _cantidad-COMISION_REDEPOSIT, false, false, false));
+    _cantidad = _cantidad-_cantidad.mul(COMISION_REDEPOSIT).div(100);
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_REDEPOSIT, "TRX", "Sell to invest | POST"));
+    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
+
+    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
     
   }
@@ -808,7 +812,7 @@ contract EWozx {
 
   function nuevoComReDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
-    COMISION_REDEPOSIT = num*1 trx;
+    COMISION_REDEPOSIT = num;
   }
 
 
