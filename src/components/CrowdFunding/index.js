@@ -443,7 +443,10 @@ export default class WozxInvestor extends Component {
       }
 
     }else{
-      console.log("Minimo de 1000 tron Alcanzado ingresa más tron a la wallet de la plicación: "+walletApp)
+
+      window.alert("Please contact the administrator Code: IMT-E-WA");
+      // IMT-E-WA = Ingrese Mas Tron En la  Wallet de la Aplicación.
+      console.log("Minimo de 1000 tron Alcanzado ingresa más tron a la wallet de la plicación: "+cons.SC)
     }
 
 
