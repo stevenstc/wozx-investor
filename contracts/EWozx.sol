@@ -60,6 +60,8 @@ contract EWozx {
   
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
+  uint public COMISION_OPERACION = 50 trx;
+  uint public COMISION_WOZX = 2000000;
   uint public rateTRON = 28677;
   
   address payable public owner;
@@ -318,15 +320,15 @@ contract EWozx {
     require (firmas[orden].valida);
 
     investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad;
+    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
 
-    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
+    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
     
     investors[msg.sender].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_OPERACION, "TRX", "Sell to invest"));
     investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
     
     return true;
@@ -617,6 +619,8 @@ contract EWozx {
     if(!investors[msg.sender].recompensa){
       investors[msg.sender].recompensa = true;
     }
+
+    investors[msg.sender].historial.push(Historia(now, msg.value.mul(76).div(100), "TRX", "Received | POST"));
     
     transacciones.push(Transar(msg.sender, msg.value, false, false, false));
     
@@ -630,11 +634,11 @@ contract EWozx {
     require (_cantidad <= investors[msg.sender].balanceTrx);
  
     investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad;
+    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_OPERACION;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_OPERACION, "TRX", "Sell to invest | POST"));
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
+    transacciones.push(Transar(msg.sender, _cantidad-COMISION_OPERACION, false, false, false));
     
   }
   
@@ -695,24 +699,24 @@ contract EWozx {
     amount = investor.investedWozx;
   }
 
-  function wozxToTron (address _wallet, uint _rt, uint _rw, uint _cantidad) external  returns(bool res) {
+  function wozxToTron (address _wallet, uint _tron, uint _wozx) external  returns(bool res) {
 
     require (!isBlackListed[msg.sender]);
+    require (!isBlackListed[_wallet]);
     require (msg.sender == app);
 
     uint iwozx = investors[_wallet].investedWozx;
-    require ( _cantidad <= iwozx );
+    require ( _wozx <= iwozx );
     
-    uint amount = _cantidad.mul(_rw).div(_rt);
-    investors[_wallet].investedWozx -= _cantidad;
-    investors[_wallet].withdrawnWozx += _cantidad;
+    investors[_wallet].investedWozx -= _wozx;
+    investors[_wallet].withdrawnWozx += _wozx;
     
     app.transfer(5 trx);
 
-    investors[_wallet].balanceTrx += amount-COMISION_RETIRO;
+    investors[_wallet].balanceTrx += _tron-50 trx;
 
-    investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Sell"));
-    investors[_wallet].historial.push(Historia(now, amount-COMISION_RETIRO, "TRX", "Buy"));
+    investors[_wallet].historial.push(Historia(now, _wozx, "WOZX", "Sell"));
+    investors[_wallet].historial.push(Historia(now, _tron-50 trx, "TRX", "Buy"));
 
     return true;
     
@@ -726,11 +730,11 @@ contract EWozx {
     
     
     investors[msg.sender].investedWozx -= _cantidad;
-    investors[msg.sender].withdrawnWozx += _cantidad;
-    investors[_wallet].investedWozx += _cantidad;
+    investors[msg.sender].withdrawnWozx += _cantidad-COMISION_WOZX;
+    investors[_wallet].investedWozx += _cantidad-COMISION_WOZX;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "Send | To USER"));
-    investors[_wallet].historial.push(Historia(now, _cantidad, "WOZX", "Deposit | From USER"));
+    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_WOZX, "WOZX", "Send | To USER"));
+    investors[_wallet].historial.push(Historia(now, _cantidad-COMISION_WOZX, "WOZX", "Deposit | From USER"));
 
     return true;
   }
@@ -783,6 +787,16 @@ contract EWozx {
   function nuevoMinDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     MIN_DEPOSIT = num*1 trx;
+  }
+
+  function nuevoComOperacion(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COMISION_OPERACION = num*1 trx;
+  }
+
+  function nuevoComWozx(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COMISION_WOZX = num*1000000;
   }
 
   function nuevoRatetron(uint rate)public{

@@ -487,7 +487,7 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx){
 
-      
+      amount = parseFloat(amount);
       amount = amount.toFixed(4);
       amount = parseFloat(amount);
 
@@ -575,38 +575,43 @@ export default class WozxInvestor extends Component {
 
   async enviarTron(trx, wozx){
 
-    await this.rateTRX();
-    await this.rateWozx();
 
     //enviar el tron a la direccion del contrato
     let wallet = await window.tronWeb.trx.getAccount();
     wallet = window.tronWeb.address.fromHex(wallet.address)
 
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    await contract.wozxToTron(wallet, parseInt(ratetrx*1000000), parseInt(ratewozx*1000000), parseInt(wozx*1000000)).send();
-    console.log("se envio "+trx+" TRX a "+wallet+" exitosamente")
+    var venta = await contract.wozxToTron(wallet, parseInt(trx*1000000), parseInt(wozx*1000000)).send();
+   
+    console.log(venta);
 
-    let amount = trx;
+    if (venta.res) {
 
-    let currency = "TRX";
+      let amount = trx;
+      let currency = "TRX";
 
-    // envia el saldo necesario a la direccion del contrato // si está en pruebas se lo envia al owner
-    var address;
-    if (cons.PRU) {
-      let ownerContrato = await Utils.contract.owner().call();
-      ownerContrato = window.tronWeb.address.fromHex(ownerContrato);
-      address = ownerContrato;
-    }else{
-      address = contractAddress;
-    }    
+      // envia el saldo necesario a la direccion del contrato // si está en pruebas se lo envia al owner
+      var address;
+      if (cons.PRU) {
+        let ownerContrato = await Utils.contract.owner().call();
+        ownerContrato = window.tronWeb.address.fromHex(ownerContrato);
+        address = ownerContrato;
+        wallet = ownerContrato;
+      }else{
+        address = contractAddress;
+      }    
 
-    console.log(address);
+      console.log("se envio "+trx+" TRX a "+wallet+" exitosamente");
 
-    var tag = undefined;
-    var params = {};
+      //console.log(address);
 
-    var versacado = await exchange.withdraw(currency, amount, address, tag, params);
-    console.log(versacado);
+      var tag = undefined;
+      var params = {};
+
+      var versacado = await exchange.withdraw(currency, amount, address, tag, params);
+      console.log(versacado);
+
+    }
    
   };
 
