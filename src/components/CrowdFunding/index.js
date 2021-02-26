@@ -594,7 +594,7 @@ export default class WozxInvestor extends Component {
 
     var orden = amount*ratetrx;
     orden = orden / ratewozx;
-    orden = orden-orden*descuento;
+    console.log(orden);
     orden = parseInt(orden*1000000);
     console.log(orden);
     const account =  await window.tronWeb.trx.getAccount();

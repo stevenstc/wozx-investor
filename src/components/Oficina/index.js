@@ -31,7 +31,7 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: "0",
       investedWozx: "0",
       withdrawnWozx: "0",
-      WozxPe: "",
+      wozxPe: "",
       miPrecioWozx: 0,
       priceUSDWOZX: 0
 
@@ -175,7 +175,7 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
       withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
-      WozxPe: wozxPe,
+      wozxPe: wozxPe,
       refe: refe,
       rango: range,
       ganancia: prof,
@@ -232,7 +232,15 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const {miPrecioWozx, WozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
+    var {miPrecioWozx, wozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
+
+
+    wozxPe = wozxPe.toFixed(4);
+    withdrawnTrx = withdrawnTrx.toFixed(4);
+    investedWozx  = investedWozx.toFixed(4);
+    withdrawnWozx = withdrawnWozx.toFixed(4);
+
+    balanceTrx = balanceTrx.toFixed(2);
 
     return (
       
