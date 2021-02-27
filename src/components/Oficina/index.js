@@ -31,7 +31,7 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: "0",
       investedWozx: "0",
       withdrawnWozx: "0",
-      wozxPe: "",
+      wozxPe: {},
       miPrecioWozx: 0,
       priceUSDWOZX: 0
 
@@ -154,19 +154,9 @@ export default class WozxInvestor extends Component {
       range = "DIAMANTE CORONA"
     }
     //console.log(prof);
-    
+
     var wozxPe = await Utils.contract.wozxP().call();
-
-    //console.log(wozxPe);
-    //console.log("(~ "+parseInt(wozxPe.cantidad._hex)/1000000+" WOZX)")
-
-    if (wozxPe.res) {
-      wozxPe ="(~ "+parseInt(wozxPe.cantidad._hex)/1000000+" WOZX)";
-    }else{
-      wozxPe ="";
-    }
-
-    
+  
     
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
@@ -235,11 +225,27 @@ export default class WozxInvestor extends Component {
     var {miPrecioWozx, wozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
 
-    wozxPe = wozxPe.toFixed(4);
+    var cantidadPW = parseInt(wozxPe.cantidad._hex)/1000000;
+
+    cantidadPW = cantidadPW.toFixed(4);
+
+    if (wozxPe.res) {
+      wozxPe ="(~ "+cantidadPW+" WOZX)";
+    }else{
+      wozxPe ="";
+    }
+    
+   
+    withdrawnTrx = parseFloat(withdrawnTrx);
     withdrawnTrx = withdrawnTrx.toFixed(4);
+
+    investedWozx = parseFloat(investedWozx);
     investedWozx  = investedWozx.toFixed(4);
+
+    withdrawnWozx = parseFloat(withdrawnWozx);
     withdrawnWozx = withdrawnWozx.toFixed(4);
 
+    balanceTrx = parseFloat(balanceTrx);
     balanceTrx = balanceTrx.toFixed(2);
 
     return (
@@ -286,7 +292,7 @@ export default class WozxInvestor extends Component {
           
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{investedWozx} WOZX</h3>
-              <h3 className="display-2--light">{WozxPe}</h3>
+              <h3 className="display-2--light">{wozxPe}</h3>
               <hr></hr>
             
           </div>
