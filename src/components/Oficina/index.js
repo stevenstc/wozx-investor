@@ -31,7 +31,8 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: "0",
       investedWozx: "0",
       withdrawnWozx: "0",
-      wozxPe: {},
+      wozxPe: false,
+      wozxCa: 0,
       miPrecioWozx: 0,
       priceUSDWOZX: 0
 
@@ -46,6 +47,7 @@ export default class WozxInvestor extends Component {
   }
 
   async componentDidMount() {
+
     await Utils.setContract(window.tronWeb, contractAddress);
     this.rateW();
     await this.Link();
@@ -156,6 +158,12 @@ export default class WozxInvestor extends Component {
     //console.log(prof);
 
     var wozxPe = await Utils.contract.wozxP().call();
+
+    var wozxCa = parseInt(wozxPe.cantidad._hex)/1000000;
+
+    wozxCa = wozxCa.toFixed(4);
+
+    wozxPe = wozxPe.res;
   
     
     this.setState({
@@ -166,6 +174,7 @@ export default class WozxInvestor extends Component {
       investedWozx: parseInt(esto.investedWozx._hex)/1000000,
       withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
       wozxPe: wozxPe,
+      wozxCa: wozxCa,
       refe: refe,
       rango: range,
       ganancia: prof,
@@ -222,15 +231,13 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    var {miPrecioWozx, wozxPe, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
+    var {miPrecioWozx, wozxPe, wozxCa, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
 
-    var cantidadPW = parseInt(wozxPe.cantidad._hex)/1000000;
+    
 
-    cantidadPW = cantidadPW.toFixed(4);
-
-    if (wozxPe.res) {
-      wozxPe ="(~ "+cantidadPW+" WOZX)";
+    if ( wozxPe ) {
+      wozxPe ="(~ "+wozxCa+" WOZX)";
     }else{
       wozxPe ="";
     }
