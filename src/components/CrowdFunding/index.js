@@ -591,25 +591,30 @@ export default class WozxInvestor extends Component {
     await this.rateWozx();
     await this.rateTRX();
 
-    let amount = document.getElementById("amount").value;
+    var amount = document.getElementById("amount").value;
     document.getElementById("amount").value = "";
 
     this.setState({
       texto:"Don't close the window"
     });
 
-    await Utils.contract.depositPost().send({
-      callValue: amount * 1000000 // converted to SUN
+    var account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+    amount = parseInt(amount * 1000000);
+
+    await Utils.contract.depositPost(accountAddress, amount).send({
+      callValue: amount // converted to SUN
     });
 
     var orden = amount*ratetrx;
     orden = orden / ratewozx;
     orden = orden-orden*descuento;
     orden = parseInt(orden*1000000);
+
     console.log(orden);
-    const account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
     console.log(accountAddress);
 
     var am = parseInt(amount*1000000);
