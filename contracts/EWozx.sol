@@ -309,7 +309,7 @@ contract EWozx {
     return true;
   }
 
-  function redeposit(address _user, uint _cantidad) external payable returns(bool res){
+  function redeposit(address _user, uint _cantidad) external returns(bool res){
     require (msg.sender == _user, "Not is your account");
 
     require (!isBlackListed[_user]);
@@ -638,7 +638,7 @@ contract EWozx {
     
   }
 
-  function redepositPost(address _user, uint _cantidad) external payable {
+  function redepositPost(address _user, uint _cantidad) external {
     require (msg.sender == _user, "Not is your account");
 
     require (!isBlackListed[_user]);
