@@ -389,8 +389,14 @@ export default class WozxInvestor extends Component {
       this.setState({
         texto3:"Reciving TRON"
       });
+
+      var account =  await window.tronWeb.trx.getAccount();
+      var accountAddress = account.address;
+      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+      amount = parseInt(amount * 1000000);
       
-      await Utils.contract.redeposit(amount * 1000000).send();
+      await Utils.contract.redeposit(accountAddress, amount).send();
 
       this.setState({
         texto3:"Handing out rewards"
@@ -418,9 +424,14 @@ export default class WozxInvestor extends Component {
     this.setState({
       texto3:"Don't close the window"
     });
-    
 
-    await Utils.contract.redepositPost(amount * 1000000).send();
+    var account =  await window.tronWeb.trx.getAccount();
+    var accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    
+    amount = parseInt(amount * 1000000);
+
+    await Utils.contract.redepositPost(accountAddress, amount).send();
 
     var orden = amount*ratetrx;
     orden = orden / ratewozx;
@@ -701,8 +712,12 @@ export default class WozxInvestor extends Component {
       this.setState({
         texto: "Wait for sing..."
       });
+
+      var account =  await window.tronWeb.trx.getAccount();
+      var accountAddress = account.address;
+      accountAddress = window.tronWeb.address.fromHex(accountAddress);
       
-      await Utils.contract.retirarWozx(parseInt(c)*1000000).send();
+      await Utils.contract.retirarWozx( accountAddress, parseInt(c)*1000000).send();
 
       this.setState({
         texto: "successful withdrawal"

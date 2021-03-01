@@ -221,7 +221,11 @@ export default class WozxInvestor extends Component {
 
       cantidad = parseInt(cantidad*1000000);
 
-      await Utils.contract.enviarWozx(direccion, cantidad).send();
+      var account =  await window.tronWeb.trx.getAccount();
+      var accountAddress = account.address;
+      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+      await Utils.contract.enviarWozx(accountAddress, direccion, cantidad).send();
 
       document.getElementById("cantidadwozx").value = "";
 

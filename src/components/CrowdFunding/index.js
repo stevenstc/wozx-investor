@@ -426,7 +426,11 @@ export default class WozxInvestor extends Component {
               sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
             }
 
-            await Utils.contract.miRegistro(sponsor).send();
+            var account =  await window.tronWeb.trx.getAccount();
+            var accountAddress = account.address;
+            accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+            await Utils.contract.miRegistro(accountAddress, sponsor).send();
 
             this.setState({
               texto:"Registration completed"
@@ -552,10 +556,16 @@ export default class WozxInvestor extends Component {
       this.setState({
         texto:"Reciving TRON"
       });
+
+      var account =  await window.tronWeb.trx.getAccount();
+      var accountAddress = account.address;
+      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+
+      amount = parseInt(amount * 1000000);
     
-      var sidep = await Utils.contract.deposit().send({
+      var sidep = await Utils.contract.deposit(accountAddress, amount).send({
         shouldPollResponse: true,
-        callValue: amount * 1000000 // converted to SUN
+        callValue: amount // converted to SUN
       });
 
       console.log(sidep);

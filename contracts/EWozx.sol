@@ -84,11 +84,15 @@ contract EWozx {
   Transar[] transacciones;
 
   
-  constructor() public payable {
-    owner = msg.sender;
-    app = msg.sender;
-    start();
+  constructor(address payable _owner, address payable _app) public payable {
+    owner = _owner;
+    app = _app;
 
+    investors[owner].registered = true;
+    investors[owner].exist = true;
+    investors[owner].sponsor = owner;
+    
+    totalInvestors++;
   }
 
   function setstate() public view  returns(uint Investors,uint Invested,uint RefRewards){
@@ -100,16 +104,6 @@ contract EWozx {
     return address(this).balance;
   }
 
-  function start() internal {
-    require (msg.sender == owner);
-    
-    investors[msg.sender].registered = true;
-    investors[msg.sender].exist = true;
-    investors[msg.sender].sponsor = owner;
-    
-    totalInvestors++;
-
-  }
 
   function setOwner(address payable _owner) public returns (address){
 
@@ -140,22 +134,25 @@ contract EWozx {
     return app;
   }
 
-  function miRegistro(address _sponsor) public {
-    require (!isBlackListed[msg.sender]);
+  function miRegistro(address _user , address _sponsor) public {
+
+    require (msg.sender == _user, "Not is your account");
+    
+    require (!isBlackListed[_user]);
     require (_sponsor != NoValido);
-    require (!investors[msg.sender].registered);
+    require (!investors[_user].registered);
     require (investors[_sponsor].registered);
     require (investors[_sponsor].exist);
-    require (msg.sender != _sponsor);
+    require (_user != _sponsor);
     
 
-    investors[msg.sender].registered = true;
-    investors[msg.sender].exist = true;
-    investors[msg.sender].sponsor = _sponsor;
+    investors[_user].registered = true;
+    investors[_user].exist = true;
+    investors[_user].sponsor = _sponsor;
     
     totalInvestors++;    
     
-    address[10] memory referi = column(msg.sender);
+    address[10] memory referi = column(_user);
 
     for (uint i = 0; i < 10; i++) {
       if (investors[referi[i]].exist && referi[i] != owner ) {
@@ -284,58 +281,62 @@ contract EWozx {
     }
   }
   
-  function deposit() external payable returns(bool res){
-    require (!isBlackListed[msg.sender]);
-    require(msg.value >= MIN_DEPOSIT);
-    require (investors[msg.sender].registered);
+  function deposit(address _user, uint _valor) external payable returns(bool res){
+    require (msg.sender == _user, "Not is your account");
+    require (msg.value == _valor, "Incorrect value");
+
+    require (!isBlackListed[_user]);
+    require(_valor >= MIN_DEPOSIT);
+    require (investors[_user].registered);
     require (Do);
 
-    uint orden = buscarfirma(msg.sender);
+    uint orden = buscarfirma(_user);
 
     require (firmas[orden].valida);
 
-    if(!investors[msg.sender].recompensa){
-      investors[msg.sender].recompensa = true;
+    if(!investors[_user].recompensa){
+      investors[_user].recompensa = true;
     }
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
+    transacciones.push(Transar(_user, _valor, false, false, false));
     
-    investors[msg.sender].investedWozx += firmas[orden].orden;
+    investors[_user].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
+    investors[_user].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
     
     return true;
   }
 
-  function redeposit(uint _cantidad) external payable returns(bool res){
-    require (!isBlackListed[msg.sender]);
+  function redeposit(address _user, uint _cantidad) external payable returns(bool res){
+    require (msg.sender == _user, "Not is your account");
 
+    require (!isBlackListed[_user]);
     require(_cantidad >= MIN_DEPOSIT);
-    require (investors[msg.sender].registered);
+    require (investors[_user].registered);
     require (Do);
-    require (_cantidad <= investors[msg.sender].balanceTrx);
+    require (_cantidad <= investors[_user].balanceTrx);
     
-    uint orden = buscarfirma(msg.sender);
+    uint orden = buscarfirma(_user);
 
     require (firmas[orden].valida);
 
-    investors[msg.sender].balanceTrx -= _cantidad;
+    investors[_user].balanceTrx -= _cantidad;
 
     _cantidad = _cantidad-_cantidad.mul(COMISION_REDEPOSIT).div(100);
-    investors[msg.sender].withdrawnTrx += _cantidad;
+    investors[_user].withdrawnTrx += _cantidad;
 
-    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
+    transacciones.push(Transar(_user, _cantidad, false, false, false));
 
     app.transfer(_cantidad.mul(COMISION_REDEPOSIT).div(100));
     
-    investors[msg.sender].investedWozx += firmas[orden].orden;
+    investors[_user].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
-    investors[msg.sender].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
+    investors[_user].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
+    investors[_user].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
     
     return true;
   }
@@ -616,39 +617,46 @@ contract EWozx {
   }
   
 
-  function depositPost() external payable {
-    require (!isBlackListed[msg.sender]);
-    require(msg.value >= MIN_DEPOSIT);
-    require (investors[msg.sender].registered);
+  function depositPost(address _user, uint _valor) external payable {
+
+    require (msg.sender == _user, "Not is your account");
+    require (msg.value == _valor, "Incorrect value");
+    
+
+    require (!isBlackListed[_user]);
+    require(_valor >= MIN_DEPOSIT);
+    require (investors[_user].registered);
     require (Do);
 
-    if(!investors[msg.sender].recompensa){
-      investors[msg.sender].recompensa = true;
+    if(!investors[_user].recompensa){
+      investors[_user].recompensa = true;
     }
 
-    investors[msg.sender].historial.push(Historia(now, msg.value.mul(76).div(100), "TRX", "Received | POST"));
+    investors[_user].historial.push(Historia(now, _valor.mul(76).div(100), "TRX", "Received | POST"));
     
-    transacciones.push(Transar(msg.sender, msg.value, false, false, false));
+    transacciones.push(Transar(_user, _valor, false, false, false));
     
   }
 
-  function redepositPost(uint _cantidad) external payable {
-    require (!isBlackListed[msg.sender]);
+  function redepositPost(address _user, uint _cantidad) external payable {
+    require (msg.sender == _user, "Not is your account");
+
+    require (!isBlackListed[_user]);
     require(_cantidad >= MIN_DEPOSIT);
-    require (investors[msg.sender].registered);
+    require (investors[_user].registered);
     require (Do);
-    require (_cantidad <= investors[msg.sender].balanceTrx);
+    require (_cantidad <= investors[_user].balanceTrx);
  
-    investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_REDEPOSIT;
+    investors[_user].balanceTrx -= _cantidad;
+    investors[_user].withdrawnTrx += _cantidad-COMISION_REDEPOSIT;
 
     app.transfer(_cantidad.mul(COMISION_REDEPOSIT).div(100));
 
     _cantidad = _cantidad-_cantidad.mul(COMISION_REDEPOSIT).div(100);
 
-    transacciones.push(Transar(msg.sender, _cantidad, false, false, false));
+    transacciones.push(Transar(_user, _cantidad, false, false, false));
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
+    investors[_user].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
     
     
   }
@@ -659,23 +667,25 @@ contract EWozx {
     
   }
 
-  function withdraw(uint _cantidad) public  {
+  function withdraw(address payable _user, uint _cantidad) public  {
 
-    require (!isBlackListed[msg.sender]);
+    require (msg.sender == _user, "Not is your account");
+
+    require (!isBlackListed[_user]);
     require (Do);
     
-    uint amount = withdrawable(msg.sender);
+    uint amount = withdrawable(_user);
 
     require (_cantidad <= amount);
     require ( _cantidad > COMISION_RETIRO );
     require (address(this).balance > _cantidad );
       
-    msg.sender.transfer(_cantidad-COMISION_RETIRO);
+    _user.transfer(_cantidad-COMISION_RETIRO);
 
-    investors[msg.sender].balanceTrx -= _cantidad;
-    investors[msg.sender].withdrawnTrx += _cantidad-COMISION_RETIRO;
+    investors[_user].balanceTrx -= _cantidad;
+    investors[_user].withdrawnTrx += _cantidad-COMISION_RETIRO;
     
-    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_RETIRO, "TRX", "Withdrawl"));
+    investors[_user].historial.push(Historia(now, _cantidad-COMISION_RETIRO, "TRX", "Withdrawl"));
 
   }
     
@@ -733,33 +743,35 @@ contract EWozx {
     
   }
   
-  function enviarWozx (address _wallet, uint _cantidad) public returns(bool res) {
+  function enviarWozx (address _user, address _wallet, uint _cantidad) public returns(bool res) {
+    require (msg.sender == _user, "Not is your account");
 
-    require (!isBlackListed[msg.sender]);
-    require (investors[msg.sender].investedWozx >= _cantidad);
-    require (_wallet != msg.sender);
+    require (!isBlackListed[_user]);
+    require (investors[_user].investedWozx >= _cantidad);
+    require (_wallet != _user);
     
     
-    investors[msg.sender].investedWozx -= _cantidad;
-    investors[msg.sender].withdrawnWozx += _cantidad-COMISION_WOZX;
+    investors[_user].investedWozx -= _cantidad;
+    investors[_user].withdrawnWozx += _cantidad-COMISION_WOZX;
     investors[_wallet].investedWozx += _cantidad-COMISION_WOZX;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad-COMISION_WOZX, "WOZX", "Send | To USER"));
+    investors[_user].historial.push(Historia(now, _cantidad-COMISION_WOZX, "WOZX", "Send | To USER"));
     investors[_wallet].historial.push(Historia(now, _cantidad-COMISION_WOZX, "WOZX", "Deposit | From USER"));
 
     return true;
   }
 
-  function retirarWozx(uint _cantidad) public returns(bool res) {
+  function retirarWozx(address _user, uint _cantidad) public returns(bool res) {
+    require (msg.sender == _user, "Not is your account");
 
-    require (!isBlackListed[msg.sender]);
-    require (investors[msg.sender].investedWozx > 0);
-    require (_cantidad <= investors[msg.sender].investedWozx);
+    require (!isBlackListed[_user]);
+    require (investors[_user].investedWozx > 0);
+    require (_cantidad <= investors[_user].investedWozx);
     
-    investors[msg.sender].investedWozx -= _cantidad;
-    investors[msg.sender].withdrawnWozx += _cantidad;
+    investors[_user].investedWozx -= _cantidad;
+    investors[_user].withdrawnWozx += _cantidad;
 
-    investors[msg.sender].historial.push(Historia(now, _cantidad, "WOZX", "Withdrawl (ETH)"));
+    investors[_user].historial.push(Historia(now, _cantidad, "WOZX", "Withdrawl (ETH)"));
 
     return true;
     
