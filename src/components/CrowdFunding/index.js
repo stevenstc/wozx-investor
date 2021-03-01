@@ -611,20 +611,19 @@ export default class WozxInvestor extends Component {
     var orden = amount*ratetrx;
     orden = orden / ratewozx;
     orden = orden-orden*descuento;
-    orden = parseInt(orden*1000000);
+    orden = parseInt(orden);
 
     console.log(orden);
 
     console.log(accountAddress);
 
-    var am = parseInt(amount*1000000);
-    console.log(am);
+    console.log(amount);
 
     this.setState({
       texto:"Saving order"
     });
     let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    await contract.ordenPost(accountAddress, am, orden).send();
+    await contract.ordenPost(accountAddress, amount, orden).send();
 
     this.setState({
       texto:"Buy WOZX"
