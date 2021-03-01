@@ -363,7 +363,7 @@ export default class WozxInvestor extends Component {
       orden = parseInt(orden);
       console.log(orden);
 
-      const account =  await window.tronWeb.trx.getAccount();
+      var account =  await window.tronWeb.trx.getAccount();
       var accountAddress = account.address;
       accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
@@ -390,8 +390,8 @@ export default class WozxInvestor extends Component {
         texto3:"Reciving TRON"
       });
 
-      var account =  await window.tronWeb.trx.getAccount();
-      var accountAddress = account.address;
+      account =  await window.tronWeb.trx.getAccount();
+      accountAddress = account.address;
       accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
       amount = parseInt(amount * 1000000);
@@ -439,8 +439,8 @@ export default class WozxInvestor extends Component {
     orden = parseInt(orden*1000000);
     console.log(orden);
     console.log(amount);
-    const account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
+    account =  await window.tronWeb.trx.getAccount();
+    accountAddress = account.address;
     accountAddress = window.tronWeb.address.fromHex(accountAddress);
     console.log(accountAddress);
 
