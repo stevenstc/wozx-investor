@@ -138,12 +138,7 @@ contract EWozx {
 
     require (msg.sender == _user, "Not is your account");
     
-    require (!isBlackListed[_user]);
-    require (_sponsor != NoValido);
-    require (!investors[_user].registered);
-    require (investors[_sponsor].registered);
-    require (investors[_sponsor].exist);
-    require (_user != _sponsor);
+    require (!isBlackListed[_user] && _sponsor != NoValido && !investors[_user].registered && investors[_sponsor].registered && investors[_sponsor].exist && _user != _sponsor);
     
 
     investors[_user].registered = true;
@@ -622,11 +617,7 @@ contract EWozx {
     require (msg.sender == _user, "Not is your account");
     require (msg.value == _valor, "Incorrect value");
     
-
-    require (!isBlackListed[_user]);
-    require(_valor >= MIN_DEPOSIT);
-    require (investors[_user].registered);
-    require (Do);
+    require (!isBlackListed[_user] && _valor >= MIN_DEPOSIT && investors[_user].registered && Do);
 
     if(!investors[_user].recompensa){
       investors[_user].recompensa = true;

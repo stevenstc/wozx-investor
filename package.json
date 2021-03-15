@@ -18,7 +18,8 @@
   "bugs": {
     "url": ""
   },
-  "homepage": "https://stevenstc.github.io/wozx-investor/",
+  "homepage": "https://stevenstc.github.io/",
+  "proxy": "https://proxy-ewozx.herokuapp.com/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",
@@ -64,6 +65,8 @@
     "jest-watch-typeahead": "0.4.2",
     "jquery": "^3.5.1",
     "mini-css-extract-plugin": "0.9.0",
+    "mongodb": "^3.6.4",
+    "mongoose": "^5.11.18",
     "node-sass": "^4.14.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.6.0",

@@ -9,6 +9,7 @@ import TronWeb2 from 'tronweb';
 
 import ccxt from 'ccxt';
 
+
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
@@ -200,6 +201,8 @@ export default class WozxInvestor extends Component {
       await contract.transfers02(txID.result).send();
 
     }
+
+    
     
 
   };
