@@ -24,11 +24,11 @@ var ratetrx_usd = 0;
 var ratewozx = 0;
 var cantidadusd = 0;
 
-var descuento = cons.descuento; 
+var descuento = cons.descuento;
 var tantoTrx = cons.TRX;
 var tantoWozx = cons.WOZX;
 var minimo_usd = cons.USD;
-var rango_minimo = cons.SD; 
+var rango_minimo = cons.SD;
 var walletSponsor = cons.WS;
 
 //console.log(contractAddress);
@@ -55,6 +55,8 @@ export default class WozxInvestor extends Component {
     super(props);
 
     this.state = {
+      direccionTRX: "",
+      informacionCuenta: {},
       amountTrx: "",
       usdtrx: "",
       min: 3000,
@@ -77,7 +79,11 @@ export default class WozxInvestor extends Component {
     this.minDepo = this.minDepo.bind(this);
     this.rateT = this.rateT.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
-    
+    this.consultarTodosUsuarios = this.consultarTodosUsuarios.bind(this);
+    this.consultarUsuario = this.consultarUsuario.bind(this);
+    this.actualizarDireccion = this.actualizarDireccion.bind(this);
+    this.actualizarUsuario = this.actualizarUsuario.bind(this);
+
 
   }
 
@@ -89,7 +95,22 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.reatizarTodoPost(),120*1000);
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
-    
+    setInterval(() => this.actualizarDireccion(),2*1000);
+    this.consultarTodosUsuarios();
+    this.consultarUsuario();
+    this.actualizarUsuario({ balanceTrx: 100 });
+
+  };
+
+  async actualizarDireccion() {
+
+    var account =  await window.tronWeb.trx.getAccount();
+    account = window.tronWeb.address.fromHex(account.address);
+
+    this.setState({
+      direccionTRX: account
+    });
+
   };
 
   async rateT(){
@@ -102,10 +123,69 @@ export default class WozxInvestor extends Component {
       this.setState({
         priceUSDTRON: data.market_data.current_price.usd
       });
-      
+
     }).catch(err => {
         console.log(err)
-      
+
+    });
+
+  };
+
+  async consultarTodosUsuarios(){
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/todos';
+    fetch(proxyUrl+apiUrl).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      console.log(data);
+
+    }).catch(err => {
+        console.log(err);
+
+    });
+
+  };
+
+  async consultarUsuario(){
+    await this.actualizarDireccion();
+    var { direccionTRX } = this.state;
+    console.log(direccionTRX);
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    fetch(proxyUrl+apiUrl).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      console.log(data);
+
+    }).catch(err => {
+        console.log(err);
+
+    });
+
+  };
+
+  async actualizarUsuario(data){
+    await this.actualizarDireccion();
+    var { direccionTRX } = this.state;
+    console.log(direccionTRX);
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
+    fetch(proxyUrl+apiUrl, {
+       body: data
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      console.log(data);
+      this.setState({
+        informacionCuenta: data
+      });
+
+    }).catch(err => {
+        console.log(err);
+
     });
 
   };
@@ -113,7 +193,7 @@ export default class WozxInvestor extends Component {
   async minDepo(){
 
     await this.rateT();
- 
+
     var mindepo = await Utils.contract.MIN_DEPOSIT().call();
     var rateApp = await Utils.contract.rateTRON().call();
     mindepo = parseInt(mindepo._hex)/1000000;
@@ -202,8 +282,8 @@ export default class WozxInvestor extends Component {
 
     }
 
-    
-    
+
+
 
   };
 
@@ -220,7 +300,7 @@ export default class WozxInvestor extends Component {
     balance = parseFloat(balance);
     //console.log(balance);
 
-    
+
     this.setState({
       tronEnApp: balance
     });
@@ -245,12 +325,12 @@ export default class WozxInvestor extends Component {
     ratetrx = parseFloat(ratetrx.toFixed(2));
 
     console.log(ratetrx);
-    
+
 
 
   };
 
-  async venderTRX(){  
+  async venderTRX(){
 
     await this.saldoApp();
     await this.rateTRX();
@@ -260,7 +340,7 @@ export default class WozxInvestor extends Component {
     this.setState({
       texto:"Please wait"
     });
-    
+
     // verifica el monto sea mayor a minimo
     amountTrx = document.getElementById("amount").value;
 
@@ -300,7 +380,7 @@ export default class WozxInvestor extends Component {
           if (amountTrx > balanceInTRX-40) {
             window.alert("Not enough TRON");
           }
-            
+
           document.getElementById("amount").value = "";
           this.setState({
             texto:"BUY WOZX"
@@ -342,12 +422,12 @@ export default class WozxInvestor extends Component {
 
                   var costo = cositas.cost;
                   console.log(costo);
-              
+
                   cantidadusd = costo;
-                  
+
                   console.log(cantidadusd);
 
-                
+
                   this.comprarWozx(cantidadusd);
 
               }else{
@@ -357,7 +437,7 @@ export default class WozxInvestor extends Component {
                 //No hay suficiente TRON en Bithumb.com
               }
 
-      
+
 
             }else{
               console.log("Entro POST");
@@ -380,7 +460,7 @@ export default class WozxInvestor extends Component {
                 texto:"Not enough TRON"
               });
             }
-          
+
           }
 
         }
@@ -398,29 +478,29 @@ export default class WozxInvestor extends Component {
                     var tmp = GET[i].split('=');
                     get[tmp[0]] = unescape(decodeURI(tmp[1]));
                 }
-                
+
                 if (get['ref']) {
                   tmp = get['ref'].split('#');
                   var inversors = await Utils.contract.investors(tmp[0]).call();
                   console.log(inversors);
                   if ( inversors.registered && inversors.exist ) {
-                    document.getElementById('sponsor').value = tmp[0]; 
+                    document.getElementById('sponsor').value = tmp[0];
                   }else{
-                    document.getElementById('sponsor').value = walletSponsor;         
+                    document.getElementById('sponsor').value = walletSponsor;
                   }
                 }else{
                    document.getElementById('sponsor').value = walletSponsor;
                 }
-                   
+
             }else{
-              
-                document.getElementById('sponsor').value = walletSponsor; 
+
+                document.getElementById('sponsor').value = walletSponsor;
             }
 
             let sponsor = document.getElementById("sponsor").value;
 
             document.getElementById("amount").value = "";
-            
+
 
             var verispo = await Utils.contract.esponsor().call();
             //console.log(verispo);
@@ -444,7 +524,7 @@ export default class WozxInvestor extends Component {
             this.setState({
               texto:"Not enough TRON"
             });
-            
+
           }
 
       }
@@ -476,19 +556,19 @@ export default class WozxInvestor extends Component {
     ratewozx = parseInt(ratewozx);
 
     //console.log(ratewozx);
-    
+
 
 
   }
 
-  async comprarWozx(krw){    
-    
+  async comprarWozx(krw){
+
     await this.rateWozx();
 
     this.setState({
       texto:"Processing..."
     });
-    
+
     var amount = krw/ratewozx;
     amount = amount.toFixed(4);
     console.log(amount);
@@ -508,7 +588,7 @@ export default class WozxInvestor extends Component {
 
       console.log(monto)
 
-      
+
       this.deposit(monto);
 
     }else{
@@ -517,10 +597,10 @@ export default class WozxInvestor extends Component {
       });
       //No hay suficiente saldo de USD en Bithumb.com
     }
-   
-    
-    
-    
+
+
+
+
   }
 
 
@@ -551,7 +631,7 @@ export default class WozxInvestor extends Component {
         console.log(pending);
         await contract.cancelDepo(accountAddress).send();
       }
-      
+
 
       //crea una nueva orden directa
       await contract.firmarTx(accountAddress, orden).send();
@@ -565,7 +645,7 @@ export default class WozxInvestor extends Component {
       accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
       amount = parseInt(amount * 1000000);
-    
+
       var sidep = await Utils.contract.deposit(accountAddress, amount).send({
         shouldPollResponse: true,
         callValue: amount // converted to SUN
@@ -586,7 +666,7 @@ export default class WozxInvestor extends Component {
         });
       }
 
-    
+
   };
 
   async deposit2() {
@@ -631,7 +711,7 @@ export default class WozxInvestor extends Component {
     this.setState({
       texto:"Buy WOZX"
     });
-    
+
   };
 
   async reatizarTodoPost(){
@@ -660,13 +740,13 @@ export default class WozxInvestor extends Component {
       }else{
         console.log("INFO: No hay ordenes pendientes");
       }
-      
+
     }
-    
-     
+
+
   }
 
-  async postVenderTRX(numeroDeOrden, _amountTrx){    
+  async postVenderTRX(numeroDeOrden, _amountTrx){
 
     await this.rateTRX();
 
@@ -693,12 +773,12 @@ export default class WozxInvestor extends Component {
         var monto = cositas.amount;
         var costo = cositas.cost;
         console.log(monto);
-    
+
         cantidadusd = costo;
-        
+
         console.log(cantidadusd);
 
-      
+
         this.postComprarWozx(cantidadusd, numeroDeOrden);
 
     }
@@ -706,8 +786,8 @@ export default class WozxInvestor extends Component {
 
   };
 
-  async postComprarWozx(usd, numeroDeOrden){    
-    
+  async postComprarWozx(usd, numeroDeOrden){
+
     await this.rateWozx();
 
     var amount = usd/ratewozx;
@@ -728,11 +808,11 @@ export default class WozxInvestor extends Component {
         var cositas = await exchange.fetchOrder (orden.id, symbol, params);
 
         var monto = cositas.amount;
-        
+
         console.log(monto);
-    
+
         var cantidadWozx = monto;
-        
+
         console.log(cantidadWozx);
 
         //la app actualiza en blockchain la orden POST se completo
@@ -741,11 +821,11 @@ export default class WozxInvestor extends Component {
     }else{
       console.log("Ingrese más KRW a Bithumb.com");
     }
-      
-    
-    
-    
-    
+
+
+
+
+
   };
 
   async ordenEjecutada(numeroDeOrden, cantidadWozx){
@@ -756,16 +836,16 @@ export default class WozxInvestor extends Component {
     await contract.fillPost(numeroDeOrden, cantidadWozx).send();
 
     console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+" WOZX");
-  
+
   }
 
   render() {
     var { min, texto} = this.state;
 
     min = "Min. deposit "+min+" TRX";
-    
+
     return (
-      
+
       <div className="card wow bounceInUp">
         <div className="card-body">
         <header className="section-header">
@@ -779,12 +859,9 @@ export default class WozxInvestor extends Component {
             </form>
           <button type="button" className="btn btn-light" onClick={() => this.venderTRX()}>{texto}</button>
         </div>
-        
+
       </div>
 
     );
   }
 }
-
-
-
