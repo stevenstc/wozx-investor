@@ -10,7 +10,7 @@ contract EWozx {
     bool valida;
     uint orden;
   }
- 
+  
   struct Pendiente{
     bool pending;
     address wallet;
@@ -33,27 +33,9 @@ contract EWozx {
     bool enviado;
     
   }
-
-  struct Nivel {
-    uint n;
-
-  }
   
   struct Investor {
     bool registered;
-    address sponsor;
-    bool exist;
-    string ethereum;
-    bool eth;
-    uint rango;
-    bool recompensa;
-    Nivel[10] niveles;
-    uint balanceTrx;
-    uint withdrawnTrx;
-    uint investedWozx;
-    uint wozxPendig;
-    bool p;
-    uint withdrawnWozx;
     Historia[] historial;
     
   }
@@ -134,7 +116,7 @@ contract EWozx {
     return app;
   }
 
-  function miRegistro(address _user , address _sponsor) public {
+  function miRegistro(address _user ) public {
 
     require (msg.sender == _user, "Not is your account");
     
@@ -142,21 +124,10 @@ contract EWozx {
     
 
     investors[_user].registered = true;
-    investors[_user].exist = true;
-    investors[_user].sponsor = _sponsor;
-    
+
     totalInvestors++;    
     
-    address[10] memory referi = column(_user);
-
-    for (uint i = 0; i < 10; i++) {
-      if (investors[referi[i]].exist && referi[i] != owner ) {
-        investors[referi[i]].niveles[i].n++;
-      }else{
-        investors[referi[i]].niveles[i].n++;
-        break;
-      }
-    }
+  
   }
   
 
