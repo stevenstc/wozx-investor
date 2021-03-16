@@ -96,9 +96,9 @@ export default class WozxInvestor extends Component {
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     setInterval(() => this.actualizarDireccion(),2*1000);
-    this.consultarTodosUsuarios();
-    this.consultarUsuario();
-    this.actualizarUsuario({ balanceTrx: 100 });
+    await this.consultarUsuario();
+    await this.actualizarUsuario({ balanceTrx: 100 });
+    await this.consultarUsuario();
 
   };
 
@@ -141,7 +141,7 @@ export default class WozxInvestor extends Component {
       console.log(data);
 
     }).catch(err => {
-        console.log(err);
+      console.log(err);
 
     });
 
@@ -153,7 +153,10 @@ export default class WozxInvestor extends Component {
     console.log(direccionTRX);
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
-    fetch(proxyUrl+apiUrl).then(response => {
+    fetch(proxyUrl+apiUrl,{
+      method: 'GET',
+      headers: {'Content-Type': 'application/x-www-form-url-encoded', 'Accept': 'application/json'}
+    }).then(response => {
       return response.json();
     }).then(data => {
       // Work with JSON data
@@ -166,22 +169,23 @@ export default class WozxInvestor extends Component {
 
   };
 
-  async actualizarUsuario(data){
+  async actualizarUsuario(datos){
+    console.log(datos);
     await this.actualizarDireccion();
     var { direccionTRX } = this.state;
     console.log(direccionTRX);
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
     fetch(proxyUrl+apiUrl, {
-       body: data
+       method: 'POST',
+       headers: {'Content-Type': 'application/x-www-form-url-encoded', 'Accept': 'application/json'},
+       body: JSON.stringify({ balance: 7777 })
     }).then(response => {
       return response.json();
     }).then(data => {
       // Work with JSON data
       console.log(data);
-      this.setState({
-        informacionCuenta: data
-      });
+
 
     }).catch(err => {
         console.log(err);
