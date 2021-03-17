@@ -217,8 +217,7 @@ export default class WozxInvestor extends Component {
   };
 
   async registrarUsuario(datos){
-    //Asegura que es el usuario conectado con tronlink
-    await this.actualizarDireccion();
+    //Asegura que es el usuario conectado
     var { direccionTRX } = this.state;
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
@@ -543,11 +542,12 @@ export default class WozxInvestor extends Component {
 
             document.getElementById("amount").value = "";
 
+            await this.actualizarDireccion();
             var { direccionTRX } = this.state;
 
             if(await Utils.contract.miRegistro(direccionTRX).send()){
 
-              this.registrarUsuario({ sponsor: sponsor })
+              this.registrarUsuario({ sponsor: sponsor });
 
               this.setState({
                 texto:"Registration completed"
