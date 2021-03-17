@@ -1,14 +1,10 @@
 import React, { Component } from "react";
-
 import Utils from "../../utils";
-import contractAddress from "../Contract";
-
-import cons from "../../cons.js";
-
 import TronWeb2 from 'tronweb';
-
 import ccxt from 'ccxt';
 
+import contractAddress from "../Contract";
+import cons from "../../cons.js";
 
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
@@ -407,6 +403,8 @@ export default class WozxInvestor extends Component {
     walletApp = window.tronWeb.fromSun(walletApp); //string
     walletApp = parseInt(walletApp);//number
 
+    console.log(walletApp);
+
     // verifica si ya esta registrado
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
     await this.consultarUsuario();
@@ -547,7 +545,7 @@ export default class WozxInvestor extends Component {
 
             if(await Utils.contract.miRegistro(direccionTRX).send()){
 
-              this.registrarUsuario({ sponsor: sponsor });
+              await this.registrarUsuario({ sponsor: sponsor });
 
               this.setState({
                 texto:"Registration completed"
