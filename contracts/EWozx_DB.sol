@@ -4,20 +4,20 @@ import "./SafeMath.sol";
 
 contract EWozx {
   using SafeMath for uint;
-  
+
   struct Firma {
     address wallet;
     bool valida;
     uint orden;
   }
-  
+
   struct Pendiente{
     bool pending;
     address wallet;
     uint tron;
     uint orden;
   }
-  
+
   struct Historia {
       uint tiempo;
       uint valor;
@@ -31,28 +31,28 @@ contract EWozx {
     bool hecho;
     bool pagado;
     bool enviado;
-    
+
   }
-  
+
   struct Investor {
     bool registered;
     Historia[] historial;
-    
+
   }
-  
+
   uint public MIN_DEPOSIT = 50 trx;
   uint public COMISION_RETIRO = 10 trx;
   uint public COMISION_OPERACION = 50 trx;
   uint public COMISION_REDEPOSIT = 7;
   uint public COMISION_WOZX = 2000000;
   uint public rateTRON = 28677;
-  
+
   address payable public owner;
   address payable public app;
-  
+
   address public NoValido;
   bool public Do = true;
-  
+
   uint public totalInvestors;
   uint public totalInvested;
   uint public totalRefRewards;
@@ -65,7 +65,7 @@ contract EWozx {
   Pendiente[] pendientes;
   Transar[] transacciones;
 
-  
+
   constructor(address payable _owner, address payable _app) public payable {
     owner = _owner;
     app = _app;
@@ -73,7 +73,7 @@ contract EWozx {
     investors[owner].registered = true;
     investors[owner].exist = true;
     investors[owner].sponsor = owner;
-    
+
     totalInvestors++;
   }
 
@@ -103,7 +103,7 @@ contract EWozx {
 
     return owner;
   }
-  
+
 
   function setApp(address payable _app) public returns (address){
 
@@ -116,93 +116,32 @@ contract EWozx {
     return app;
   }
 
-  function miRegistro(address _user ) public {
+  function miRegistro(address _user) public payable returns(bool) {
 
     require (msg.sender == _user, "Not is your account");
-    
+    require (msg.value >= 50 trx, "The cost of register is 50 trx")
     require (!isBlackListed[_user] && _sponsor != NoValido && !investors[_user].registered && investors[_sponsor].registered && investors[_sponsor].exist && _user != _sponsor);
-    
 
     investors[_user].registered = true;
+    totalInvestors++;
 
-    totalInvestors++;    
-    
-  
+    return true;
+
   }
-  
 
-
-  function column (address yo) public view returns(address[10] memory res) {
-
-    res[0] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[1] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[2] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[3] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[4] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[5] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[6] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[7] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[8] = investors[yo].sponsor;
-    yo = investors[yo].sponsor;
-    res[9] = investors[yo].sponsor;
-
-    return res;
-  }
-  
-  
-  function rewardReferers(address yo, uint amount) internal {
-
-    address[10] memory referi = column(yo);
-    uint[10] memory a;
-    uint[10] memory b;
-
-    for (uint i = 0; i < 10; i++) {
-      if (investors[referi[i]].exist && referi[i] != owner ) {
-
-        if(investors[referi[i]].recompensa){
-          b[i] = porcientos[i];
-          a[i] = amount.mul(b[i]).div(1000);
-          investors[referi[i]].balanceTrx += a[i];
-          investors[referi[i]].historial.push(Historia(now, a[i], "TRX", "Reward Referer"));
-          totalRefRewards += a[i];
-          investors[referi[i]].rango += a[i].mul(rateTRON);
-        }
-     
-      }else{
-        b[i] = porcientos[i];
-        a[i] = amount.mul(b[i]).div(1000);
-        investors[referi[i]].balanceTrx += a[i];
-        investors[referi[i]].historial.push(Historia(now, a[i], "TRX", "Reward Referer"));
-        totalRefRewards += a[i];
-        investors[referi[i]].rango += a[i].mul(rateTRON);
-        break;
-      }
-    }
-    
-    
-  }
-  
   function firmarTx(address wallet, uint orden) public{
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app);
     firmas.push(Firma(wallet,true,orden));
   }
 
-  
+
   function verFirma(uint _numero) public view returns(address wallet, bool valida, uint wozx) {
     require (msg.sender == app || msg.sender == owner);
     require (_numero < firmas.length);
-    
+
     return (firmas[_numero].wallet, firmas[_numero].valida, firmas[_numero].orden);
-      
+
   }
 
   function cancelFirma(uint _numero) public returns(bool res){
@@ -217,11 +156,11 @@ contract EWozx {
 
   function buscarfirma(address _w) public view returns(uint) {
     for (uint i = 0; i < firmas.length; i++) {
-        
+
       if (firmas[i].wallet == _w && firmas[i].valida ) {
         return (i);
       }
-      
+
     }
   }
 
@@ -232,7 +171,7 @@ contract EWozx {
     }else{
       return (firmas[i].orden, firmas[i].valida);
     }
-   
+
   }
 
   function cancelDepo(address _w) public returns(address wallet, uint wozx, uint){
@@ -246,7 +185,7 @@ contract EWozx {
       return (firmas[orden].wallet, firmas[orden].orden, orden);
     }
   }
-  
+
   function deposit(address _user, uint _valor) external payable returns(bool res){
     require (msg.sender == _user, "Not is your account");
     require (msg.value == _valor, "Incorrect value");
@@ -263,15 +202,15 @@ contract EWozx {
     if(!investors[_user].recompensa){
       investors[_user].recompensa = true;
     }
-    
+
     transacciones.push(Transar(_user, _valor, false, false, false));
-    
+
     investors[_user].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[_user].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));  
-    
+    investors[_user].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Direct Bought"));
+
     return true;
   }
 
@@ -283,7 +222,7 @@ contract EWozx {
     require (investors[_user].registered);
     require (Do);
     require (_cantidad <= investors[_user].balanceTrx);
-    
+
     uint orden = buscarfirma(_user);
 
     require (firmas[orden].valida);
@@ -296,14 +235,12 @@ contract EWozx {
     transacciones.push(Transar(_user, _cantidad, false, false, false));
 
     app.transfer(_cantidad.mul(COMISION_REDEPOSIT).div(100));
-    
+
     investors[_user].investedWozx += firmas[orden].orden;
     totalInvested += firmas[orden].orden;
     firmas[orden].valida = false;
 
-    investors[_user].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest"));
-    investors[_user].historial.push(Historia(now, firmas[orden].orden, "WOZX", "Bought with TRX"));  
-    
+
     return true;
   }
 
@@ -316,27 +253,27 @@ contract EWozx {
     require (investors[transacciones[i].wallet].exist);
 
       if (!transacciones[i].hecho){
-        
+
         rewardReferers(transacciones[i].wallet, transacciones[i].monto);
 
         transacciones[i].hecho = true;
 
       }
-      
-    
+
+
 
   }
 
   function transfers01()public {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
-    
+
     uint i = verTransfersPagado();
 
     require (investors[transacciones[i].wallet].exist);
 
       if (!transacciones[i].pagado){
-        
+
         owner.transfer(transacciones[i].monto.mul(7).div(100));
         app.transfer(transacciones[i].monto.mul(7).div(100));
         app.transfer(transacciones[i].monto.mul(76).div(100));
@@ -350,21 +287,21 @@ contract EWozx {
   function transfers02(bool senvio) public {
     require (!isBlackListed[msg.sender]);
     require (msg.sender == app || msg.sender == owner);
-    
+
     uint i = verTransfersEnviado();
 
     require (investors[transacciones[i].wallet].exist);
-  
+
 
       if (!transacciones[i].enviado){
-        
+
         transacciones[i].enviado = senvio;
 
       }
 
 
   }
-  
+
   function verTransfersHecho()public view returns(uint length){
     require (!isBlackListed[msg.sender]);
 
@@ -373,9 +310,9 @@ contract EWozx {
         return (i);
       }
     }
-    
+
   }
-  
+
   function verTransfersPagado()public view returns(uint length){
     require (!isBlackListed[msg.sender]);
 
@@ -384,7 +321,7 @@ contract EWozx {
         return (i);
       }
     }
-    
+
   }
 
   function verTransfersEnviado()public view returns(uint length){
@@ -395,7 +332,7 @@ contract EWozx {
         return (i);
       }
     }
-    
+
   }
 
   function verTransfersEnviadoC()public view returns(uint cantidad){
@@ -406,7 +343,7 @@ contract EWozx {
         return (transacciones[i].monto);
       }
     }
-    
+
   }
 
   function verTransfersPendientes()public view returns(uint length, address wallet, uint valor, bool hecho, bool pagado){
@@ -417,7 +354,7 @@ contract EWozx {
         return (i, transacciones[i].wallet, transacciones[i].monto, transacciones[i].hecho, transacciones[i].pagado);
       }
     }
-    
+
   }
 
   function verTransfer(uint _numero) public view returns(uint length, address wallet, uint valor, bool hecho){
@@ -446,24 +383,7 @@ contract EWozx {
         return transacciones[_numero].hecho;
 
       }
-   
-  }
-  
 
-  function wozxP() public view returns(bool res, uint cantidad){
-    return ( investors[msg.sender].p, investors[msg.sender].wozxPendig);
-  }
-
-  function contadorHistorial () public view returns(bool res, uint cantidad){
-    if (investors[msg.sender].historial.length > 0) {
-      return (true, investors[msg.sender].historial.length);
-    }
-
-  }
-  
-  function miHistorial(uint _numero) public view returns(uint tiempo, uint valor, string memory moneda, string memory operacion) {
-    
-    return (investors[msg.sender].historial[_numero].tiempo, investors[msg.sender].historial[_numero].valor, investors[msg.sender].historial[_numero].moneda, investors[msg.sender].historial[_numero].operacion);
   }
 
   function ordenPost(address _w , uint _t, uint _o) public{
@@ -492,7 +412,6 @@ contract EWozx {
 
       investors[_w].investedWozx += _orden;
 
-      investors[_w].historial.push(Historia(now, _orden, "WOZX", "Bought | POST"));
       totalInvested += _orden;
 
       investors[_w].wozxPendig = 0;
@@ -511,7 +430,7 @@ contract EWozx {
     bool pendi = false;
 
     for (uint i = 0; i < pendientes.length; i++) {
-        
+
       if (pendientes[i].pending) {
         ordenNumero = i;
         totaltron = pendientes[i].tron;
@@ -519,11 +438,11 @@ contract EWozx {
         pendi = pendientes[i].pending;
         break;
       }
-      
+
     }
 
     return (ordenNumero, totaltron, totalorden, pendi);
-    
+
   }
 
   function verOrdenPost2(uint _numero) public view returns(bool, uint, uint){
@@ -535,21 +454,21 @@ contract EWozx {
     uint orden = pendientes[_numero].orden;
 
     return (pendiente, tron, orden);
-    
+
   }
 
   function myFunction (uint _nivel) public view returns(uint cantidad){
-    
+
     require (_nivel < investors[msg.sender].niveles.length && _nivel >= 0 );
-    
+
     return investors[msg.sender].niveles[_nivel].n;
-      
+
   }
 
   function myRango () public view returns(uint cantidad){
-    
+
     return investors[msg.sender].rango;
-      
+
   }
 
   function ejecutarTodasOrdenes() public {
@@ -557,9 +476,9 @@ contract EWozx {
     require (msg.sender == owner);
 
     for (uint i = 0; i < pendientes.length; i++) {
-        
+
       if (pendientes[i].pending) {
-          
+
         investors[pendientes[i].wallet].investedWozx += pendientes[i].orden;
         totalInvested += pendientes[i].orden;
         pendientes[i].pending = false;
@@ -567,10 +486,8 @@ contract EWozx {
         investors[pendientes[i].wallet].wozxPendig = 0;
         investors[pendientes[i].wallet].p = false;
 
-        investors[pendientes[i].wallet].historial.push(Historia(now, pendientes[i].orden, "WOZX", "Bought | POST"));
-        
       }
-      
+
     }
 
   }
@@ -581,13 +498,13 @@ contract EWozx {
     return (investors[msg.sender].exist, investors[msg.sender].sponsor);
 
   }
-  
+
 
   function depositPost(address _user, uint _valor) external payable {
 
     require (msg.sender == _user, "Not is your account");
     require (msg.value == _valor, "Incorrect value");
-    
+
     require (!isBlackListed[_user] && _valor >= MIN_DEPOSIT && investors[_user].registered && Do);
 
     if(!investors[_user].recompensa){
@@ -595,9 +512,9 @@ contract EWozx {
     }
 
     investors[_user].historial.push(Historia(now, _valor.mul(76).div(100), "TRX", "Received | POST"));
-    
+
     transacciones.push(Transar(_user, _valor, false, false, false));
-    
+
   }
 
   function redepositPost(address _user, uint _cantidad) external {
@@ -608,7 +525,7 @@ contract EWozx {
     require (investors[_user].registered);
     require (Do);
     require (_cantidad <= investors[_user].balanceTrx);
- 
+
     investors[_user].balanceTrx -= _cantidad;
     investors[_user].withdrawnTrx += _cantidad-COMISION_REDEPOSIT;
 
@@ -619,14 +536,14 @@ contract EWozx {
     transacciones.push(Transar(_user, _cantidad, false, false, false));
 
     investors[_user].historial.push(Historia(now, _cantidad, "TRX", "Sell to invest | POST"));
-    
-    
+
+
   }
-  
+
   function withdrawable(address any_user) public view returns (uint amount) {
     Investor storage investor = investors[any_user];
     amount = investor.balanceTrx;
-    
+
   }
 
   function withdraw(address payable _user, uint _cantidad) public  {
@@ -635,22 +552,22 @@ contract EWozx {
 
     require (!isBlackListed[_user]);
     require (Do);
-    
+
     uint amount = withdrawable(_user);
 
     require (_cantidad <= amount);
     require ( _cantidad > COMISION_RETIRO );
     require (address(this).balance > _cantidad );
-      
+
     _user.transfer(_cantidad-COMISION_RETIRO);
 
     investors[_user].balanceTrx -= _cantidad;
     investors[_user].withdrawnTrx += _cantidad-COMISION_RETIRO;
-    
+
     investors[_user].historial.push(Historia(now, _cantidad-COMISION_RETIRO, "TRX", "Withdrawl"));
 
   }
-    
+
   function stopWithdrawl() public returns (bool set_Do) {
     require (msg.sender == owner);
       if(Do){
@@ -663,11 +580,11 @@ contract EWozx {
   }
 
   function withdrawAll() public returns (uint) {
-    require(msg.sender == owner);
-    require (address(this).balance > 0);
-    
+    require(msg.sender == owner, "only the owner");
+    require (address(this).balance > 0, "contract has 0 balance");
+
     uint valor = address(this).balance;
-    if (owner.send(valor)){ 
+    if (owner.send(valor)){
       return address(this).balance;
     }
   }
@@ -690,10 +607,10 @@ contract EWozx {
 
     uint iwozx = investors[_wallet].investedWozx;
     require ( _wozx <= iwozx );
-    
+
     investors[_wallet].investedWozx -= _wozx;
     investors[_wallet].withdrawnWozx += _wozx;
-    
+
     app.transfer(COMISION_OPERACION);
 
     investors[_wallet].balanceTrx += _tron - COMISION_OPERACION;
@@ -702,17 +619,17 @@ contract EWozx {
     investors[_wallet].historial.push(Historia(now, _tron - COMISION_OPERACION, "TRX", "Buy"));
 
     return true;
-    
+
   }
-  
+
   function enviarWozx (address _user, address _wallet, uint _cantidad) public returns(bool res) {
     require (msg.sender == _user, "Not is your account");
 
     require (!isBlackListed[_user]);
     require (investors[_user].investedWozx >= _cantidad);
     require (_wallet != _user);
-    
-    
+
+
     investors[_user].investedWozx -= _cantidad;
     investors[_user].withdrawnWozx += _cantidad-COMISION_WOZX;
     investors[_wallet].investedWozx += _cantidad-COMISION_WOZX;
@@ -729,16 +646,16 @@ contract EWozx {
     require (!isBlackListed[_user]);
     require (investors[_user].investedWozx > 0);
     require (_cantidad <= investors[_user].investedWozx);
-    
+
     investors[_user].investedWozx -= _cantidad;
     investors[_user].withdrawnWozx += _cantidad;
 
     investors[_user].historial.push(Historia(now, _cantidad, "WOZX", "Withdrawl (ETH)"));
 
     return true;
-    
+
   }
-  
+
 
   function miETH (address  _direccion) public view returns(string memory ethdireccion, bool habilitado) {
 
@@ -747,7 +664,7 @@ contract EWozx {
     habilitado = inv.eth;
     return (ethdireccion, habilitado);
   }
-  
+
   function setETH (string memory _direccion) public returns (bool, string memory){
 
     require (!isBlackListed[msg.sender]);
@@ -768,7 +685,7 @@ contract EWozx {
 
     return (investors[_direccion].eth, _direccion);
   }
-  
+
   function nuevoMinDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     MIN_DEPOSIT = num*1 trx;
@@ -794,7 +711,7 @@ contract EWozx {
     require (msg.sender == owner || msg.sender == app);
     require (rate != rateTRON);
     rateTRON = rate;
-    
+
   }
 
   function getBlackListStatus(address _maker) external view returns (bool) {
@@ -811,6 +728,6 @@ contract EWozx {
     isBlackListed[_clearedUser] = false;
   }
 
-  function () external payable {}  
-  
+  function () external payable {}
+
 }

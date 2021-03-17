@@ -80,9 +80,12 @@ export default class WozxInvestor extends Component {
     this.rateT = this.rateT.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
     this.consultarTodosUsuarios = this.consultarTodosUsuarios.bind(this);
+    this.registrarUsuario = this.registrarUsuario.bind(this);
     this.consultarUsuario = this.consultarUsuario.bind(this);
-    this.actualizarDireccion = this.actualizarDireccion.bind(this);
     this.actualizarUsuario = this.actualizarUsuario.bind(this);
+
+    this.actualizarDireccion = this.actualizarDireccion.bind(this);
+
 
 
   }
@@ -95,10 +98,10 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.reatizarTodoPost(),120*1000);
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
-    setInterval(() => this.actualizarDireccion(),2*1000);
+    setInterval(() => this.actualizarDireccion(),15*1000);
     await this.consultarUsuario();
-    await this.actualizarUsuario({ balanceTrx: 100 });
-    await this.consultarUsuario();
+    await this.actualizarUsuario({ balanceTrx: '100' });
+
 
   };
 
@@ -147,10 +150,18 @@ export default class WozxInvestor extends Component {
 
   };
 
-  async consultarUsuario(){
+  async consultarUsuario(otro){
+
     await this.actualizarDireccion();
     var { direccionTRX } = this.state;
+
+    if (otro) {
+      direccionTRX = otro;
+
+    }
+
     console.log(direccionTRX);
+
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
     fetch(proxyUrl+apiUrl,{
@@ -160,6 +171,14 @@ export default class WozxInvestor extends Component {
       return response.json();
     }).then(data => {
       // Work with JSON data
+      if (otro) {
+        return data;
+      }else{
+        this.setState({
+          informacionCuenta: data
+        });
+      }
+
       console.log(data);
 
     }).catch(err => {
@@ -170,16 +189,19 @@ export default class WozxInvestor extends Component {
   };
 
   async actualizarUsuario(datos){
-    console.log(datos);
+    //Asegura que es el usuario conectado con tronlink
     await this.actualizarDireccion();
     var { direccionTRX } = this.state;
-    console.log(direccionTRX);
+    //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
     fetch(proxyUrl+apiUrl, {
        method: 'POST',
-       headers: {'Content-Type': 'application/x-www-form-url-encoded', 'Accept': 'application/json'},
-       body: JSON.stringify({ balance: 7777 })
+       headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+       body: JSON.stringify(datos)
     }).then(response => {
       return response.json();
     }).then(data => {
@@ -189,6 +211,34 @@ export default class WozxInvestor extends Component {
 
     }).catch(err => {
         console.log(err);
+
+    });
+
+  };
+
+  async registrarUsuario(datos){
+    //Asegura que es el usuario conectado con tronlink
+    await this.actualizarDireccion();
+    var { direccionTRX } = this.state;
+    //console.log(direccionTRX);
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/registrar/'+direccionTRX;
+    fetch(proxyUrl+apiUrl, {
+       method: 'POST',
+       headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+       body: JSON.stringify(datos)
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      // Work with JSON data
+      console.log(data);
+
+
+    }).catch(err => {
+      console.log(err);
 
     });
 
@@ -250,12 +300,11 @@ export default class WozxInvestor extends Component {
       console.log("INFO: Rate 1 TRX "+rat+" USD // aplicación "+rateApp+" USD");
     }
 
-    const account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
-    var investors = await Utils.contract.investors(accountAddress).call();
+    await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
+    await this.consultarUsuario();
+    var { informacionCuenta } = this.state;
 
-    if (!investors.registered) {
+    if (!informacionCuenta.registered) {
       document.getElementById("amount").value = "";
       this.setState({
         texto:"Click to register"
@@ -360,12 +409,9 @@ export default class WozxInvestor extends Component {
     walletApp = parseInt(walletApp);//number
 
     // verifica si ya esta registrado
-    var account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
-
-    var investors = await Utils.contract.investors(accountAddress).call();
-    console.log(investors);
+    await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
+    await this.consultarUsuario();
+    var { informacionCuenta } = this.state;
 
     const balanceInSun = await window.tronWeb.trx.getBalance(); //number
     var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
@@ -376,7 +422,7 @@ export default class WozxInvestor extends Component {
 
     if (walletApp > 1000){
 
-      if (investors.registered) {
+      if (informacionCuenta.registered) {
 
         if (amountTrx <= 0 || amountTrx > balanceInTRX-40) {
 
@@ -473,6 +519,7 @@ export default class WozxInvestor extends Component {
 
           if ( balanceInTRX >= 40) {
             //registra a la persona con los referidos
+            var sponsor = walletSponsor;
             var loc = document.location.href;
             if(loc.indexOf('?')>0){
                 var getString = loc.split('?')[1];
@@ -485,43 +532,29 @@ export default class WozxInvestor extends Component {
 
                 if (get['ref']) {
                   tmp = get['ref'].split('#');
-                  var inversors = await Utils.contract.investors(tmp[0]).call();
-                  console.log(inversors);
-                  if ( inversors.registered && inversors.exist ) {
-                    document.getElementById('sponsor').value = tmp[0];
-                  }else{
-                    document.getElementById('sponsor').value = walletSponsor;
+
+                  var infoSponsor = await this.consultarUsuario(tmp[0]);
+
+                  if ( infoSponsor.registered && infoSponsor.exist ) {
+                    sponsor = tmp[0];
                   }
-                }else{
-                   document.getElementById('sponsor').value = walletSponsor;
                 }
-
-            }else{
-
-                document.getElementById('sponsor').value = walletSponsor;
             }
-
-            let sponsor = document.getElementById("sponsor").value;
 
             document.getElementById("amount").value = "";
 
+            var { direccionTRX } = this.state;
 
-            var verispo = await Utils.contract.esponsor().call();
-            //console.log(verispo);
+            if(await Utils.contract.miRegistro(direccionTRX).send()){
 
-            if (verispo.res) {
-              sponsor = window.tronWeb.address.fromHex(verispo.sponsor);
+              this.registrarUsuario({ sponsor: sponsor })
+
+              this.setState({
+                texto:"Registration completed"
+              });
             }
 
-            account =  await window.tronWeb.trx.getAccount();
-            accountAddress = account.address;
-            accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
-            await Utils.contract.miRegistro(accountAddress, sponsor).send();
-
-            this.setState({
-              texto:"Registration completed"
-            });
 
           }else{
             document.getElementById("amount").value = "";
