@@ -108,14 +108,14 @@ contract EWozx {
 
   function depositoWozx(address _user, uint _cantidad) external returns(bool){
     require (!isBlackListed[msg.sender]);
+    require (!isBlackListed[_user]);
     require (msg.sender == app);
 
-    require (_cantidad >= MIN_DEPOSIT);
     require (investors[_user].registered);
     require (Do);
     require (_cantidad <= wozxDisponibleEnPlataforma);
 
-
+    wozxDisponibleEnPlataforma -= _cantidad;
     investors[_user].wozxEntrante += _cantidad;
     investors[_user].wozxDisponible += _cantidad;
 
@@ -169,42 +169,40 @@ contract EWozx {
     }
   }
 
-  function MYwithdrawable() public view returns (uint amount) {
+  function MYwithdrawable() public view returns (uint) {
     Investor storage investor = investors[msg.sender];
-    amount = investor.tronDisponible;
+    return investor.tronDisponible;
   }
 
-  function withdrawableWozx() public view returns (uint amount) {
+  function withdrawableWozx() public view returns (uint) {
     Investor storage investor = investors[msg.sender];
-    amount = investor.wozxDisponible;
+    return investor.wozxDisponible;
   }
 
 
-  function enviarWozx (address _user, address _wallet, uint _cantidad) public returns(bool) {
-    require (msg.sender == _user, "Not is your account");
+  function enviarWozx (address _wallet, uint _cantidad) public returns(bool) {
 
-    require (!isBlackListed[_user]);
-    require (investors[_user].wozxDisponible >= _cantidad);
-    require (_wallet != _user);
+    require (!isBlackListed[msg.sender] && !isBlackListed[_wallet] );
+    require (investors[msg.sender].wozxDisponible >= _cantidad);
+    require (_wallet !=msg.sender);
 
 
-    investors[_user].wozxDisponible -= _cantidad;
-    investors[_user].wozxRetirado += _cantidad-COMISION_WOZX;
+    investors[msg.sender].wozxDisponible -= _cantidad;
+    investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
     investors[_wallet].wozxDisponible += _cantidad-COMISION_WOZX;
 
 
     return true;
   }
 
-  function retirarWozx(address _user, uint _cantidad) public returns(bool) {
-    require (msg.sender == _user, "Not is your account");
+  function retirarWozx(uint _cantidad) public returns(bool) {
 
-    require (!isBlackListed[_user]);
-    require (investors[_user].wozxDisponible > 0);
-    require (_cantidad <= investors[_user].wozxDisponible);
+    require (!isBlackListed[msg.sender]);
+    require (investors[msg.sender].wozxDisponible > 0);
+    require (_cantidad <= investors[msg.sender].wozxDisponible);
 
-    investors[_user].wozxDisponible -= _cantidad;
-    investors[_user].wozxRetirado += _cantidad;
+    investors[msg.sender].wozxDisponible -= _cantidad;
+    investors[msg.sender].wozxRetirado += _cantidad;
 
 
     return true;
