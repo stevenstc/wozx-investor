@@ -18,16 +18,16 @@ contract EWozx {
     uint tronRetirado;
     uint tronDisponible;
 
-    uint comisiones;
+    uint tronComisiones;
+    uint wozxComisiones;
 
   }
 
   uint public MIN_DEPOSIT = 50 trx;
-  uint public COMISION_RETIRO = 10 trx;
-  uint public COMISION_OPERACION = 50 trx;
-  uint public COMISION_REDEPOSIT = 7;
-  uint public COMISION_WOZX = 2000000;
-  uint public rateTRON = 28677;
+
+  uint public COMISION_TRON = 10 trx;
+  uint public COMISION_WOZX = 2*1000000;
+
 
   uint public wozxEnPlataforma = 0;
   uint public wozxDisponibleEnPlataforma = 0;
@@ -136,13 +136,13 @@ contract EWozx {
     uint amount = withdrawable(msg.sender);
 
     require (_cantidad <= amount);
-    require ( _cantidad > COMISION_RETIRO );
+    require ( _cantidad > COMISION_TRON );
     require (address(this).balance > _cantidad );
 
-    msg.sender.transfer(_cantidad-COMISION_RETIRO);
+    msg.sender.transfer(_cantidad-COMISION_TRON);
 
     investors[msg.sender].tronDisponible -= _cantidad;
-    investors[msg.sender].tronRetirado += _cantidad-COMISION_RETIRO;
+    investors[msg.sender].tronRetirado += _cantidad-COMISION_TRON;
 
     return true;
 
@@ -186,11 +186,9 @@ contract EWozx {
     require (investors[msg.sender].wozxDisponible >= _cantidad);
     require (_wallet !=msg.sender);
 
-
     investors[msg.sender].wozxDisponible -= _cantidad;
     investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
     investors[_wallet].wozxDisponible += _cantidad-COMISION_WOZX;
-
 
     return true;
   }
@@ -202,11 +200,22 @@ contract EWozx {
     require (_cantidad <= investors[msg.sender].wozxDisponible);
 
     investors[msg.sender].wozxDisponible -= _cantidad;
-    investors[msg.sender].wozxRetirado += _cantidad;
-
+    investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
 
     return true;
 
+  }
+
+  function retirarTron(uint _cantidad) public returns(bool) {
+
+    require (!isBlackListed[msg.sender]);
+    require (investors[msg.sender].tronDisponible > 0);
+    require (_cantidad <= investors[msg.sender].tronDisponible);
+
+    investors[msg.sender].tronDisponible -= _cantidad;
+    investors[msg.sender].tronRetirado += _cantidad-COMISION_TRON;
+
+    return true;
   }
 
 
@@ -215,19 +224,9 @@ contract EWozx {
     MIN_DEPOSIT = num*1 trx;
   }
 
-  function nuevoComOperacion(uint num)public{
-    require (msg.sender == owner || msg.sender == app);
-    COMISION_OPERACION = num*1 trx;
-  }
-
   function nuevoComWozx(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     COMISION_WOZX = num*1000000;
-  }
-
-  function nuevoComReDeposit(uint num)public{
-    require (msg.sender == owner || msg.sender == app);
-    COMISION_REDEPOSIT = num;
   }
 
   function getBlackListStatus(address _user) external view returns (bool) {
