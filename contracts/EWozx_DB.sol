@@ -24,6 +24,7 @@ contract EWozx {
   }
 
   uint public MIN_DEPOSIT = 50 trx;
+  uint public COSTO_REGISTRO = 50 trx;
 
   uint public COMISION_TRON = 10 trx;
   uint public COMISION_WOZX = 2*1000000;
@@ -83,7 +84,7 @@ contract EWozx {
 
   function miRegistro() public payable returns(bool) {
 
-    require (msg.value >= 50 trx, "The cost of register is 50 trx");
+    require (msg.value >= COSTO_REGISTRO);
     require (!isBlackListed[msg.sender] && !investors[msg.sender].registered );
 
     investors[msg.sender].registered = true;
@@ -221,12 +222,17 @@ contract EWozx {
 
   function nuevoMinDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
-    MIN_DEPOSIT = num*1 trx;
+    MIN_DEPOSIT = num;
+  }
+
+  function nuevoCostoRegistro(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COSTO_REGISTRO = num;
   }
 
   function nuevoComWozx(uint num)public{
     require (msg.sender == owner || msg.sender == app);
-    COMISION_WOZX = num*1000000;
+    COMISION_WOZX = num;
   }
 
   function getBlackListStatus(address _user) external view returns (bool) {
