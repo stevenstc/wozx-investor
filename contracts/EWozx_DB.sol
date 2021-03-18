@@ -123,9 +123,9 @@ contract EWozx {
     return true;
   }
 
-  function withdrawable(address any_user) public view returns (uint amount) {
+  function withdrawable(address any_user) public view returns (uint) {
     Investor storage investor = investors[any_user];
-    amount = investor.tronDisponible;
+    return investor.tronDisponible;
 
   }
 
@@ -170,7 +170,7 @@ contract EWozx {
     }
   }
 
-  function MYwithdrawable() public view returns (uint) {
+  function withdrawableTrx() public view returns (uint) {
     Investor storage investor = investors[msg.sender];
     return investor.tronDisponible;
   }
@@ -230,7 +230,7 @@ contract EWozx {
     COSTO_REGISTRO = num;
   }
 
-  function nuevoComWozx(uint num)public{
+  function nuevaComisionWozx(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     COMISION_WOZX = num;
   }

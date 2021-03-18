@@ -41,9 +41,9 @@ export default class WozxInvestor extends Component {
     this.Investors = this.Investors.bind(this);
     this.enviarWozx = this.enviarWozx.bind(this);
     this.Link = this.Link.bind(this);
-    this.Wozx = this.Wozx.bind(this); 
+    this.Wozx = this.Wozx.bind(this);
     this.rateW = this.rateW.bind(this);
-    
+
   }
 
   async componentDidMount() {
@@ -66,10 +66,10 @@ export default class WozxInvestor extends Component {
       this.setState({
         priceUSDWOZX: data.market_data.current_price.usd
       });
-      
+
     }).catch(err => {
         console.log(err)
-      
+
     });
 
   };
@@ -113,22 +113,22 @@ export default class WozxInvestor extends Component {
     var esto = await Utils.contract.investors(direccion.address).call();
     var refe = [];
     for (var i = 0; i < 10; i++) {
-      var a = await Utils.contract.myFunction(i).call();
-      if(parseInt(a.cantidad._hex) === 0){
+      var a = 0;
+      if(true){
         refe[i] = "N/A";
       }else{
         refe[i] = parseInt(a.cantidad._hex);
       }
-      
+
     }
     //console.log(refe);
     //console.log(a);
-    var r = await Utils.contract.myRango().call();
+    var r = 0;
     var range = "N/A";
-    var prof = parseInt(r.cantidad._hex)/1000000000000
+    var prof = r;
 
     prof = prof.toFixed(2);
-    
+
     prof = parseFloat(prof);
     //console.log(prof);
     if (prof > 0 && prof < 1000  ) {
@@ -157,22 +157,22 @@ export default class WozxInvestor extends Component {
     }
     //console.log(prof);
 
-    var wozxPe = await Utils.contract.wozxP().call();
+    var wozxPe = 0;// consulta del wozx pendiente por llegar
 
-    var wozxCa = parseInt(wozxPe.cantidad._hex)/1000000;
+    var wozxCa = wozxPe;
 
     wozxCa = wozxCa.toFixed(4);
 
     wozxPe = wozxPe.res;
-  
-    
+
+
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
       registered: esto.registered,
-      balanceTrx: parseInt(esto.balanceTrx._hex)/1000000,
-      withdrawnTrx: parseInt(esto.withdrawnTrx._hex)/1000000,
-      investedWozx: parseInt(esto.investedWozx._hex)/1000000,
-      withdrawnWozx: parseInt(esto.withdrawnWozx._hex)/1000000,
+      balanceTrx: 1000000,
+      withdrawnTrx: 1000000,
+      investedWozx: 1000000,
+      withdrawnWozx: 1000000,
       wozxPe: wozxPe,
       wozxCa: wozxCa,
       refe: refe,
@@ -212,7 +212,7 @@ export default class WozxInvestor extends Component {
       }else{
 
         result = window.confirm("You are sure that you want to SEND "+cantidad+" Wozx?, remember that this action cannot be reversed");
-      
+
       }
 
     }
@@ -238,15 +238,15 @@ export default class WozxInvestor extends Component {
     var {miPrecioWozx, wozxPe, wozxCa, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
 
 
-    
+
 
     if ( wozxPe ) {
       wozxPe ="(~ "+wozxCa+" WOZX)";
     }else{
       wozxPe ="";
     }
-    
-   
+
+
     withdrawnTrx = parseFloat(withdrawnTrx);
     withdrawnTrx = withdrawnTrx.toFixed(4);
 
@@ -260,7 +260,7 @@ export default class WozxInvestor extends Component {
     balanceTrx = balanceTrx.toFixed(2);
 
     return (
-      
+
       <div id="officer" className="container">
 
         <header style={{'textAlign': 'center'}} className="section-header">
@@ -294,72 +294,72 @@ export default class WozxInvestor extends Component {
           </CopyToClipboard>
           </h6>
           <hr></hr>
-          
+
         </header>
 
         <div className="row centrartexto">
 
           <div className="col-five">
-          
+
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{investedWozx} WOZX</h3>
               <h3 className="display-2--light">{wozxPe}</h3>
               <hr></hr>
-            
+
           </div>
 
           <div className="col-seven">
-            
+
               <h1 className="subhead">Withdrawn</h1>
               <h3 className="display-2--light">{withdrawnWozx} WOZX</h3>
               <hr></hr>
-            
-          </div> 
+
+          </div>
         </div>
         <div className="row centrartexto">
 
           <div className="col-five">
-            
+
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{balanceTrx} TRX</h3>
               <hr></hr>
-            
+
           </div>
 
           <div className="col-seven">
-            
+
               <h1 className="subhead">Withdrawn</h1>
               <h3 className="display-2--light">{withdrawnTrx} TRX</h3>
               <hr></hr>
-            
+
           </div>
-          
+
         </div>
         <div className="row centrartexto">
 
           <div className="col-seven">
-            
+
               <h3 className="display-2--light"> Send WOZX to USER:</h3>
               <input type="text" className="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="Tron wallet Member" />
               <small id="emailHelp" className="form-text text-muted">make sure the address is well written, once sent, this action cannot be reversed</small>
 
-            
+
           </div>
 
           <div className="col-five">
 
               <h3 className="display-2--light" onClick={() => this.Wozx()}> Available {investedWozx} WOZX</h3>
               <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
-              <a className="btn btn-light"  href="#enviartronwozx" onClick={() => this.enviarWozx()}>send WOZX</a>
-            
+              <a className="btn btn-light"  href="#enviartronwozx" style={{'backgroundColor': 'red','color': 'white','borderBlockColor': 'red'}} onClick={() => this.enviarWozx()}>send WOZX</a>
+
           </div>
 
           <hr />
-          
+
         </div>
 
       </div>
-    
+
 
 
 

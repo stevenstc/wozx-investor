@@ -43,6 +43,22 @@ var user = mongoose.model('usuarios', {
 
     });
 
+    var aplicacion = mongoose.model('aplicacion', {
+            nombre: String,
+            wozxSaldo: Number,
+            wozxSaldoAsignado: Number,
+            wozxSaldoRecibido: Number,
+            wozxSaldoRetirado: Number,
+            tronSaldo: Number,
+            tronSaldoAsignado: Number,
+            tronSaldoRecibido: Number,
+            tronSaldoRetirado: Number,
+            permitirRegistros: Boolean,
+            permitirRetiros: Boolean,
+            depositoMinimo: Number
+
+        });
+
 var usuariobuscado = 'TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF';
 
 app.get('/', async(req,res) => {
@@ -125,7 +141,7 @@ app.post('/registrar/:direccion', async(req,res) => {
 
              var users = new user({
                 direccion: cuenta,
-                registered: false,
+                registered: true,
                 sponsor: sponsor,
                 exist: false,
                 ethereum: '',

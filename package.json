@@ -1,7 +1,7 @@
 {
   "name": "Ewozx",
   "version": "0.7.77",
-  "description": "Es la aplicacion para hacer Crowd Funding de la criptomoneda WOZX en la Blockchain TRON",
+  "description": "Es la aplicacion para comprar la criptomoneda WOZX por medio de la Blockchain TRON",
   "directories": {
     "test": "test"
   },

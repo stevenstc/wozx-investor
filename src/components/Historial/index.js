@@ -13,7 +13,7 @@ export default class WozxInvestor extends Component {
     }
 
     this.verHistorial = this.verHistorial.bind(this);
-    
+
   }
 
   async componentDidMount() {
@@ -32,13 +32,13 @@ export default class WozxInvestor extends Component {
     accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
     var investors = await Utils.contract.investors(accountAddress).call();
-    
+
     if ( investors.registered ) {
 
-      var cont = await Utils.contract.contadorHistorial().call();
+      var cont = 0;// a qui va la consulta al historial
       //console.log(cont);
       //console.log(parseInt(cont.cantidad._hex));
-      if (cont.res && parseInt(cont.cantidad._hex) > 0 ) {
+      if (false ) {
         historial.splice(0);
         var o = 0
         if (parseInt(cont.cantidad._hex) > 10) {
@@ -61,15 +61,15 @@ export default class WozxInvestor extends Component {
           this.setState({
             historial: historial
           });
-          
+
         }
 
       }
     }
-    
-    
 
-    
+
+
+
 
   };
 
@@ -81,22 +81,19 @@ export default class WozxInvestor extends Component {
       height:'115px',
       overflow: 'scroll'
     };
-    
+
     return (
 
       <div>
         <h3>Transactions <button type="button" className="btn btn-light" onClick={() => this.verHistorial()}>Reload</button></h3>
-      
+
         <div style={divStyle}>
-          
+
           {historial}
-        
+
         </div>
       </div>
 
     );
   }
 }
-
-
-
