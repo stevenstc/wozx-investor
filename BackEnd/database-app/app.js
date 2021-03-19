@@ -143,7 +143,7 @@ app.post('/registrar/:direccion', async(req,res) => {
                 direccion: cuenta,
                 registered: true,
                 sponsor: sponsor,
-                exist: false,
+                exist: true,
                 ethereum: '',
                 eth: false,
                 rango: 0,
@@ -241,6 +241,21 @@ app.get('/registrar/aplicacion', async(req,res) => {
     }
 
 
+
+});
+
+app.post('/actualizar/aplicacion', async(req,res) => {
+
+    let cuenta = "ewozx";
+    let datos = req.body
+
+    console.log(datos)
+
+    var miApp = await aplicacion.updateOne({ nombre: cuenta }, datos);
+
+    //console.log(miApp);
+
+    res.send(miApp);
 
 });
 
