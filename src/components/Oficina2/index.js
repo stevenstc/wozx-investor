@@ -93,8 +93,53 @@ export default class WozxInvestor extends Component {
     this.deposit = this.deposit.bind(this);
     this.deposit2 = this.deposit2.bind(this);
 
+    this.consultarUsuario = this.consultarUsuario.bind(this);
+    this.actualizarDireccion = this.actualizarDireccion.bind(this);
+
 
   }
+
+  async componentDidMount() {
+    await Utils.setContract(window.tronWeb, contractAddress);
+    await this.Investors();
+    await this.vereth();
+    await this.enviarEth();
+    setInterval(() => this.Investors(),10*1000);
+    setInterval(() => this.vereth(),10*1000);
+    setInterval(() => this.enviarEth(),3*1000);
+  };
+
+  async actualizarDireccion() {
+
+    var account =  await window.tronWeb.trx.getAccount();
+    account = window.tronWeb.address.fromHex(account.address);
+
+    this.setState({
+      direccionTRX: account
+    });
+
+  };
+
+  async consultarUsuario(direccionTRX, otro){
+
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+
+    if (!otro) {
+      this.setState({
+        informacionCuenta: json
+      });
+      return json;
+    }else{
+
+      console.log(json);
+      return json;
+    }
+
+  };
 
   async Wozx (){
 
@@ -110,16 +155,6 @@ export default class WozxInvestor extends Component {
 
     document.getElementById("amountTRX").value = balanceTrx;
 
-  };
-
-  async componentDidMount() {
-    await Utils.setContract(window.tronWeb, contractAddress);
-    await this.Investors();
-    await this.vereth();
-    await this.enviarEth();
-    setInterval(() => this.Investors(),10*1000);
-    setInterval(() => this.vereth(),10*1000);
-    setInterval(() => this.enviarEth(),3*1000);
   };
 
   async saldoApp(){
@@ -630,27 +665,60 @@ export default class WozxInvestor extends Component {
 
   async Investors() {
 
-    let direccion = await window.tronWeb.trx.getAccount();
-    let esto = await Utils.contract.investors(direccion.address).call();
-    let My = await Utils.contract.withdrawableTrx().call();
+    var direccion = await window.tronWeb.trx.getAccount();
+    direccion = window.tronWeb.address.fromHex(direccion.address);
+    let esto = await Utils.contract.investors(direccion).call();
+    let My = await Utils.contract.withdrawableWozx().call();
     //console.log(esto);
     //console.log(My);
+
+    var usuario =  await this.consultarUsuario(direccion, false);
+    //console.log(usuario);
+
     this.setState({
-      direccion: window.tronWeb.address.fromHex(direccion.address),
-      registered: esto.registered,
-      balanceTrx: 1000000,
-      investedWozx: 1000000,
+      direccion: direccion,
+      registered: usuario.registered,
+      balanceTrx: usuario.balanceTrx,
+      investedWozx: usuario.investedWozx,
       mywithdrawableWozx: parseInt(My._hex)/1000000
     });
 
   };
 
+  async actualizarUsuario( datos, otro ){
+    //Asegura que es el usuario conectado con tronlink
+    await this.actualizarDireccion();
+    var { direccionTRX } = this.state;
+    //encaso de recibir otro usiario se escoge el uasuario enviado para ser actualizado
+    if ( otro ) {
+      direccionTRX = otro;
+    }
+    //console.log(direccionTRX);
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
+    const response = await fetch(proxyUrl+apiUrl, {
+       method: 'POST',
+       headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+       body: JSON.stringify(datos)
+    })
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+
+    console.log(json);
+    return json;
+
+  };
+
   async withdraw(){
     var hay = await Utils.contract.withdrawableTrx().call();
-    var minre = await Utils.contract.COMISION_RETIRO().call();
+    var minre = await Utils.contract.COMISION_TRON().call();
     var balanceContract = await Utils.contract.InContract().call();
 
     var amount = document.getElementById("amountTRX").value;
+    amount = parseFloat(amount);
 
     hay = parseInt(hay._hex)/1000000;
     minre = parseInt(minre._hex)/1000000;
@@ -660,7 +728,7 @@ export default class WozxInvestor extends Component {
     var accountAddress = account.address;
     accountAddress = window.tronWeb.address.fromHex(accountAddress);
     var investors = await Utils.contract.investors(accountAddress).call();
-    var balanceTrxYo = parseInt(investors.balanceTrx._hex)/1000000;
+    var balanceTrxYo = parseInt(investors.tronDisponible._hex)/1000000;
 
     console.log(balanceTrxYo);
     console.log(balanceContract);
@@ -683,9 +751,30 @@ export default class WozxInvestor extends Component {
 
       if ( hay >= minre*2 && balanceContract >= amount && amount >= minre*2 ) {
 
-        amount = parseInt(amount*1000000);
 
-        await Utils.contract.withdraw(amount).send();
+        if ( await Utils.contract.withdraw( amount*1000000 ).send() ) {
+          var { informacionCuenta } = this.state;
+
+          informacionCuenta = await this.consultarUsuario(accountAddress, null);
+
+          console.log(informacionCuenta);
+          informacionCuenta.balanceTrx -= amount;
+
+          informacionCuenta.historial.push({
+              tiempo: Date.now(),
+              valor: amount,
+              moneda: 'TRX',
+              accion: 'Withdrawl from plataform'
+
+          })
+
+          var otro = null;
+
+          await this.actualizarUsuario( informacionCuenta, otro );
+
+          document.getElementById("amountTRX").value = "";
+        }
+
       }else{
 
         if ( hay < minre*2 ) {

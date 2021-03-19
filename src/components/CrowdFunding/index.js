@@ -88,13 +88,12 @@ export default class WozxInvestor extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     setInterval(() => this.reatizarTodoPost(),120*1000);
-    setInterval(() => this.rateT(),15*1000);
-    await this.rateT();
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
-    setInterval(() => this.actualizarDireccion(),15*1000);
-    await this.consultarUsuario();
-    setInterval(() => this.consultarUsuario(),3*1000);
+    setInterval(() => this.actualizarDireccion(),3*1000);
+    var { direccionTRX } = this.state;
+    await this.consultarUsuario(direccionTRX,false);
+    setInterval(() => this.consultarUsuario(direccionTRX,false),3*1000);
     this.reatizarTodoPost();
 
 
@@ -117,83 +116,45 @@ export default class WozxInvestor extends Component {
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
-
     console.log(json.market_data.current_price.usd);
     this.setState({
       priceUSDTRON: json.market_data.current_price.usd
     });
-    return json;
+    return json.market_data.current_price.usd;
 
-    /*
-    await fetch(proxyUrl+apiUrl).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      console.log(data.market_data.current_price.usd);
-      this.setState({
-        priceUSDTRON: data.market_data.current_price.usd
-      });
-
-      return data.market_data.current_price.usd;
-
-    }).catch(err => {
-        console.log(err)
-
-    });
-    */
 
   };
 
   async consultarTodosUsuarios(){
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/todos';
-    fetch(proxyUrl+apiUrl).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      console.log(data);
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+    console.log(json);
 
-    }).catch(err => {
-      console.log(err);
-
-    });
+    return json;
 
   };
 
-  async consultarUsuario(otro){
-
-    await this.actualizarDireccion();
-    var { direccionTRX } = this.state;
-
-    if (otro) {
-      direccionTRX = otro;
-    }
-
-    console.log(direccionTRX);
+  async consultarUsuario(direccionTRX, otro){
 
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
-    fetch(proxyUrl+apiUrl,{
-      method: 'GET',
-      headers: {'Content-Type': 'application/x-www-form-url-encoded', 'Accept': 'application/json'}
-    }).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      if (otro) {
-        return data;
-      }else{
-        this.setState({
-          informacionCuenta: data
-        });
-      }
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
 
-      console.log(data);
+    if (!otro) {
+      this.setState({
+        informacionCuenta: json
+      });
+      return json;
+    }else{
 
-    }).catch(err => {
-        console.log(err);
-
-    });
+      console.log(json);
+      return json;
+    }
 
   };
 
@@ -208,24 +169,19 @@ export default class WozxInvestor extends Component {
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
-    fetch(proxyUrl+apiUrl, {
+    const response = await fetch(proxyUrl+apiUrl, {
        method: 'POST',
        headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
        body: JSON.stringify(datos)
-    }).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      console.log(data);
+    })
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
 
-
-    }).catch(err => {
-      console.log(err);
-
-    });
+    console.log(json);
+    return json;
 
   };
 
@@ -235,33 +191,26 @@ export default class WozxInvestor extends Component {
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
     var apiUrl = 'https://ewozx-mdb.herokuapp.com/registrar/'+direccionTRX;
-
-    fetch(proxyUrl+apiUrl, {
+    const response = await fetch(proxyUrl+apiUrl, {
        method: 'POST',
        headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
        body: JSON.stringify(datos)
-    }).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      console.log(data);
-      return true;
+    })
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
 
+    console.log(json);
+    return true;
 
-    }).catch(err => {
-      console.log(err);
-      return false;
-
-    });
 
   };
 
   async minDepo(){
 
-    var { priceUSDTRON } = this.state;
+    var priceUSDTRON = await this.rateT();
 
     var mini = parseInt(minimo_usd/priceUSDTRON);
 
@@ -286,7 +235,8 @@ export default class WozxInvestor extends Component {
     }
 
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
-    await this.consultarUsuario();
+    var { direccionTRX } = this.state;
+    await this.consultarUsuario(direccionTRX,false);
     var { informacionCuenta } = this.state;
 
     if (!informacionCuenta.registered) {
@@ -395,7 +345,8 @@ export default class WozxInvestor extends Component {
 
     // verifica si ya esta registrado
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
-    await this.consultarUsuario();
+    var { direccionTRX } = this.state;
+    await this.consultarUsuario(direccionTRX,false);
     var { informacionCuenta } = this.state;
 
     const balanceInSun = await window.tronWeb.trx.getBalance(); //number
@@ -468,7 +419,7 @@ export default class WozxInvestor extends Component {
                 if (get['ref']) {
                   tmp = get['ref'].split('#');
 
-                  var infoSponsor = await this.consultarUsuario(tmp[0]);
+                  var infoSponsor = await this.consultarUsuario(tmp[0],true);
 
                   if ( infoSponsor.registered && infoSponsor.exist ) {
                     sponsor = tmp[0];
@@ -589,6 +540,8 @@ export default class WozxInvestor extends Component {
       amount = amount/1000000;
 
       var { informacionCuenta } = this.state;
+
+      informacionCuenta.balanceTrx += amount;
 
       informacionCuenta.historial.push({
           tiempo: Date.now(),

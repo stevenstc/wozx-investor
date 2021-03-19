@@ -43,6 +43,7 @@ export default class WozxInvestor extends Component {
     this.Link = this.Link.bind(this);
     this.Wozx = this.Wozx.bind(this);
     this.rateW = this.rateW.bind(this);
+    this.consultarUsuario = this.consultarUsuario.bind(this);
 
   }
 
@@ -54,6 +55,27 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.Link(),3*1000);
     await this.Investors();
     setInterval(() => this.Investors(),10*1000);
+  };
+
+  async consultarUsuario(direccionTRX, otro){
+
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+
+    if (!otro) {
+      this.setState({
+        informacionCuenta: json
+      });
+      return json;
+    }else{
+
+      console.log(json);
+      return json;
+    }
+
   };
 
   async rateW(){
@@ -109,8 +131,12 @@ export default class WozxInvestor extends Component {
 
     const {investedWozx, priceUSDWOZX} = this.state;
 
-    let direccion = await window.tronWeb.trx.getAccount();
-    var esto = await Utils.contract.investors(direccion.address).call();
+    var direccion = await window.tronWeb.trx.getAccount();
+    direccion = direccion = window.tronWeb.address.fromHex(direccion.address);
+
+    var usuario =  await this.consultarUsuario(direccion, false);
+
+    var esto = await Utils.contract.investors(direccion).call();
     var refe = [];
     for (var i = 0; i < 10; i++) {
       var a = 0;
@@ -128,7 +154,6 @@ export default class WozxInvestor extends Component {
     var prof = r;
 
     prof = prof.toFixed(2);
-
     prof = parseFloat(prof);
     //console.log(prof);
     if (prof > 0 && prof < 1000  ) {
@@ -157,24 +182,16 @@ export default class WozxInvestor extends Component {
     }
     //console.log(prof);
 
-    var wozxPe = 0;// consulta del wozx pendiente por llegar
-
-    var wozxCa = wozxPe;
-
-    wozxCa = wozxCa.toFixed(4);
-
-    wozxPe = wozxPe.res;
-
 
     this.setState({
-      direccion: window.tronWeb.address.fromHex(direccion.address),
-      registered: esto.registered,
-      balanceTrx: 1000000,
-      withdrawnTrx: 1000000,
-      investedWozx: 1000000,
-      withdrawnWozx: 1000000,
-      wozxPe: wozxPe,
-      wozxCa: wozxCa,
+      direccion: direccion,
+      registered: usuario.registered,
+      balanceTrx: usuario.balanceTrx,
+      withdrawnTrx: usuario.withdrawnTrx,
+      investedWozx: usuario.investedWozx,
+      withdrawnWozx: usuario.withdrawnWozx,
+      wozxPe: usuario.p,
+      wozxCa: usuario.wozxPendig,
       refe: refe,
       rango: range,
       ganancia: prof,

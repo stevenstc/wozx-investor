@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import Utils from "../../utils";
 import contractAddress from "../Contract";
+import cons from "../../cons.js";
 
 export default class WozxInvestor extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ export default class WozxInvestor extends Component {
     }
 
     this.verHistorial = this.verHistorial.bind(this);
+    this.consultarUsuario = this.consultarUsuario.bind(this);
 
   }
 
@@ -22,39 +24,53 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.verHistorial(),360*1000);
   };
 
+  async consultarUsuario(direccionTRX, otro){
+
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+
+    if (!otro) {
+      this.setState({
+        informacionCuenta: json
+      });
+      return json;
+    }else{
+
+      console.log(json);
+      return json;
+    }
+
+  };
 
   async verHistorial(){
 
-    var {historial} = this.state;
+    var { historial } = this.state;
 
-    var account =  await window.tronWeb.trx.getAccount();
-    var accountAddress = account.address;
-    accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    var direccion =  await window.tronWeb.trx.getAccount();
+    direccion = window.tronWeb.address.fromHex(direccion.address);
 
-    var investors = await Utils.contract.investors(accountAddress).call();
+    var usuario =  await this.consultarUsuario(direccion, false);
 
-    if ( investors.registered ) {
+    if ( usuario.registered ) {
 
-      var cont = 0;// a qui va la consulta al historial
-      //console.log(cont);
-      //console.log(parseInt(cont.cantidad._hex));
-      if (false ) {
+      if ( usuario.historial.length > 0) {
         historial.splice(0);
         var o = 0
-        if (parseInt(cont.cantidad._hex) > 10) {
-          o = parseInt(cont.cantidad._hex)-10;
+        if (usuario.historial.length > 10) {
+          o = usuario.historial.length-10;
         }
-        for (var i = o; i < parseInt(cont.cantidad._hex); i++) {
+        for (var i = o; i < usuario.historial.length; i++) {
 
-          var ver = await Utils.contract.miHistorial(i).call();
-          //console.log(ver);
-          ver.valor = parseInt(ver.valor._hex)/1000000;
-          ver.tiempo = Date(parseInt(ver.tiempo._hex));
-          //console.log(ver);
+          var ver = usuario.historial[i];
+          ver.tiempo = new Date(ver.tiempo);
+          console.log(ver);
 
           let evento = (
             <div className="col-full" key={i.toString()}>
-              <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.operacion} </span>
+              <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
             </div>
           );
           historial.splice(0,0,evento);

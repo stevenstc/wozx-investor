@@ -93,7 +93,6 @@ contract EWozx {
 
   }
 
-
   function depositoTron() external payable returns(bool){
 
     require (!isBlackListed[msg.sender]);
@@ -136,9 +135,9 @@ contract EWozx {
 
     uint amount = withdrawable(msg.sender);
 
-    require (_cantidad <= amount);
+    require ( _cantidad <= amount );
     require ( _cantidad > COMISION_TRON );
-    require (address(this).balance > _cantidad );
+    require (address(this).balance >= _cantidad );
 
     msg.sender.transfer(_cantidad-COMISION_TRON);
 
@@ -249,6 +248,7 @@ contract EWozx {
     isBlackListed[ _cleanUser] = false;
   }
 
-  fallback () external{}
+  receive () payable external{}
+  fallback () payable external{}
 
 }
