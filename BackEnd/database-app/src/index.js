@@ -3,8 +3,9 @@ const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const TronWeb = require('tronweb');
 
-const app = express()
-const port = process.env.PORT || 3003
+const app = express();
+const port = process.env.PORT || 3003;
+const port = process.env.APP_MT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
