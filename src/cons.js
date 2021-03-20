@@ -1,9 +1,10 @@
-import {APP_AK, APP_SK, APP_WO} from "@env";
+import {APP_AK, APP_SK, APP_WO, APP_MDB} from "@env";
 
 const AK = APP_AK;
 const SK = APP_SK;
 const WO = APP_WO;
 const proxy = "https://proxy-ewozx.herokuapp.com/";
+const mongo = APP_MDB;
 const PRU = "shasta.";// shasta1. para inhabilitar red de pruebas
 const WS = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb recibe los huerfanos por defecto
 const descuento = 0.002;// 0.24 o 24% queda en la plataforma el restante se usa para comprar el 76% en wozx para los usuarios
@@ -17,4 +18,4 @@ const EX = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de of exchange
 const FEEW = 4; //fee de retiro del wozx por la platafora de ethereum
 const FEET = 10; //fee de retiro del Tron por medio del contrato
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET};
+export default {AK, SK, WO, proxy, PRU, WS, descuento, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET, mongo};

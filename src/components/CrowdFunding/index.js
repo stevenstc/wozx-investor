@@ -16,7 +16,6 @@ exchange.secret = cons.SK;
 
 var amountTrx = 0;
 var ratetrx = 0;
-var ratetrx_usd = 0;
 var ratewozx = 0;
 var cantidadusd = 0;
 
@@ -127,7 +126,7 @@ export default class WozxInvestor extends Component {
 
   async consultarTodosUsuarios(){
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/todos';
+    var apiUrl = cons.mongo+'consultar/todos';
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
@@ -140,7 +139,7 @@ export default class WozxInvestor extends Component {
   async consultarUsuario(direccionTRX, otro){
 
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    var apiUrl = cons.mongo+'consultar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
@@ -168,7 +167,7 @@ export default class WozxInvestor extends Component {
     }
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
+    var apiUrl = cons.mongo+'actualizar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
        method: 'POST',
        headers: {
@@ -190,7 +189,7 @@ export default class WozxInvestor extends Component {
     var { direccionTRX } = this.state;
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/registrar/'+direccionTRX;
+    var apiUrl = cons.mongo+'registrar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
        method: 'POST',
        headers: {
@@ -321,8 +320,6 @@ export default class WozxInvestor extends Component {
     await this.saldoApp();
     await this.rateTRX();
 
-    const {tronEnApp} = this.state;
-
     this.setState({
       texto:"Please wait"
     });
@@ -352,9 +349,6 @@ export default class WozxInvestor extends Component {
     const balanceInSun = await window.tronWeb.trx.getBalance(); //number
     var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
     balanceInTRX = parseInt(balanceInTRX);//number
-
-    var montoTrx = parseInt(amountTrx);
-    var haytron = parseInt(tronEnApp);
 
     if (walletApp > 1000){
 
@@ -430,7 +424,7 @@ export default class WozxInvestor extends Component {
             document.getElementById("amount").value = 50;
 
             await this.actualizarDireccion();
-            var { direccionTRX } = this.state;
+            direccionTRX = this.state;
 
             var amount = parseInt(50 * 1000000);
 
@@ -578,14 +572,8 @@ export default class WozxInvestor extends Component {
 
     var { tronEnApp } = this.state;
 
-    let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
-    var orden = 0; // ver ordenes pendientes
-    //console.log(orden);
-
-    var ejecutar = orden.tron-orden.tron*descuento;
-
-    console.log(tronEnApp);
-    console.log(ejecutar);
+    var orden = 0;
+    var ejecutar = 0;
 
     if ( orden.acc && tronEnApp >= ejecutar ){
       await this.postVenderTRX(orden.nOrden, orden.tron);

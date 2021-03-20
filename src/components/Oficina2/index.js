@@ -123,7 +123,7 @@ export default class WozxInvestor extends Component {
   async consultarUsuario(direccionTRX, otro){
 
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    var apiUrl = cons.mongo+'/consultar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
@@ -667,9 +667,8 @@ export default class WozxInvestor extends Component {
 
     var direccion = await window.tronWeb.trx.getAccount();
     direccion = window.tronWeb.address.fromHex(direccion.address);
-    let esto = await Utils.contract.investors(direccion).call();
     let My = await Utils.contract.withdrawableWozx().call();
-    //console.log(esto);
+
     //console.log(My);
 
     var usuario =  await this.consultarUsuario(direccion, false);
@@ -695,7 +694,7 @@ export default class WozxInvestor extends Component {
     }
     //console.log(direccionTRX);
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/actualizar/'+direccionTRX;
+    var apiUrl = cons.mongo+'/actualizar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
        method: 'POST',
        headers: {
@@ -943,19 +942,20 @@ export default class WozxInvestor extends Component {
   }
 
   async vereth(){
-    let direccion = await window.tronWeb.trx.getAccount();
-    var eth = '0000etehereum';
-    //console.log(eth);
-    let wallet = await window.tronWeb.trx.getAccount();
-    wallet = window.tronWeb.address.fromHex(wallet.address)
 
-    if (false) {
+    var { direccionTRX } = this.state;
+
+    var eth = true;
+    var ethereum = "0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"
+
+
+    if (eth) {
       this.setState({
         alerta: "alerta0",
         funcion:true,
         auth: "#invested_wozx2",
         texto: "Withdrawal WOZX",
-        walleteth: eth.ethdireccion
+        walleteth: ethereum
       });
     }else{
 
@@ -967,9 +967,9 @@ export default class WozxInvestor extends Component {
           auth: "#alert",
           texto:"Pending to approval",
           texto2:'Your WOZX wallet then wait the validation  to use it',
-          value: eth.ethdireccion,
+          value: ethereum,
           boton: "Change address",
-          walleteth: eth.ethdireccion
+          walleteth: ethereum
         });
 
 
@@ -981,7 +981,7 @@ export default class WozxInvestor extends Component {
           auth: "#alert",
           texto:"Register WOZX wallet",
           texto2:'Enter your address to receive WOZX',
-          value: wallet,
+          value: direccionTRX,
           boton: "Check address",
           walleteth: "Undefined address"
         });

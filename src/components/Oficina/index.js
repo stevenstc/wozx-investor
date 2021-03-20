@@ -60,7 +60,7 @@ export default class WozxInvestor extends Component {
   async consultarUsuario(direccionTRX, otro){
 
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    var apiUrl = cons.mongo+'consultar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
@@ -135,23 +135,8 @@ export default class WozxInvestor extends Component {
     direccion = direccion = window.tronWeb.address.fromHex(direccion.address);
 
     var usuario =  await this.consultarUsuario(direccion, false);
-
-    var esto = await Utils.contract.investors(direccion).call();
-    var refe = [];
-    for (var i = 0; i < 10; i++) {
-      var a = 0;
-      if(true){
-        refe[i] = "N/A";
-      }else{
-        refe[i] = parseInt(a.cantidad._hex);
-      }
-
-    }
-    //console.log(refe);
-    //console.log(a);
-    var r = 0;
     var range = "N/A";
-    var prof = r;
+    var prof = usuario.rango;
 
     prof = prof.toFixed(2);
     prof = parseFloat(prof);
@@ -192,7 +177,7 @@ export default class WozxInvestor extends Component {
       withdrawnWozx: usuario.withdrawnWozx,
       wozxPe: usuario.p,
       wozxCa: usuario.wozxPendig,
-      refe: refe,
+      refe: usuario.nivel,
       rango: range,
       ganancia: prof,
       miPrecioWozx: investedWozx*priceUSDWOZX
