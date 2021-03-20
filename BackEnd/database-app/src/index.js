@@ -5,7 +5,7 @@ const TronWeb = require('tronweb');
 
 const app = express();
 const port = process.env.PORT || 3003;
-const port = process.env.APP_MT;
+const token = process.env.APP_MT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -119,17 +119,13 @@ app.post('/registrar/:direccion', async(req,res) => {
 
     let cuenta = req.params.direccion;
     let sponsor = req.body.sponsor;
+    let token2 = req.body.token;
     let respuesta = {};
     respuesta.status = "200";
 
     usuario = await user.find({ direccion: cuenta }, function (err, docs) {});
 
-    //res.send(usuario);
-
-    //console.log(await TronWeb.isAddress(cuenta));
-
-
-    if (await TronWeb.isAddress(cuenta)) {
+    if (await TronWeb.isAddress(cuenta) && token == token2) {
 
         if ( usuario != "" ) {
             respuesta.status = "303";
@@ -186,15 +182,17 @@ app.post('/registrar/:direccion', async(req,res) => {
 app.post('/actualizar/:direccion', async(req,res) => {
 
     let cuenta = req.params.direccion;
+    let token2 = req.body.token;
     let datos = req.body
 
-    console.log(datos)
+    if ( token == token2 ) {
+      usuario = await user.updateOne({ direccion: cuenta }, datos);
+      res.send(usuario);
 
-    usuario = await user.updateOne({ direccion: cuenta }, datos);
+    }else{
+      res.send("No autorizado");
 
-    //console.log(usuario);
-
-    res.send(usuario);
+    }
 
 });
 

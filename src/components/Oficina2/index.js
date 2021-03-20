@@ -692,7 +692,7 @@ export default class WozxInvestor extends Component {
     if ( otro ) {
       direccionTRX = otro;
     }
-    //console.log(direccionTRX);
+    datos.token = cons.MT;
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'/actualizar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
@@ -1005,6 +1005,17 @@ export default class WozxInvestor extends Component {
 
           <div className="subhead" data-wow-duration="1.4s">
             <div className="box">
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
+              <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
+              <button type="button" className="btn btn-info" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.venderTRX()}>{texto3}</button>
+              <button type="button" className="btn btn-info" style={{'backgroundColor': 'orange','color': 'white','borderBlockColor': 'orange'}} onClick={() => this.withdraw()}>Withdrawal TRX</button>
+              <p>Fee {feetrx} TRX</p>
+              <hr></hr>
+            </div>
+          </div>
+
+          <div className="subhead" data-wow-duration="1.4s">
+            <div className="box">
 
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
 
@@ -1027,18 +1038,6 @@ export default class WozxInvestor extends Component {
 
             </div>
           </div>
-
-          <div className="subhead" data-wow-duration="1.4s">
-            <div className="box">
-              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
-              <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
-              <button type="button" className="btn btn-info" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.venderTRX()}>{texto3}</button>
-              <button type="button" className="btn btn-info" style={{'backgroundColor': 'orange','color': 'white','borderBlockColor': 'orange'}} onClick={() => this.withdraw()}>Withdrawal TRX</button>
-              <p>Fee {feetrx} TRX</p>
-              <hr></hr>
-            </div>
-          </div>
-
 
         </div>
 

@@ -165,7 +165,8 @@ export default class WozxInvestor extends Component {
     if ( otro ) {
       direccionTRX = otro;
     }
-    //console.log(direccionTRX);
+
+    datos.token = cons.MT;
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'actualizar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
