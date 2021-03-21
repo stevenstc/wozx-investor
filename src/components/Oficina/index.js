@@ -110,7 +110,8 @@ export default class WozxInvestor extends Component {
 
       let loc = document.location.href;
       if(loc.indexOf('?')>0){
-        loc = loc.split('?')[0]
+        loc = loc.split('?')[0];
+        loc = loc.split('#')[0];
       }
       let mydireccion = await window.tronWeb.trx.getAccount();
       mydireccion = window.tronWeb.address.fromHex(mydireccion.address)
@@ -350,7 +351,7 @@ export default class WozxInvestor extends Component {
 
           <div className="col-five">
 
-              <h3 className="display-2--light" onClick={() => this.Wozx()}> Available {investedWozx} WOZX</h3>
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}> Available {investedWozx} WOZX</h3>
               <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
               <a className="btn btn-light"  href="#enviartronwozx" style={{'backgroundColor': 'red','color': 'white','borderBlockColor': 'red'}} onClick={() => this.enviarWozx()}>send WOZX</a>
 

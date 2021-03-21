@@ -66,7 +66,7 @@ export default class WozxInvestor extends Component {
 
           var ver = usuario.historial[i];
           ver.tiempo = new Date(ver.tiempo);
-          console.log(ver);
+          //console.log(ver);
 
           let evento = (
             <div className="col-full" key={i.toString()}>

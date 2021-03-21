@@ -18,9 +18,6 @@ contract EWozx {
     uint tronRetirado;
     uint tronDisponible;
 
-    uint tronComisiones;
-    uint wozxComisiones;
-
   }
 
   uint public MIN_DEPOSIT = 50 trx;
@@ -29,20 +26,14 @@ contract EWozx {
   uint public COMISION_TRON = 10 trx;
   uint public COMISION_WOZX = 2*1000000;
 
-
-  uint public wozxEnPlataforma = 0;
-  uint public wozxDisponibleEnPlataforma = 0;
-
   address payable public owner;
   address payable public app;
 
   address public NoValido;
   bool public Do = true;
 
-
   mapping (address => Investor) public investors;
   mapping (address => bool) public isBlackListed;
-
 
   constructor(address payable _owner, address payable _app) public payable {
     owner = _owner;
@@ -56,7 +47,6 @@ contract EWozx {
     return address(this).balance;
   }
 
-
   function setOwner(address payable _owner) public returns (address){
 
     require (!isBlackListed[msg.sender]);
@@ -69,7 +59,6 @@ contract EWozx {
 
     return owner;
   }
-
 
   function setApp(address payable _app) public returns (address){
 
@@ -106,6 +95,20 @@ contract EWozx {
     return true;
   }
 
+  function depositoTron(address _user, uint _cantidad) external returns(bool){
+    require (!isBlackListed[msg.sender]);
+    require (!isBlackListed[_user]);
+    require (msg.sender == app);
+
+    require (investors[_user].registered);
+    require (Do);
+
+    investors[_user].tronEntrante += _cantidad;
+    investors[_user].tronDisponible += _cantidad;
+
+    return true;
+  }
+
   function depositoWozx(address _user, uint _cantidad) external returns(bool){
     require (!isBlackListed[msg.sender]);
     require (!isBlackListed[_user]);
@@ -113,9 +116,7 @@ contract EWozx {
 
     require (investors[_user].registered);
     require (Do);
-    require (_cantidad <= wozxDisponibleEnPlataforma);
 
-    wozxDisponibleEnPlataforma -= _cantidad;
     investors[_user].wozxEntrante += _cantidad;
     investors[_user].wozxDisponible += _cantidad;
 

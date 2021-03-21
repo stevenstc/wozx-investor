@@ -24,6 +24,7 @@
     "@svgr/webpack": "4.3.3",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
+    "array.prototype.find": "^2.1.1",
     "autoprefixer": "^10.0.1",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",

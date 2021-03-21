@@ -73,6 +73,7 @@ export default class WozxInvestor extends Component {
     this.minDepo = this.minDepo.bind(this);
     this.rateT = this.rateT.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
+
     this.consultarTodosUsuarios = this.consultarTodosUsuarios.bind(this);
     this.registrarUsuario = this.registrarUsuario.bind(this);
     this.consultarUsuario = this.consultarUsuario.bind(this);
@@ -189,6 +190,7 @@ export default class WozxInvestor extends Component {
     //Asegura que es el usuario conectado
     var { direccionTRX } = this.state;
     //console.log(direccionTRX);
+    datos.token = cons.MT;
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'registrar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl, {
@@ -432,6 +434,30 @@ export default class WozxInvestor extends Component {
             if(await Utils.contract.miRegistro().send({ callValue: amount})) {
 
               await this.registrarUsuario({ sponsor: sponsor });
+
+              var informacionSponsor = await this.consultarUsuario(sponsor, true);
+              var informacionUsuario = await this.consultarUsuario(direccionTRX, null);
+
+              if (informacionSponsor.registered) {
+
+                for ( i = 0; i < informacionUsuario.nivel; i++) {
+
+                  if (informacionSponsor.registered) {
+                    console.log(informacionSponsor);
+
+                    informacionSponsor.nivel[i] += amount;
+                    var otro = informacionSponsor.direccion;
+
+                    await this.actualizarUsuario( informacionSponsor, otro );
+
+                    informacionSponsor = await this.consultarUsuario(informacionSponsor.sponsor, null);
+                  }else{
+                    break;
+                  }
+                }
+
+              }
+
               document.getElementById("amount").value = "";
               this.setState({
                 texto:"Registration completed"
