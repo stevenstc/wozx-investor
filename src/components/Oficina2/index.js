@@ -388,7 +388,6 @@ export default class WozxInvestor extends Component {
       var informacionCuenta = await this.consultarUsuario(accountAddress, otro);
 
       var aumentar = false;
-      var precioUsdTron = await this.rateT();
 
       informacionCuenta.balanceTrx -= amountTrxsindescuento;
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
@@ -444,12 +443,20 @@ export default class WozxInvestor extends Component {
                 informacionSponsor.nivel[i]++;
               }
 
-              informacionSponsor.rango += precioUsdTron*amountTrxsindescuento*recompensa[i];
+              var precioUsdTron = await this.rateT();
+
+              console.log(precioUsdTron);
+
+              var rango = precioUsdTron*amountTrxsindescuento*recompensa[i];
+              rango = rango.toFixed(2);
+              rango = parseFloat(rango);
+
+              informacionSponsor.rango += rango;
               informacionSponsor.historial.push({
                   tiempo: Date.now(),
                   valor: amountTrxsindescuento*recompensa[i],
                   moneda: 'TRX',
-                  accion: 'Redward Referer'
+                  accion: 'Redward Referer -> $ '+rango+' USD'
 
               })
 
