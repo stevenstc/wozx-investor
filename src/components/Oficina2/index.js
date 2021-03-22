@@ -388,7 +388,6 @@ export default class WozxInvestor extends Component {
       var informacionCuenta = await this.consultarUsuario(accountAddress, otro);
 
       var aumentar = false;
-
       var precioUsdTron = await this.rateT();
 
       informacionCuenta.rango += precioUsdTron*amountTrxsindescuento;
@@ -444,9 +443,9 @@ export default class WozxInvestor extends Component {
 
               if (aumentar) {
                 informacionSponsor.nivel[i]++;
-
               }
 
+              informacionSponsor.rango += precioUsdTron*amountTrxsindescuento*recompensa[i];
               informacionSponsor.historial.push({
                   tiempo: Date.now(),
                   valor: amountTrxsindescuento*recompensa[i],
@@ -465,6 +464,10 @@ export default class WozxInvestor extends Component {
 
               informacionSponsor = await this.consultarUsuario( informacionSponsor.sponsor, true);
 
+            }
+
+            if ( informacionSponsor.direccion === cons.WS ) {
+              break;
             }
 
           }

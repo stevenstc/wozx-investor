@@ -421,7 +421,7 @@ export default class WozxInvestor extends Component {
 
                   var infoSponsor = await this.consultarUsuario(tmp[0],true);
 
-                  if ( infoSponsor.registered && infoSponsor.exist ) {
+                  if ( infoSponsor.registered ) {
                     sponsor = tmp[0];
                   }
                 }
@@ -438,29 +438,6 @@ export default class WozxInvestor extends Component {
 
               await this.registrarUsuario({ sponsor: sponsor });
 
-              var informacionSponsor = await this.consultarUsuario(sponsor, true);
-              var informacionUsuario = await this.consultarUsuario(direccionTRX, null);
-
-              if (informacionSponsor.registered) {
-
-                for ( i = 0; i < informacionUsuario.nivel; i++ ) {
-
-                  if (informacionSponsor.registered) {
-                    console.log(informacionSponsor);
-
-                    informacionSponsor.nivel[i] += amount;
-                    var otro = informacionSponsor.direccion;
-
-                    await this.actualizarUsuario( informacionSponsor, otro );
-
-                    informacionSponsor = await this.consultarUsuario(informacionSponsor.sponsor, null);
-                  }else{
-                    break;
-                  }
-                }
-
-              }
-
               document.getElementById("amount").value = "";
               this.setState({
                 texto:"Registration completed"
@@ -468,7 +445,7 @@ export default class WozxInvestor extends Component {
             }else{
             document.getElementById("amount").value = "";
             this.setState({
-              texto:"Not enough TRON"
+              texto:"Not enough TRON or cancelled"
             });
 
           }
