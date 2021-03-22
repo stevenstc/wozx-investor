@@ -390,7 +390,6 @@ export default class WozxInvestor extends Component {
       var aumentar = false;
       var precioUsdTron = await this.rateT();
 
-      informacionCuenta.rango += precioUsdTron*amountTrxsindescuento;
       informacionCuenta.balanceTrx -= amountTrxsindescuento;
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
       if (!informacionCuenta.recompensa) {

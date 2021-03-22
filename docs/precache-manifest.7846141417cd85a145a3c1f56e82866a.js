@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d648811278030c033f8985e336e8cfff",
+    "revision": "e1af9f280a5973f8a945c04b9585fafc",
     "url": "/wozx-investor/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/wozx-investor/static/js/2.a5c8368a.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "3ab02be8a2757e45b4a2",
-    "url": "/wozx-investor/static/js/main.09cc3409.chunk.js"
+    "revision": "59fc1e435cd1bd1959b0",
+    "url": "/wozx-investor/static/js/main.eca27f03.chunk.js"
   },
   {
     "revision": "5740db928795b03189e2",
