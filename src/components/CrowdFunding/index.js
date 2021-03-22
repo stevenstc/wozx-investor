@@ -440,7 +440,7 @@ export default class WozxInvestor extends Component {
 
               if (informacionSponsor.registered) {
 
-                for ( i = 0; i < informacionUsuario.nivel; i++) {
+                for ( i = 0; i < informacionUsuario.nivel; i++ ) {
 
                   if (informacionSponsor.registered) {
                     console.log(informacionSponsor);
