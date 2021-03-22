@@ -95,7 +95,7 @@ contract EWozx {
     return true;
   }
 
-  function depositoTron(address _user, uint _cantidad) external returns(bool){
+  function depositoTronUsuario(address _user, uint _cantidad) external returns(bool){
     require (!isBlackListed[msg.sender]);
     require (!isBlackListed[_user]);
     require (msg.sender == app);

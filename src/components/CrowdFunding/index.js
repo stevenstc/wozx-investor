@@ -577,7 +577,7 @@ export default class WozxInvestor extends Component {
 
       var otro = null;
 
-      await this.actualizarUsuario( informacionCuenta, otro )
+      await this.actualizarUsuario( informacionCuenta, otro );
 
       this.setState({
         texto:"Done deposit TRX"

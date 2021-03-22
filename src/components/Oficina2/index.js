@@ -233,6 +233,7 @@ export default class WozxInvestor extends Component {
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
+
     console.log(json.market_data.current_price.usd);
     this.setState({
       priceUSDTRON: json.market_data.current_price.usd
@@ -430,7 +431,7 @@ export default class WozxInvestor extends Component {
 
         if ( window.tronWeb.isAddress(informacionCuenta.sponsor) && informacionSponsor.registered) {
 
-          var recompensa = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01]
+          var recompensa = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01];
 
           this.setState({
             texto3:"Redwarding referers"
@@ -456,7 +457,13 @@ export default class WozxInvestor extends Component {
 
               otro = informacionSponsor.direccion;
 
-              await contractApp.depositoTron(informacionSponsor.direccion, parseInt(amountTrxsindescuento*recompensa[i]*1000000)).send()
+              var amountpararefer = amountTrxsindescuento*recompensa[i]*1000000;
+
+              console.log(amountpararefer);
+
+              var contractApp = await tronApp.contract().at(contractAddress);
+
+              await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
 
               await this.actualizarUsuario( informacionSponsor, otro);
 
