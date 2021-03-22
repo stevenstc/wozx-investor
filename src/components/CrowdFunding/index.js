@@ -33,6 +33,7 @@ const pry = cons.WO;
 var pru = "";
 if (cons.PRU === "shasta.") {
   pru = cons.PRU;
+
 }
 
 const TRONGRID_API = "https://api."+pru+"trongrid.io";
@@ -96,10 +97,11 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.consultarUsuario(direccionTRX,false),3*1000);
     this.reatizarTodoPost();
 
-
   };
 
   async actualizarDireccion() {
+    
+    document.getElementById("linkContrato").innerHTML = "<a class='smoothscroll'   href='https://"+pru+"tronscan.org/#/contract/"+contractAddress+"/code' target='_blank' rel='noopener noreferrer'>Contract</a>";
 
     var account =  await window.tronWeb.trx.getAccount();
     account = window.tronWeb.address.fromHex(account.address);

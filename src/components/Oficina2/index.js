@@ -24,7 +24,6 @@ var tantoWozx = cons.WOZX;// para que el WOZX se venda de inmediato
 var minimo_usd = cons.USD;
 
 var amountTrx = 0;
-var cantidadusd = 0;
 var ratetrx = 0;
 var ratewozx = 0;
 
@@ -264,16 +263,14 @@ export default class WozxInvestor extends Component {
       var result = window.confirm("You are sure you want to reinvest "+amountTrx+" TRX? this action cost "+COMISION_RETIRO+" TRX");
     }
 
-    if ( result && investors.registered && await Utils.contract.retirarTron( amountTrx*1000000 ).send() ) {
+
+
+    if ( result && investors.registered ) {
         if ( amountTrx >= depomin ) {
-            console.log("Entro directo");
           amountTrx = amountTrx - amountTrx*descuento;
           amountTrx = amountTrx.toFixed(2);
 
           var orden = await exchange.createLimitSellOrder('TRX/KRW', amountTrx, ratetrx)
-
-          console.log(orden);
-          console.log(orden.info.status);
 
           if (orden.info.status === "0000") {
               this.setState({
@@ -282,70 +279,13 @@ export default class WozxInvestor extends Component {
               var symbol = "TRX/KRW";
               var params = {};
               //vende el tron y obtiene KRW
-              var cositas = await exchange.fetchOrder (orden.id, symbol, params);
-
-              var costo = cositas.cost;
-
-              var otro = null;
-
-              var informacionCuenta = await this.consultarUsuario(accountAddress, otro);
-              console.log(informacionCuenta);
-
-              informacionCuenta.balanceTrx -= amountTrxsindescuento;
-              informacionCuenta.withdrawnTrx += amountTrxsindescuento;
-              informacionCuenta.recompensa = true;
-
-              informacionCuenta.historial.push({
-                  tiempo: Date.now(),
-                  valor: amountTrxsindescuento,
-                  moneda: 'TRX',
-                  accion: 'Selled'
-
-              })
-
-              otro = null;
-
-              await this.actualizarUsuario( informacionCuenta, otro );
-
-              var informacionSponsor = await this.consultarUsuario(informacionCuenta.sponsor, true);
-
-              if ( window.tronWeb.isAddress(informacionCuenta.sponsor) && informacionSponsor.registered) {
-
-                var recompensa = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01]
-
-                for (var i = 0; i < recompensa.length; i++) {
-                  if (informacionSponsor.registered && informacionSponsor.recompensa ) {
-
-                    informacionSponsor.balanceTrx += amountTrxsindescuento*recompensa[i];
-
-                    informacionSponsor.historial.push({
-                        tiempo: Date.now(),
-                        valor: amountTrxsindescuento*recompensa[i],
-                        moneda: 'TRX',
-                        accion: 'Redward Referer'
-
-                    })
-
-                    otro = informacionSponsor.direccion;
-
-                    this.actualizarUsuario( informacionSponsor, otro);
-
-                  }
-
-                }
-              }
-
-              console.log(costo);
-
-              cantidadusd = costo;
-
-              console.log(cantidadusd);
+              orden = await exchange.fetchOrder (orden.id, symbol, params);
 
               this.setState({
                 texto3:"Buying WOZX"
               });
 
-              this.comprarWozx(cantidadusd);
+              this.comprarWozx(orden.cost, amountTrxsindescuento, accountAddress);
 
           }else{
               this.setState({
@@ -401,7 +341,7 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async comprarWozx(usd){
+  async comprarWozx( usd, amountTrxsindescuento, accountAddress ){
 
     await this.rateWozx();
 
@@ -415,48 +355,103 @@ export default class WozxInvestor extends Component {
     amount = parseFloat(amount);
     console.log(amount);
 
-    var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
+    var orden2 = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
 
-    console.log(orden);
+    console.log(orden2);
 
-    if (orden.info.status === "0000") {
+    if ( orden2.info.status === "0000" ) {
 
-      var symbol = "WOZX/KRW";
-      var params = {};
+      var symbol2 = "WOZX/KRW";
+      var params2 = {};
 
-      var cositas = await exchange.fetchOrder(orden.id, symbol, params);
+      orden2 = await exchange.fetchOrder(orden2.id, symbol2, params2);
 
-      var monto = cositas.amount;
+      var otro = null;
 
-      console.log(monto);
+      var informacionCuenta = await this.consultarUsuario(accountAddress, otro);
 
-      var { informacionCuenta } = this.state;
+      var aumentar = false;
 
-      var contractApp = await tronApp.contract().at(contractAddress);
-
-
-
-      informacionCuenta.investedWozx += monto;
+      informacionCuenta.balanceTrx -= amountTrxsindescuento;
+      informacionCuenta.withdrawnTrx += amountTrxsindescuento;
+      if (!informacionCuenta.recompensa) {
+        informacionCuenta.recompensa = true;
+        aumentar =  true;
+      }
 
       informacionCuenta.historial.push({
           tiempo: Date.now(),
-          valor: amount,
+          valor: amountTrxsindescuento,
+          moneda: 'TRX',
+          accion: 'Selled'
+
+      })
+
+      informacionCuenta.investedWozx += orden2.amount;
+
+      informacionCuenta.historial.push({
+          tiempo: Date.now(),
+          valor: orden2.amount,
           moneda: 'WOZX',
           accion: 'Invested'
 
       })
 
-      var otro = null;
+      otro = null;
 
-      if ( await contractApp.depositoWozx(informacionCuenta.direccion, parseInt(monto*1000000)).send() ) {
+      var contractApp = await tronApp.contract().at(contractAddress);
+
+      if ( await contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send() && await Utils.contract.retirarTron( amountTrxsindescuento*1000000 ).send() ) {
+
         await this.actualizarUsuario( informacionCuenta, otro );
+
+        //repartir recompensa referidos
+        informacionCuenta = await this.consultarUsuario(accountAddress, otro);
+        var informacionSponsor = await this.consultarUsuario(informacionCuenta.sponsor, true);
+
+        if ( window.tronWeb.isAddress(informacionCuenta.sponsor) && informacionSponsor.registered) {
+
+          var recompensa = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01]
+
+          this.setState({
+            texto3:"Redwarding referers"
+          });
+          for (var i = 0; i < recompensa.length; i++) {
+
+            if (informacionSponsor.registered && informacionSponsor.recompensa ) {
+
+              informacionSponsor.balanceTrx += amountTrxsindescuento*recompensa[i];
+
+              if (aumentar) {
+                informacionSponsor.nivel[i]++;
+
+              }
+
+              informacionSponsor.historial.push({
+                  tiempo: Date.now(),
+                  valor: amountTrxsindescuento*recompensa[i],
+                  moneda: 'TRX',
+                  accion: 'Redward Referer'
+
+              })
+
+              otro = informacionSponsor.direccion;
+
+              await this.actualizarUsuario( informacionSponsor, otro);
+
+              informacionSponsor = await this.consultarUsuario( informacionSponsor.sponsor, true);
+
+            }
+
+          }
+        }
 
         this.setState({
           texto3:"success!"
         });
       }else{
         this.setState({
-          texto3:"Error!"
+          texto3:"Try again Later, server Bussy"
         });
       }
 
