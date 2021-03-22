@@ -459,10 +459,6 @@ export default class WozxInvestor extends Component {
 
               var amountpararefer = amountTrxsindescuento*recompensa[i]*1000000;
 
-              console.log(amountpararefer);
-
-              var contractApp = await tronApp.contract().at(contractAddress);
-
               await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
 
               await this.actualizarUsuario( informacionSponsor, otro);

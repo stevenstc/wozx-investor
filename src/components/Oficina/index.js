@@ -43,7 +43,10 @@ export default class WozxInvestor extends Component {
     this.Link = this.Link.bind(this);
     this.Wozx = this.Wozx.bind(this);
     this.rateW = this.rateW.bind(this);
+
     this.consultarUsuario = this.consultarUsuario.bind(this);
+    this.actualizarDireccion = this.actualizarDireccion.bind(this);
+    this.actualizarUsuario = this.actualizarUsuario.bind(this);
 
   }
 
@@ -75,6 +78,45 @@ export default class WozxInvestor extends Component {
       console.log(json);
       return json;
     }
+
+  };
+
+  async actualizarDireccion() {
+
+    var account =  await window.tronWeb.trx.getAccount();
+    account = window.tronWeb.address.fromHex(account.address);
+
+    this.setState({
+      direccionTRX: account
+    });
+
+  };
+
+  async actualizarUsuario( datos, otro ){
+    //Asegura que es el usuario conectado con tronlink
+    await this.actualizarDireccion();
+    var { direccionTRX } = this.state;
+    //encaso de recibir otro usiario se escoge el uasuario enviado para ser actualizado
+    if ( otro ) {
+      direccionTRX = otro;
+    }
+
+    datos.token = cons.MT;
+    var proxyUrl = cons.proxy;
+    var apiUrl = cons.mongo+'actualizar/'+direccionTRX;
+    const response = await fetch(proxyUrl+apiUrl, {
+       method: 'POST',
+       headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+       body: JSON.stringify(datos)
+    })
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+
+    console.log(json);
+    return json;
 
   };
 
@@ -220,15 +262,40 @@ export default class WozxInvestor extends Component {
 
     }
 
-    if (result) {
+    account =  await window.tronWeb.trx.getAccount();
+    accountAddress = account.address;
+    accountAddress = window.tronWeb.address.fromHex(accountAddress);
 
-      cantidad = parseInt(cantidad*1000000);
+    var informacionCuenta = await this.consultarUsuario(accountAddress, true);
+    var informacionDestino = await this.consultarUsuario(direccion, true);
 
-      account =  await window.tronWeb.trx.getAccount();
-      accountAddress = account.address;
-      accountAddress = window.tronWeb.address.fromHex(accountAddress);
+    if (result && await Utils.contract.enviarWozx(direccion, parseInt(cantidad*1000000)).send() && informacionCuenta.registered && informacionDestino.registered) {
 
-      await Utils.contract.enviarWozx(accountAddress, direccion, cantidad).send();
+      informacionCuenta.investedWozx -= cantidad;
+      informacionCuenta.withdrawnWozx += cantidad;
+      informacionCuenta.historial.push({
+          tiempo: Date.now(),
+          valor: cantidad,
+          moneda: 'WOZX',
+          accion: 'Sed to: '+direccion
+
+      })
+
+      var otro = accountAddress;
+      await this.actualizarUsuario( informacionCuenta, otro);
+
+      informacionDestino.investedWozx += cantidad;
+      informacionDestino.withdrawnWozx -= cantidad;
+      informacionDestino.historial.push({
+          tiempo: Date.now(),
+          valor: cantidad,
+          moneda: 'WOZX',
+          accion: 'Send From: '+accountAddress
+
+      })
+
+      otro = direccion;
+      await this.actualizarUsuario( informacionDestino, otro);
 
       document.getElementById("cantidadwozx").value = "";
 
