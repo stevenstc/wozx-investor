@@ -437,6 +437,8 @@ export default class WozxInvestor extends Component {
 
               otro = informacionSponsor.direccion;
 
+              await contractApp.depositoTron(informacionSponsor.direccion, parseInt(amountTrxsindescuento*recompensa[i]*1000000)).send()
+
               await this.actualizarUsuario( informacionSponsor, otro);
 
               informacionSponsor = await this.consultarUsuario( informacionSponsor.sponsor, true);

@@ -92,6 +92,7 @@ export default class WozxInvestor extends Component {
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     setInterval(() => this.actualizarDireccion(),3*1000);
+    await this.actualizarDireccion();
     var { direccionTRX } = this.state;
     await this.consultarUsuario(direccionTRX,false);
     setInterval(() => this.consultarUsuario(direccionTRX,false),3*1000);
@@ -100,7 +101,7 @@ export default class WozxInvestor extends Component {
   };
 
   async actualizarDireccion() {
-    
+
     document.getElementById("linkContrato").innerHTML = "<a class='smoothscroll'   href='https://"+pru+"tronscan.org/#/contract/"+contractAddress+"/code' target='_blank' rel='noopener noreferrer'>Contract</a>";
 
     var account =  await window.tronWeb.trx.getAccount();
