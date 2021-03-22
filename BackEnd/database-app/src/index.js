@@ -24,19 +24,16 @@ var user = mongoose.model('usuarios', {
         sponsor: String,
         ethereum: String,
         eth: Boolean,
-        rango: Double,
+        rango: Number,
         recompensa: Boolean,
-        nivel: [Number
-         ],
-        balanceTrx: Double,
-        withdrawnTrx: Double,
-        investedWozx: Double,
-        withdrawnWozx: Double,
-        wozxPendig: Double,
-        p: Boolean,
+        nivel: [Number],
+        balanceTrx: Number,
+        withdrawnTrx: Number,
+        investedWozx: Number,
+        withdrawnWozx: Number,
         historial: [{
             tiempo: Number,
-            valor: Double,
+            valor: Number,
             moneda: String,
             accion: String
 
@@ -44,7 +41,7 @@ var user = mongoose.model('usuarios', {
 
     });
 
-  var aplicacion = mongoose.model('aplicacions', {
+var aplicacion = mongoose.model('aplicacions', {
           nombre: String,
           wozxSaldo: Number,
           wozxSaldoAsignado: Number,
@@ -90,6 +87,53 @@ app.get('/consultar/ejemplo', async(req,res) => {
     console.log(usuario);
 
     res.send(usuario[0]);
+
+});
+
+app.get('/registrar/aplicacion', async(req,res) => {
+
+    let cuenta = "ewozx";
+
+    let respuesta = {};
+    respuesta.status = "200";
+
+    var miApp = await aplicacion.find({ nombre: cuenta }, function (err, docs) {});
+
+    if ( miApp != "" ) {
+        respuesta.status = "303";
+        respuesta.txt = "Aplicacion ya registrada";
+        respuesta.usuario = miApp[0];
+
+        res.send(respuesta);
+
+    }else{
+
+         var apps = new aplicacion({
+           nombre: cuenta,
+           wozxSaldo: 0,
+           wozxSaldoAsignado: 0,
+           wozxSaldoRecibido: 0,
+           wozxSaldoRetirado: 0,
+           tronSaldo: 0,
+           tronSaldoAsignado: 0,
+           tronSaldoRecibido: 0,
+           tronSaldoRetirado: 0,
+           permitirRegistros: true,
+           permitirRetiros: true,
+           depositoMinimo: 0
+        });
+
+        apps.save().then(() => {
+            respuesta.status = "200";
+            respuesta.txt = "Aplicacion creada exitodamente";
+            respuesta.usuario = apps;
+
+            res.send(respuesta);
+        });
+
+    }
+
+
 
 });
 
@@ -149,8 +193,6 @@ app.post('/registrar/:direccion', async(req,res) => {
                 withdrawnTrx: 0,
                 investedWozx: 0,
                 withdrawnWozx: 0,
-                wozxPendig: 0,
-                p: false,
                 historial: [{
                     tiempo: Date.now(),
                     valor: 50,
@@ -177,7 +219,6 @@ app.post('/registrar/:direccion', async(req,res) => {
 
 });
 
-
 app.post('/actualizar/:direccion', async(req,res) => {
 
     let cuenta = req.params.direccion;
@@ -194,53 +235,5 @@ app.post('/actualizar/:direccion', async(req,res) => {
     }
 
 });
-
-app.get('/registrar/aplicacion', async(req,res) => {
-
-    let cuenta = "ewozx";
-
-    let respuesta = {};
-    respuesta.status = "200";
-
-    var miApp = await aplicacion.find({ nombre: cuenta }, function (err, docs) {});
-
-    if ( miApp != "" ) {
-        respuesta.status = "303";
-        respuesta.txt = "Aplicacion ya registrada";
-        respuesta.usuario = miApp[0];
-
-        res.send(respuesta);
-
-    }else{
-
-         var apps = new aplicacion({
-           nombre: cuenta,
-           wozxSaldo: 0,
-           wozxSaldoAsignado: 0,
-           wozxSaldoRecibido: 0,
-           wozxSaldoRetirado: 0,
-           tronSaldo: 0,
-           tronSaldoAsignado: 0,
-           tronSaldoRecibido: 0,
-           tronSaldoRetirado: 0,
-           permitirRegistros: true,
-           permitirRetiros: true,
-           depositoMinimo: 0
-        });
-
-        apps.save().then(() => {
-            respuesta.status = "200";
-            respuesta.txt = "Aplicacion creada exitodamente";
-            respuesta.usuario = apps;
-
-            res.send(respuesta);
-        });
-
-    }
-
-
-
-});
-
 
 app.listen(port, ()=> console.log('Escuchando Puerto: ' + port))
