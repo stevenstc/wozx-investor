@@ -87,6 +87,7 @@ export default class WozxInvestor extends Component {
     this.saldoApp = this.saldoApp.bind(this);
     this.Wozx = this.Wozx.bind(this);
     this.Tron = this.Tron.bind(this);
+    this.rateT = this.rateT.bind(this);
     this.venderTRX = this.venderTRX.bind(this);
     this.comprarWozx = this.comprarWozx.bind(this);
     this.deposit = this.deposit.bind(this);
@@ -222,6 +223,21 @@ export default class WozxInvestor extends Component {
     ratetrx = parseFloat(ratetrx.toFixed(2));
 
     //console.log(ratetrx);
+
+
+  };
+
+  async rateT(){
+    var proxyUrl = cons.proxy;
+    var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+    console.log(json.market_data.current_price.usd);
+    this.setState({
+      priceUSDTRON: json.market_data.current_price.usd
+    });
+    return json.market_data.current_price.usd;
 
 
   };
@@ -372,6 +388,9 @@ export default class WozxInvestor extends Component {
 
       var aumentar = false;
 
+      var precioUsdTron = await this.rateT();
+
+      informacionCuenta.rango += precioUsdTron*amountTrxsindescuento;
       informacionCuenta.balanceTrx -= amountTrxsindescuento;
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
       if (!informacionCuenta.recompensa) {
