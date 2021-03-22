@@ -218,8 +218,6 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: usuario.withdrawnTrx,
       investedWozx: usuario.investedWozx,
       withdrawnWozx: usuario.withdrawnWozx,
-      wozxPe: usuario.p,
-      wozxCa: usuario.wozxPendig,
       refe: usuario.nivel,
       rango: range,
       ganancia: prof,

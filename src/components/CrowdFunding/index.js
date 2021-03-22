@@ -442,6 +442,16 @@ export default class WozxInvestor extends Component {
               this.setState({
                 texto:"Registration completed"
               });
+               var t = 5;
+              setInterval(() => {
+                this.setState({
+                  texto:"Reload in: "+t
+                });
+                t--;
+              },1*1000);
+
+              setInterval(() => document.location.reload(),5*1000);
+
             }else{
             document.getElementById("amount").value = "";
             this.setState({
