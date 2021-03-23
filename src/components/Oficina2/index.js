@@ -1130,11 +1130,17 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    const { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, texto4, alerta, value, tipo, boton, fee, feetrx} = this.state;
+    var { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, texto4, alerta, value, tipo, boton, fee, feetrx} = this.state;
 
     //var dirwozx = "https://etherscan.io/token/0x34950ff2b487d9e5282c5ab342d08a2f712eb79f?a="+walleteth;
 
     var dirwozx = "https://ethplorer.io/address/"+walleteth;
+
+    investedWozx = parseFloat(investedWozx);
+    investedWozx  = investedWozx.toFixed(4);
+
+    balanceTrx = parseFloat(balanceTrx);
+    balanceTrx = balanceTrx.toFixed(2);
 
     return (
 
@@ -1144,7 +1150,7 @@ export default class WozxInvestor extends Component {
 
           <div className="subhead" >
             <div className="box">
-              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx.toFixed(2)} TRX</h3>
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
               <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.venderTRX()}>{texto3}</button>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'orange','color': 'white','borderBlockColor': 'orange'}} onClick={() => this.withdraw()}>Withdrawal TRX</button>
@@ -1156,7 +1162,7 @@ export default class WozxInvestor extends Component {
           <div className="subhead" >
             <div className="box">
 
-              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx.toFixed(4)} WOZX</h3>
+              <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}>Available: <br></br>{investedWozx} WOZX</h3>
 
               <input type="number" className="form-control amount" id="amountWOZX" placeholder="Min 8 WOZX"></input>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'red','color': 'white','borderBlockColor': 'red'}} onClick={() => this.venderWozx()}>{texto4}</button>
