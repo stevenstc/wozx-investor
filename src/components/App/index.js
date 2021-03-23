@@ -4,6 +4,7 @@ import TronWeb from "tronweb";
 import Utils from "../../utils";
 import CrowdFunding from "../CrowdFunding";
 //import Datos from "../Datos";
+import Historial from "../Historial/"
 import Oficina from "../Oficina";
 import Oficina2 from "../Oficina2";
 import TronLinkGuide from "../TronLinkGuide";
@@ -121,7 +122,7 @@ class App extends Component {
       );
 
     return (
-
+      <>
       <div className="row contact-content">
             
         <div className="contact-primary">
@@ -136,11 +137,13 @@ class App extends Component {
           <div className="contact-info">
             <CrowdFunding />
             <hr></hr>
-            <Oficina2 /> 
+            <Oficina2 />
+            <Historial />
           </div>
         </div>
 
       </div>
+      </>
       
 
 

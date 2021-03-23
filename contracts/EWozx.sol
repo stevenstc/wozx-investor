@@ -1,97 +1,50 @@
-pragma solidity ^0.5.14;
+pragma solidity ^0.6.0;
 
 import "./SafeMath.sol";
 
 contract EWozx {
+
   using SafeMath for uint;
 
-  struct Referer {
-    address myReferer;
-    uint porciento;
-  }
-  
-  struct Firma {
-    bytes32 numero;
-    bool valida;
-  }
 
-  struct Pendiente{
-    bool pending;
-    address wallet;
-    uint tron;
-    uint rateTrx; 
-    uint rateWozx;
-    uint orden;
-  }
-
-  struct Nivel {
-    uint n;
-
-  }
-  
   struct Investor {
     bool registered;
-    address sponsor;
-    bool exist;
-    Referer[] referers;
-    string ethereum;
-    bool eth;
-    uint rango;
-    Nivel[10] niveles;
-    uint balanceTrx;
-    uint withdrawnTrx;
-    uint investedWozx;
-    uint withdrawnWozx;
-    
+
+    uint wozxEntrante;
+    uint wozxRetirado;
+    uint wozxDisponible;
+
+    uint tronEntrante;
+    uint tronRetirado;
+    uint tronDisponible;
+
   }
-  
+
   uint public MIN_DEPOSIT = 50 trx;
-  uint public COMISION_RETIRO = 10 trx;
-  uint public rateTRON = 28677;
-  
+  uint public COSTO_REGISTRO = 50 trx;
+
+  uint public COMISION_TRON = 10 trx;
+  uint public COMISION_WOZX = 2*1000000;
+
   address payable public owner;
-  address payable public marketing;
-  address payable public gateio;
   address payable public app;
-  
+
   address public NoValido;
-  bool public Do;
-  
-  uint public totalInvestors;
-  uint public totalInvested;
-  uint public totalRefRewards;
-  uint public InContract;
-  
+  bool public Do = true;
 
   mapping (address => Investor) public investors;
   mapping (address => bool) public isBlackListed;
-  Firma[] firmas;
-  Pendiente[] pendientes;
-  
-  constructor() public payable {
+
+  constructor( address payable _app ) public {
     owner = msg.sender;
-    marketing = msg.sender;
-    gateio = msg.sender;
-    app = msg.sender;
-    start();
-    Do = true;
+    app = _app;
+
+    investors[owner].registered = true;
 
   }
 
-  function setstate() public view  returns(uint Investors,uint Invested,uint RefRewards){
-      return (totalInvestors, totalInvested, totalRefRewards);
-  }
-
-  function Do2() public view returns (bool){
-    return Do;
-  }
-
-  function InContract2() public view returns (uint){
+  function InContract() public view returns (uint){
     return address(this).balance;
-  }
-
-  function owner2() public view returns (address){
-    return owner;
   }
 
   function setOwner(address payable _owner) public returns (address){
@@ -101,33 +54,10 @@ contract EWozx {
     require (_owner != owner);
 
     owner = _owner;
+
     investors[owner].registered = true;
-    investors[owner].sponsor = owner;
-    totalInvestors++;
 
     return owner;
-  }
-  
-  function setMarketing(address payable _marketing) public returns (address){
-
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == owner);
-    require (_marketing != marketing);
-
-    marketing = _marketing;
-    
-    return marketing;
-  }
-  
-  function setGateio(address payable _gateio) public returns (address){
-
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == owner);
-    require (_gateio != gateio);
-
-    gateio = _gateio;
-
-    return gateio;
   }
 
   function setApp(address payable _app) public returns (address){
@@ -140,375 +70,86 @@ contract EWozx {
 
     return app;
   }
-  
-  
-  function start() internal {
-    require (msg.sender == owner);
-      investors[msg.sender].registered = true;
-      investors[msg.sender].sponsor = owner;
-      totalInvestors++;
+
+  function miRegistro() public payable returns(bool) {
+
+    require (msg.value >= COSTO_REGISTRO);
+    require (!isBlackListed[msg.sender] && !investors[msg.sender].registered );
+
+    investors[msg.sender].registered = true;
+
+    return true;
 
   }
-  
-  function register() internal {
-    if (!investors[msg.sender].registered) {
-      investors[msg.sender].registered = true;
-      totalInvestors++;
-    }
-  }
 
-  function registerSponsor(address sponsor) internal {
-    if (!investors[msg.sender].exist){
-      investors[msg.sender].sponsor = sponsor;
-      investors[msg.sender].exist = true;
-    }
-  }
+  function depositoTron() external payable returns(bool){
 
-  function registerReferers(address ref, address spo) internal {
-      
-    uint nvl = 0;
-
-      
-    if (investors[spo].registered) {
-
-      investors[spo].referers.push(Referer(ref,8000));
-      investors[spo].niveles[nvl].n++;
-      nvl++;
-      
-     
-      if (investors[spo].exist){
-        spo = investors[spo].sponsor;
-        if (investors[spo].registered){
-          investors[spo].referers.push(Referer(ref,2000));
-          investors[spo].niveles[nvl].n++;
-          nvl++;
-     
-          
-          if (investors[spo].exist){
-            spo = investors[spo].sponsor;
-            if (investors[spo].registered){
-              investors[spo].referers.push(Referer(ref,1000));
-              investors[spo].niveles[nvl].n++;
-              nvl++;
-              
-              
-              if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,500));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,250));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125));
-                   investors[spo].niveles[nvl].n++;
-                    nvl++;
-                   
-                   
-                   if (investors[spo].exist){
-                spo = investors[spo].sponsor;
-                if (investors[spo].registered){
-                   investors[spo].referers.push(Referer(ref,125));
-                   investors[spo].niveles[nvl].n++;
-                   
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-                   
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  function rewardReferers(address yo, uint amount, address sponsor) internal {
-    address spo = sponsor;
-    for (uint i = 0; i < 10; i++) {
-
-      if (investors[spo].exist) {
-
-        for (uint e = 0; e < investors[spo].referers.length; e++) {
-          if (!investors[spo].registered) {
-            break;
-          }
-          if ( investors[spo].referers[e].myReferer == yo){
-              uint b = investors[spo].referers[e].porciento;
-              uint a = amount.mul(b).div(100000);
-              investors[spo].balanceTrx += a;
-              totalRefRewards += a;
-              investors[spo].rango += a.mul(rateTRON);
-              
-              
-          }
-        }
-
-        spo = investors[spo].sponsor;
-      }
-    }
-    
-    
-  }
-  
-  function firmarTx(bytes32 veri) public{
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == app);
-    firmas.push(Firma(veri,true));
-  }
-    
-  
-  function deposit(uint orden, string calldata orden2, bytes32 wallet, address _sponsor, bytes32 firma, bytes32 firma2, bytes32 firma3) external payable  {
     require (!isBlackListed[msg.sender]);
     require(msg.value >= MIN_DEPOSIT);
-    require (_sponsor != msg.sender);
-    require(keccak256(abi.encodePacked(orden2)) == firma);
-    require(wallet == firma2);
-    
-    for (uint i = 0; i < firmas.length; i++) {
-        
-      if (keccak256(abi.encodePacked(firmas[i].numero)) == keccak256(abi.encodePacked(firma3))) {
-          require (firmas[i].valida);
-          firmas[i].numero = firma3;
-          firmas[i].valida = false;
-          
-        break;
-      }
-      
-    }
-    
-    register();
+    require (investors[msg.sender].registered);
+    require (Do);
 
-    if (_sponsor != owner && investors[_sponsor].registered && _sponsor != NoValido){
-      if (!investors[msg.sender].exist){
-        registerSponsor(_sponsor);
-        registerReferers(msg.sender, investors[msg.sender].sponsor);
-      }
-    }
+    investors[msg.sender].tronEntrante += msg.value;
+    investors[msg.sender].tronDisponible += msg.value;
 
-    if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
-    } 
-    
-    investors[msg.sender].investedWozx += orden;
-    totalInvested += orden;
-    
-    
-    owner.transfer(msg.value.mul(9).div(100));
-    marketing.transfer(msg.value.mul(9).div(100));
-    gateio.transfer(msg.value.mul(70).div(100));
-    setInContract();
-    
+    return true;
   }
 
-  function ordenPost(address _w , uint _t, uint _rt, uint _rw, uint _o) public{
+  function depositoTronUsuario(address _user, uint _cantidad) external returns(bool){
     require (!isBlackListed[msg.sender]);
-    require (_t >= MIN_DEPOSIT );
-    require (_o > 0);
+    require (!isBlackListed[_user]);
     require (msg.sender == app);
-    pendientes.push(Pendiente(true, _w, _t, _rt, _rw, _o));
-    setInContract();
+
+    require (investors[_user].registered);
+    require (Do);
+
+    investors[_user].tronEntrante += _cantidad;
+    investors[_user].tronDisponible += _cantidad;
+
+    return true;
   }
 
-  function verOrdenPost() public view returns(uint, uint, uint, uint, uint){
-    require (msg.sender == app || msg.sender == owner);
-    uint ordenNumero = 0;
-    uint totaltron = 0;
-    uint totalrateTrx = 0;
-    uint totalrateWozx = 0;
-    uint totalorden = 0;
-
-
-    for (uint i = 0; i < pendientes.length; i++) {
-        
-      if (pendientes[i].pending) {
-        ordenNumero = i;
-        totaltron = pendientes[i].tron;
-        totalrateTrx = pendientes[i].rateTrx;
-        totalrateWozx = pendientes[i].rateWozx;
-        totalorden = pendientes[i].orden;
-
-        break;
-      }
-      
-    }
-    return (ordenNumero, totaltron, totalrateTrx, totalrateWozx, totalorden);
-    
-
-  }
-
-  function verOrdenPost2(uint _numero) public view returns(bool, uint, uint, uint, uint){
-    require (msg.sender == app || msg.sender == owner);
-    require (_numero < pendientes.length);
-
-    bool pendiente = pendientes[_numero].pending;
-    uint tron = pendientes[_numero].tron;
-    uint rateTrx = pendientes[_numero].rateTrx;
-    uint rateWozx = pendientes[_numero].rateWozx;
-    uint orden = pendientes[_numero].orden;
-
-
-    return (pendiente, tron, rateTrx, rateWozx, orden);
-    
-
-  }
-
-  function myFunction (uint _nivel) public view returns(uint cantidad){
-    
-    require (_nivel < investors[msg.sender].niveles.length && _nivel >= 0 );
-    
-    return investors[msg.sender].niveles[_nivel].n;
-      
-  }
-
-  function myRango () public view returns(uint cantidad){
-    
-    return investors[msg.sender].rango;
-      
-  }
-  
-
-  function ejecutarOrden(uint _numero) public {
+  function depositoWozx(address _user, uint _cantidad) external returns(bool){
     require (!isBlackListed[msg.sender]);
-    require (msg.sender == app || msg.sender == owner);
-    require (_numero < pendientes.length);
-    require (pendientes[_numero].pending);
+    require (!isBlackListed[_user]);
+    require (msg.sender == app);
 
-    setInContract();
-    investors[pendientes[_numero].wallet].investedWozx += pendientes[_numero].orden;
-    totalInvested += pendientes[_numero].orden;
-    pendientes[_numero].pending = false;
-        
+    require (investors[_user].registered);
+    require (Do);
+
+    investors[_user].wozxEntrante += _cantidad;
+    investors[_user].wozxDisponible += _cantidad;
+
+    return true;
   }
 
-  function ejecutarTodasOrdenes() public {
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == owner);
-
-    setInContract();
-    for (uint i = 0; i < pendientes.length; i++) {
-        
-      if (pendientes[i].pending) {
-          
-        investors[pendientes[i].wallet].investedWozx += pendientes[i].orden;
-        totalInvested += pendientes[i].orden;
-        pendientes[i].pending = false;
-        
-      }
-      
-    }
-  }
-  
-
-  function depositPost(address _sponsor) external payable {
-    require (!isBlackListed[msg.sender]);
-    require(msg.value >= MIN_DEPOSIT);
-    require (_sponsor != msg.sender);
-    
-    register();
-
-    if (_sponsor != owner && investors[_sponsor].registered && _sponsor != NoValido){
-      if (!investors[msg.sender].exist){
-        registerSponsor(_sponsor);
-        registerReferers(msg.sender, investors[msg.sender].sponsor);
-      }
-    }
-
-    if (investors[msg.sender].exist){
-      rewardReferers(msg.sender, msg.value, investors[msg.sender].sponsor);
-    } 
-    
-    owner.transfer(msg.value.mul(9).div(100));
-    marketing.transfer(msg.value.mul(9).div(100));
-    gateio.transfer(msg.value.mul(70).div(100));
-    setInContract();
-    
-  }
-
-  function setInContract() public returns (uint){
-    InContract = address(this).balance; 
-    return InContract;
-  }
-  
-  function withdrawable(address any_user) public view returns (uint amount) {
+  function withdrawable(address any_user) public view returns (uint) {
     Investor storage investor = investors[any_user];
-    amount = investor.balanceTrx;
-    
+    return investor.tronDisponible;
+
   }
 
-  function withdraw() external returns(bool envio, uint) {
+  function withdraw(uint _cantidad) public returns(bool) {
 
     require (!isBlackListed[msg.sender]);
-    
-    setInContract();
+    require (Do);
+
     uint amount = withdrawable(msg.sender);
-    if (Do && amount > COMISION_RETIRO && address(this).balance > amount ){
-      
-      msg.sender.transfer(amount-COMISION_RETIRO);
-      app.transfer(5 trx);
-      investors[msg.sender].balanceTrx = 0;
-      investors[msg.sender].withdrawnTrx += amount-COMISION_RETIRO;
 
-      return (true, amount-COMISION_RETIRO);
-    }else{
-      return (false, amount-COMISION_RETIRO);
-    }
+    require ( _cantidad <= amount );
+    require ( _cantidad > COMISION_TRON );
+    require (address(this).balance >= _cantidad );
 
-    
+    msg.sender.transfer(_cantidad-COMISION_TRON);
+
+    investors[msg.sender].tronDisponible -= _cantidad;
+    investors[msg.sender].tronRetirado += _cantidad-COMISION_TRON;
+
+    return true;
+
   }
-    
-  function withdraw000() public returns (bool set_Do) {
+
+  function stopAll() public returns (bool) {
     require (msg.sender == owner);
       if(Do){
         Do = false;
@@ -519,116 +160,83 @@ contract EWozx {
     return Do;
   }
 
-  function withdraw001() public returns (uint) {
-    require(msg.sender == owner);
-    require (InContract > 0);
-    
+  function withdrawAll() public returns (uint) {
+    require(msg.sender == owner, "only the owner");
+    require (address(this).balance > 0, "contract has 0 balance");
+
     uint valor = address(this).balance;
-    if (msg.sender.send(valor)){
-      uint IC = InContract;
-      InContract = address(this).balance;
-      return IC;
+    if (owner.send(valor)){
+      return address(this).balance;
     }
   }
 
-  function MYwithdrawable() public view returns (uint amount) {
+  function withdrawableTrx() public view returns (uint) {
     Investor storage investor = investors[msg.sender];
-    amount = investor.balanceTrx;
+    return investor.tronDisponible;
   }
 
-  function withdrawableWozx() public view returns (uint amount) {
+  function withdrawableWozx() public view returns (uint) {
     Investor storage investor = investors[msg.sender];
-    amount = investor.investedWozx;
+    return investor.wozxDisponible;
   }
 
-  function wozxToTron (address _wallet, uint _rt, uint _rw) external  returns(bool res) {
 
-    require (!isBlackListed[msg.sender]);
-    require (msg.sender == app);
+  function enviarWozx (address _wallet, uint _cantidad) public returns(bool) {
 
-    uint iwozx = investors[_wallet].investedWozx;
-    uint amount = iwozx.mul(_rw).div(_rt);
-    investors[_wallet].withdrawnWozx += iwozx;
-    investors[_wallet].investedWozx = 0;
-    app.transfer(5 trx);
-    investors[_wallet].balanceTrx += amount-5 trx;
-    InContract = address(this).balance;
-    return true;
-    
-  }
-  
-  function enviarWozx (address _wallet, uint _cantidad) public returns(bool res) {
+    require (!isBlackListed[msg.sender] && !isBlackListed[_wallet] );
+    require (investors[msg.sender].wozxDisponible >= _cantidad);
+    require (_wallet !=msg.sender);
 
-    require (!isBlackListed[msg.sender]);
-    require (investors[msg.sender].investedWozx >= _cantidad);
-    
-    InContract = address(this).balance; 
-    investors[msg.sender].investedWozx -= _cantidad;
-    investors[msg.sender].withdrawnWozx += _cantidad;
-    investors[_wallet].investedWozx += _cantidad;
+    investors[msg.sender].wozxDisponible -= _cantidad;
+    investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
+    investors[_wallet].wozxDisponible += _cantidad-COMISION_WOZX;
+
     return true;
   }
 
-  function retirarWozx () external  returns(bool res) {
+  function retirarWozx(uint _cantidad) public returns(bool) {
 
     require (!isBlackListed[msg.sender]);
-    require (investors[msg.sender].investedWozx > 0);
-    
-    uint iwozx = investors[msg.sender].investedWozx;
-    investors[msg.sender].investedWozx = 0;
-    investors[msg.sender].withdrawnWozx += iwozx;
+    require (investors[msg.sender].wozxDisponible > 0);
+    require (_cantidad <= investors[msg.sender].wozxDisponible);
+
+    investors[msg.sender].wozxDisponible -= _cantidad;
+    investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
 
     return true;
-    
-  }
-  
 
-  function miETH (address  _direccion) public view returns(string memory ethdireccion, bool habilitado) {
-
-    Investor storage inv = investors[_direccion];
-    ethdireccion = inv.ethereum;
-    habilitado = inv.eth;
-    return (ethdireccion, habilitado);
   }
-  
-  function setETH (string memory _direccion) public returns (bool, string memory){
+
+  function retirarTron(uint _cantidad) public returns(bool) {
 
     require (!isBlackListed[msg.sender]);
+    require (investors[msg.sender].tronDisponible > 0);
+    require (_cantidad <= investors[msg.sender].tronDisponible);
 
-    Investor storage inv = investors[msg.sender];
-    inv.ethereum = _direccion;
-    inv.eth = false;
+    investors[msg.sender].tronDisponible -= _cantidad;
+    investors[msg.sender].tronRetirado += _cantidad-COMISION_TRON;
 
-    return (true, _direccion);
+    return true;
   }
 
-  function habilitarETH (address _direccion) public returns (bool result, address tron){
 
-
-    require (msg.sender == owner);
-    
-    require (!isBlackListed[msg.sender]);
-
-    investors[_direccion].eth = true;
-
-    return (investors[_direccion].eth, _direccion);
-  }
-  
   function nuevoMinDeposit(uint num)public{
     require (msg.sender == owner || msg.sender == app);
-    MIN_DEPOSIT = num*1 trx;
-    InContract = address(this).balance; 
+    MIN_DEPOSIT = num;
   }
 
-  function nuevoRatetron(uint rate)public{
+  function nuevoCostoRegistro(uint num)public{
     require (msg.sender == owner || msg.sender == app);
-    require (rate != rateTRON);
-    rateTRON = rate;
-    
+    COSTO_REGISTRO = num;
   }
 
-  function getBlackListStatus(address _maker) external view returns (bool) {
-    return isBlackListed[_maker];
+  function nuevaComisionWozx(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COMISION_WOZX = num;
+  }
+
+  function getBlackListStatus(address _user) external view returns (bool) {
+    return isBlackListed[_user];
   }
 
   function addBlackList (address _evilUser) public {
@@ -636,13 +244,12 @@ contract EWozx {
     isBlackListed[_evilUser] = true;
   }
 
-  function removeBlackList (address _clearedUser) public {
+  function removeBlackList (address _cleanUser) public {
     require(msg.sender == owner);
-    isBlackListed[_clearedUser] = false;
+    isBlackListed[ _cleanUser] = false;
   }
 
-  function () external payable {
-    setInContract();
-  }  
-  
+  receive () payable external{}
+  fallback () payable external{}
+
 }
