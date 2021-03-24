@@ -90,6 +90,23 @@ app.get('/consultar/ejemplo', async(req,res) => {
 
 });
 
+app.get('/consultar/transaccion/:id', async(req,res) => {
+
+    let id = req.params.direccion;
+
+    var onFire = await TronWeb.trx.getTransactionInfo(id).then(value=>{console.log("llego un valor"); var a = value; console.log(a); return a});
+
+    console.log(onFire.receipt.result);
+
+    if (onFire.receipt.result === "SUCCESS") {
+      res.json({true});
+    }else {
+      res.json({false});
+    }
+
+
+});
+
 app.get('/registrar/aplicacion', async(req,res) => {
 
     let cuenta = "ewozx";

@@ -546,7 +546,9 @@ export default class WozxInvestor extends Component {
 
     amount = parseInt(amount * 1000000);
 
-    if ( await Utils.contract.depositoTron().send({callValue: amount }) ) {
+    var deposito = await Utils.contract.depositoTron().send({callValue: amount,shouldPollResponse:true})
+
+    if ( deposito ) {
 
       amount = amount/1000000;
 
