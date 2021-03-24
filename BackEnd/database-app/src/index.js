@@ -6,11 +6,11 @@ const TronWeb = require('tronweb');
 const app = express();
 const port = process.env.PORT || 3003;
 const token = process.env.APP_MT;
+const uri = process.env.APP_URI;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const uri = 'mongodb+srv://userwozx:wozx1234567890@ewozx.neief.mongodb.net/registro';
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
 
 mongoose.connect(uri, options).then(
