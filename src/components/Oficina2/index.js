@@ -10,6 +10,8 @@ import web3 from 'web3';
 
 import ccxt from 'ccxt';
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
@@ -176,17 +178,17 @@ export default class WozxInvestor extends Component {
 
   async consultarTransaccion(id){
 
+    this.setState({
+      texto3: "Updating balance..."
+    });
+    await delay(3000);
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'consultar/transaccion/'+id;
     console.log(apiUrl);
     const response = await fetch(proxyUrl+apiUrl)
-    .catch(error =>{console.error(error)})
+    .catch(error =>{console.error(error)});
     const json = await response.json();
-
-    this.setState({
-      pago: json.result
-    });
-    console.log(json.result);
+    console.log(json);
     return json.result;
 
   };
@@ -444,9 +446,7 @@ export default class WozxInvestor extends Component {
 
       console.log(id);
 
-      await setTimeout(this.consultarTransaccion(id),1000);
-
-      const { pago } = this.state;
+      var pago = await this.consultarTransaccion(id);
 
       if ( pago ) {
 
@@ -616,8 +616,8 @@ export default class WozxInvestor extends Component {
     var amount = document.getElementById("amountWOZX").value;
 
     var ope = cons.FEEW*2;
-
     var result = false;
+
     if ( amount >= ope ) {
 
       if (amount <= 0 || amount === "" || amount > investedWozx) {
@@ -744,6 +744,9 @@ export default class WozxInvestor extends Component {
       var otro = null;
 
       await this.actualizarUsuario( informacionCuenta, otro );
+
+      var contractApp = await tronApp.contract().at(contractAddress);
+      await contractApp.depositoTronUsuario( informacionCuenta.direccion, monto ).send();
 
     }
 
@@ -957,8 +960,10 @@ export default class WozxInvestor extends Component {
 
           result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
         }
+        var id = await Utils.contract.retirarWozx( amount*1000000 ).send();
+        var pago = await this.consultarTransaccion(id);
 
-        if ( result && investedWozx > 0 && await Utils.contract.retirarWozx( amount*1000000 ).send() ){
+        if ( result && investedWozx > 0 && pago ){
 
           if (amount <= investedWozx && investedWozx > fee) {
             var amountsinfee = amount;

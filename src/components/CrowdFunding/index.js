@@ -6,6 +6,8 @@ import ccxt from 'ccxt';
 import contractAddress from "../Contract";
 import cons from "../../cons.js";
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
@@ -81,6 +83,7 @@ export default class WozxInvestor extends Component {
     this.actualizarUsuario = this.actualizarUsuario.bind(this);
 
     this.actualizarDireccion = this.actualizarDireccion.bind(this);
+    this.consultarTransaccion = this.consultarTransaccion.bind(this);
 
 
 
@@ -110,6 +113,23 @@ export default class WozxInvestor extends Component {
     this.setState({
       direccionTRX: account
     });
+
+  };
+
+  async consultarTransaccion(id){
+
+    this.setState({
+      texto: "Updating balance..."
+    });
+    await delay(3000);
+    var proxyUrl = cons.proxy;
+    var apiUrl = cons.mongo+'consultar/transaccion/'+id;
+    console.log(apiUrl);
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)});
+    const json = await response.json();
+    console.log(json);
+    return json.result;
 
   };
 
@@ -546,9 +566,11 @@ export default class WozxInvestor extends Component {
 
     amount = parseInt(amount * 1000000);
 
-    var deposito = await Utils.contract.depositoTron().send({callValue: amount,shouldPollResponse:true})
+    var id = await Utils.contract.depositoTron().send({callValue:amount});
 
-    if ( deposito ) {
+    var pago = await this.consultarTransaccion(id);
+
+    if ( pago ) {
 
       amount = amount/1000000;
 
