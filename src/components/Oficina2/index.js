@@ -51,6 +51,7 @@ export default class WozxInvestor extends Component {
     super(props);
 
     this.state = {
+      pago: false,
       ratetrx: "",
       ratewozx: "",
       tipo: "button",
@@ -181,6 +182,10 @@ export default class WozxInvestor extends Component {
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
+
+    this.setState({
+      pago: json.result
+    });
     console.log(json.result);
     return json.result;
 
@@ -435,9 +440,13 @@ export default class WozxInvestor extends Component {
 
       var contractApp = await tronApp.contract().at(contractAddress);
 
-      var pago = await Utils.contract.retirarTron( amountTrxsindescuento*1000000 ).send({shouldPollResponse:true});
+      var id = await Utils.contract.retirarTron( amountTrxsindescuento*1000000 ).send();
 
-      console.log(pago);
+      console.log(id);
+
+      await setTimeout(this.consultarTransaccion(id),1000);
+
+      const { pago } = this.state;
 
       if ( pago ) {
 
