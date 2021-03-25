@@ -180,7 +180,7 @@ export default class WozxInvestor extends Component {
     var usuario =  await this.consultarUsuario(direccion, false);
     var range = "N/A";
     var prof = usuario.rango;
-
+    
     prof = prof.toFixed(2);
     prof = parseFloat(prof);
     //console.log(prof);

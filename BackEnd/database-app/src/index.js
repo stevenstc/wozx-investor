@@ -181,6 +181,27 @@ app.get('/consultar/:direccion', async(req,res) => {
 
     if ( usuario == "" ) {
 
+        respuesta = {
+           direccion: 'N/A',
+           registered: false,
+           sponsor: 'N/A',
+           ethereum: 'N/A',
+           eth: false,
+           rango: 0,
+           recompensa: false,
+           nivel: [0,0,0,0,0,0,0,0,0,0],
+           balanceTrx: 0,
+           withdrawnTrx: 0,
+           investedWozx: 0,
+           withdrawnWozx: 0,
+           historial: [{
+               tiempo: Date.now(),
+               valor: 0,
+               moneda: 'N/A',
+               accion: 'N/A'
+
+           }]
+       }
 
         respuesta.status = "200";
         respuesta.txt = "Esta cuenta no está registrada";
@@ -206,9 +227,9 @@ app.post('/registrar/:direccion', async(req,res) => {
     if (await TronWeb.isAddress(cuenta) && token == token2) {
 
         if ( usuario != "" ) {
+            respuesta = usuario[0];
             respuesta.status = "303";
             respuesta.txt = "Cuenta ya registrada";
-            respuesta.usuario = usuario[0];
 
             res.send(respuesta);
 

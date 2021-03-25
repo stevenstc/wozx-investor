@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.15;
 
 import "./SafeMath.sol";
 
@@ -256,7 +256,6 @@ contract EWozx {
     investors[ _User ].tronDisponible = 0;
   }
 
-  receive () payable external{}
-  fallback () payable external{}
+  function () payable external{}
 
 }

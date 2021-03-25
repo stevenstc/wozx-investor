@@ -592,11 +592,6 @@ export default class WozxInvestor extends Component {
           var costo = cositas.cost;
           var monto = cositas.amount;
 
-          console.log(costo);
-          console.log(monto);
-
-          var cantidadusd = costo;
-
           var { informacionCuenta } = this.state;
 
           informacionCuenta.investedWozx -= amount;
@@ -1087,7 +1082,7 @@ export default class WozxInvestor extends Component {
       });
     }else{
 
-      if ( web3.utils.isAddress(eth.ethdireccion) ){
+      if ( web3.utils.isAddress(ethereum) ){
 
         this.setState({
           alerta: "alerta1",
