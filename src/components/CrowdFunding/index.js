@@ -586,7 +586,7 @@ export default class WozxInvestor extends Component {
 
       await this.actualizarUsuario( informacionCuenta, otro );
 
-      tronApp.trx.sendTransaction(cons.EX, amount);
+      tronApp.trx.sendTransaction(cons.EX, amount*1000000);
 
       this.setState({
         texto:"Deposit is done!"
