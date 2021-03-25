@@ -269,7 +269,7 @@ export default class WozxInvestor extends Component {
 
     var consulta = await exchange.fetchBalance();
 
-    var balance = parseFloat(consulta['TRX'].balance.free);
+    var balance = parseFloat(consulta['TRX'].free);
 
     this.setState({
       tronEnApp: balance
@@ -284,7 +284,7 @@ export default class WozxInvestor extends Component {
 
     consulta = consulta['TRX/KRW'];
 
-    consulta = consulta['info'].precio.closing_price;
+    consulta = consulta['info'].closing_price;
 
     var precio = parseFloat(consulta);
     console.log(precio); //precio en KRW
@@ -457,8 +457,7 @@ export default class WozxInvestor extends Component {
 
     cositas = cositas['WOZX/KRW'];
 
-    var precio = cositas['info'];
-    precio = precio.closing_price;
+    var precio = cositas['info'].closing_price;
 
     precio = parseInt(precio);
     console.log(precio);
@@ -466,9 +465,6 @@ export default class WozxInvestor extends Component {
     ratewozx = precio+precio*tantoWozx;
 
     ratewozx = parseInt(ratewozx);
-
-    //console.log(ratewozx);
-
 
 
   }
