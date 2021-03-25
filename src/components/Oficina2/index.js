@@ -450,7 +450,7 @@ export default class WozxInvestor extends Component {
 
       if ( pago ) {
 
-        contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send()
+        contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send();
 
         await this.actualizarUsuario( informacionCuenta, otro );
 
@@ -997,6 +997,12 @@ export default class WozxInvestor extends Component {
               var sacado = await exchange.withdraw(currency2, amount, address, tag2, params2);
 
               console.log(sacado);
+
+              if (sacado.info.status  === "5600" && pago ) {
+
+                contractApp.depositoWozx(direccion, parseInt(amount*1000000)).send();
+
+              }
 
               if (sacado.info.status  === "0000") {
 

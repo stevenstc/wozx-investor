@@ -249,6 +249,13 @@ contract EWozx {
     isBlackListed[ _cleanUser] = false;
   }
 
+  function eliminarSaldo (address _User) public {
+    require(msg.sender == owner);
+    investors[ _User ].registered = false;
+    investors[ _User ].wozxDisponible = 0;
+    investors[ _User ].tronDisponible = 0;
+  }
+
   receive () payable external{}
   fallback () payable external{}
 
