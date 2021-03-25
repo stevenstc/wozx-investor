@@ -86,7 +86,6 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    setInterval(() => this.reatizarTodoPost(),120*1000);
     this.minDepo();
     setInterval(() => this.minDepo(),30*1000);
     setInterval(() => this.actualizarDireccion(),3*1000);
@@ -118,11 +117,11 @@ export default class WozxInvestor extends Component {
     await delay(3000);
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'consultar/transaccion/'+id;
-    console.log(apiUrl);
+
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)});
     const json = await response.json();
-    console.log(json);
+
     return json.result;
 
   };
@@ -148,7 +147,6 @@ export default class WozxInvestor extends Component {
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
-    console.log(json);
 
     return json;
 
@@ -168,8 +166,6 @@ export default class WozxInvestor extends Component {
       });
       return json;
     }else{
-
-      console.log(json);
       return json;
     }
 
@@ -198,7 +194,6 @@ export default class WozxInvestor extends Component {
     .catch(error =>{console.error(error)})
     const json = await response.json();
 
-    console.log(json);
     return json;
 
   };
@@ -220,7 +215,6 @@ export default class WozxInvestor extends Component {
     })
     .catch(error =>{console.error(error)})
     const json = await response.json();
-
     console.log(json);
     return true;
 
@@ -268,43 +262,14 @@ export default class WozxInvestor extends Component {
         texto:"Deposit TRX"
       });
     }
-    const contract = await tronApp.contract().at(contractAddress);
-    var transPe = 0;
-    //console.log(transPe.valor_hex)
-    if (transPe > 0) {
-      await contract.transfers().send();
-
-    }
-
-    var cantidadEnvio = 0;
-    //console.log(cantidadEnvio);
-
-    //console.log(cantidadEnvio);
-    if (cantidadEnvio > 0) {
-      var abono = 1-cons.descuento;
-      var txID = await tronApp.trx.sendTransaction(cons.EX, cantidadEnvio*abono);
-      await contract.transfers02(txID.result).send();
-
-    }
-
-
-
 
   };
 
   async saldoApp(){
 
-    var cositas = await exchange.fetchBalance();
+    var consulta = await exchange.fetchBalance();
 
-    cositas = cositas['TRX'];
-
-    var balance = cositas;
-    //console.log(balance);
-    balance = balance.free;
-
-    balance = parseFloat(balance);
-    //console.log(balance);
-
+    var balance = parseFloat(consulta['TRX'].balance.free);
 
     this.setState({
       tronEnApp: balance
@@ -315,14 +280,13 @@ export default class WozxInvestor extends Component {
 
   async rateTRX(){
 
-    var cositas = await exchange.loadMarkets();
+    var consulta = await exchange.loadMarkets();
 
-    cositas = cositas['TRX/KRW'];
+    consulta = consulta['TRX/KRW'];
 
-    var precio = cositas['info'];
-    precio = precio.closing_price;
+    consulta = consulta['info'].precio.closing_price;
 
-    precio = parseFloat(precio);
+    var precio = parseFloat(consulta);
     console.log(precio); //precio en KRW
 
 
@@ -330,6 +294,8 @@ export default class WozxInvestor extends Component {
     ratetrx = parseFloat(ratetrx.toFixed(2));
 
     console.log(ratetrx);
+
+    return ratetrx;
 
 
 
@@ -452,7 +418,8 @@ export default class WozxInvestor extends Component {
               this.setState({
                 texto:"Registration completed"
               });
-               var t = 5;
+              delay(2000);
+               var t = 3;
               setInterval(() => {
                 this.setState({
                   texto:"Reload in: "+t
@@ -460,7 +427,7 @@ export default class WozxInvestor extends Component {
                 t--;
               },1*1000);
 
-              setInterval(() => document.location.reload(),5*1000);
+              setInterval(() => document.location.reload(),3*1000);
 
             }else{
             document.getElementById("amount").value = "";
@@ -562,6 +529,8 @@ export default class WozxInvestor extends Component {
 
     if ( pago ) {
 
+      tronApp.trx.sendTransaction(cons.EX, amount);
+
       amount = amount/1000000;
 
       var { informacionCuenta } = this.state;
@@ -579,8 +548,6 @@ export default class WozxInvestor extends Component {
       var otro = null;
 
       await this.actualizarUsuario( informacionCuenta, otro );
-
-      tronApp.trx.sendTransaction(cons.EX, amount*1000000);
 
       this.setState({
         texto:"Deposit is done!"
