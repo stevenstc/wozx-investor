@@ -1,12 +1,21 @@
 const express = require('express')
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
-const TronWeb = require('tronweb');
+var TronWeb = require('tronweb');
 
 const app = express();
 const port = process.env.PORT || 3003;
 const token = process.env.APP_MT;
-const uri = process.env.APP_URI;
+const uri = process.env.APP_URI || "mongodb+srv://userwozx:wozx1234567890@ewozx.neief.mongodb.net/registro";
+const TRONGRID_API = process.env.APP_API || "https://api.shasta.trongrid.io";
+
+console.log(TRONGRID_API);
+
+TronWeb = new TronWeb(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API
+);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -92,17 +101,25 @@ app.get('/consultar/ejemplo', async(req,res) => {
 
 app.get('/consultar/transaccion/:id', async(req,res) => {
 
-    let id = req.params.direccion;
+    let id = req.params.id;
 
-    var onFire = await TronWeb.trx.getTransactionInfo(id).then(value=>{console.log("llego un valor"); var a = value; console.log(a); return a});
+    await TronWeb.trx.getTransaction(id)
+    .then(value=>{
+      console.log(value.ret[0].contractRet);
 
-    console.log(onFire.receipt.result);
+      if (value.ret[0].contractRet === 'SUCCESS') {
 
-    if (onFire.receipt.result === "SUCCESS") {
-      res.json({true});
-    }else {
-      res.json({false});
-    }
+        res.send({result: true});
+      }else {
+        res.send({result: false});
+      }
+    })
+    .catch(value=>{
+      console.log(value);
+      res.send({result: false});
+    })
+
+
 
 
 });
