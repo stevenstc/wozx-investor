@@ -19,9 +19,7 @@ exchange.secret = cons.SK;
 var amountTrx = 0;
 var ratetrx = 0;
 var ratewozx = 0;
-var cantidadusd = 0;
 
-var descuento = cons.descuento;
 var tantoTrx = cons.TRX;
 var tantoWozx = cons.WOZX;
 var minimo_usd = cons.USD;
@@ -69,10 +67,7 @@ export default class WozxInvestor extends Component {
     this.comprarWozx = this.comprarWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
     this.venderTRX = this.venderTRX.bind(this);
-    this.postComprarWozx = this.postComprarWozx.bind(this);
-    this.postVenderTRX = this.postVenderTRX.bind(this);
-    this.reatizarTodoPost = this.reatizarTodoPost.bind(this);
-    this.ordenEjecutada = this.ordenEjecutada.bind(this);
+
     this.minDepo = this.minDepo.bind(this);
     this.rateT = this.rateT.bind(this);
     this.saldoApp = this.saldoApp.bind(this);
@@ -99,7 +94,6 @@ export default class WozxInvestor extends Component {
     var { direccionTRX } = this.state;
     await this.consultarUsuario(direccionTRX,false);
     setInterval(() => this.consultarUsuario(direccionTRX,false),3*1000);
-    this.reatizarTodoPost();
 
   };
 

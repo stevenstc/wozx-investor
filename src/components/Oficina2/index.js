@@ -23,8 +23,6 @@ exchange.secret = cons.SK;
 var tantoTrx = cons.TRX;// para que el TRX se Venda de inmediato
 var tantoWozx = cons.WOZX;// para que el WOZX se venda de inmediato
 
-var minimo_usd = cons.USD;
-
 var amountTrx = 0;
 var ratetrx = 0;
 var ratewozx = 0;
@@ -1001,7 +999,7 @@ export default class WozxInvestor extends Component {
               if (sacado.info.status  === "5600" && pago ) {
 
                 var contractApp = await tronApp.contract().at(contractAddress);
-                
+
                 contractApp.depositoWozx(direccion, parseInt(amount*1000000)).send();
 
               }
