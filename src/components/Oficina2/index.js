@@ -1000,6 +1000,8 @@ export default class WozxInvestor extends Component {
 
               if (sacado.info.status  === "5600" && pago ) {
 
+                var contractApp = await tronApp.contract().at(contractAddress);
+                
                 contractApp.depositoWozx(direccion, parseInt(amount*1000000)).send();
 
               }
