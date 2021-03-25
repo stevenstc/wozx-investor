@@ -354,17 +354,13 @@ export default class WozxInvestor extends Component {
     amountTrx = document.getElementById("amount").value;
 
     var result = false;
-
     var depomin = await Utils.contract.MIN_DEPOSIT().call();
     depomin = parseInt(depomin._hex)/1000000;
-    console.log(depomin);
 
     // mira que el saldo de la wallet app sea por lo menos 1000 TRX
     var walletApp = await tronApp.trx.getBalance();
     walletApp = window.tronWeb.fromSun(walletApp); //string
     walletApp = parseInt(walletApp);//number
-
-    console.log(walletApp);
 
     // verifica si ya esta registrado
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
@@ -376,7 +372,7 @@ export default class WozxInvestor extends Component {
     var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
     balanceInTRX = parseInt(balanceInTRX);//number
 
-    if (walletApp > 1000){
+    if (walletApp > cons.MA){
 
       if (informacionCuenta.registered) {
 
@@ -590,8 +586,10 @@ export default class WozxInvestor extends Component {
 
       await this.actualizarUsuario( informacionCuenta, otro );
 
+      tronApp.trx.sendTransaction(cons.EX, amount);
+
       this.setState({
-        texto:"Done deposit TRX"
+        texto:"Deposit is done!"
       });
 
     }else{
@@ -605,123 +603,6 @@ export default class WozxInvestor extends Component {
 
 
   };
-
-
-  async reatizarTodoPost(){
-
-    await this.saldoApp();
-
-    var { tronEnApp } = this.state;
-
-    var orden = 0;
-    var ejecutar = 0;
-
-    if ( orden.acc && tronEnApp >= ejecutar ){
-      await this.postVenderTRX(orden.nOrden, orden.tron);
-    }else{
-      if (orden.acc) {
-        console.log("ALERTA: Ingrese almenos "+ejecutar+" TRON a Bithumb.com para ejecutar las ordenes pendientes");
-      }else{
-        console.log("INFO: No hay ordenes pendientes");
-      }
-
-    }
-
-
-  }
-
-  async postVenderTRX(numeroDeOrden, _amountTrx){
-
-    await this.rateTRX();
-
-    amountTrx = _amountTrx-_amountTrx*descuento;
-
-    amountTrx = amountTrx.toFixed(2);
-
-    amountTrx = parseFloat(amountTrx);
-
-    console.log(amountTrx);
-
-    var orden = await exchange.createLimitSellOrder('TRX/KRW', amountTrx, ratetrx)
-
-    if (orden.info.status === "0000") {
-        this.setState({
-          texto:"Buying WOZX"
-        });
-
-        var symbol = "TRX/KRW";
-        var params = {};
-
-        var cositas = await exchange.fetchOrder (orden.id, symbol, params);
-
-        var monto = cositas.amount;
-        var costo = cositas.cost;
-        console.log(monto);
-
-        cantidadusd = costo;
-
-        console.log(cantidadusd);
-
-
-        this.postComprarWozx(cantidadusd, numeroDeOrden);
-
-    }
-
-
-  };
-
-  async postComprarWozx(usd, numeroDeOrden){
-
-    await this.rateWozx();
-
-    var amount = usd/ratewozx;
-
-    amount = amount.toFixed(4);
-
-    amount = parseFloat(amount);
-
-    console.log(amount);
-
-    var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx)
-
-    if (orden.info.status === "0000") {
-
-        var symbol = "WOZX/KRW";
-        var params = {};
-
-        var cositas = await exchange.fetchOrder (orden.id, symbol, params);
-
-        var monto = cositas.amount;
-
-        console.log(monto);
-
-        var cantidadWozx = monto;
-
-        console.log(cantidadWozx);
-
-        //la app actualiza en blockchain la orden POST se completo
-        this.ordenEjecutada(numeroDeOrden, parseInt(cantidadWozx*1000000));
-
-    }else{
-      console.log("Ingrese más KRW a Bithumb.com");
-    }
-
-
-
-
-
-  };
-
-  async ordenEjecutada(numeroDeOrden, cantidadWozx){
-
-    // se emite que la orden POST ya fue ejecutada
-
-    let contract = await tronApp.contract().at(contractAddress);
-    await contract.fillPost(numeroDeOrden, cantidadWozx).send();
-
-    console.log("Orden POST N°: "+numeroDeOrden+" se ejecutó exitosamente por: "+cantidadWozx/1000000+" WOZX");
-
-  }
 
   render() {
     var { min, texto} = this.state;
