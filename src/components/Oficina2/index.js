@@ -292,6 +292,7 @@ export default class WozxInvestor extends Component {
     if ( result && investors.registered && parseInt(investors.tronDisponible)/1000000 >= amountTrx ) {
         if ( amountTrx >= depomin ) {
           amountTrx = amountTrx - amountTrx*descuento;
+          amountTrx = amountTrx -cons.FEET;
           amountTrx = amountTrx.toFixed(2);
 
           if (amountTrx <= await this.saldoApp()){
@@ -424,7 +425,7 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: amountTrxsindescuento,
           moneda: 'TRX',
-          accion: 'Selled'
+          accion: 'Selled | fee: '+cons.FEET
 
       })
 
@@ -568,13 +569,15 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx && pago ){
 
-      console.log( { amount, ratewozx } );
+      var amountWozxDescuento = amount-cons.FEEW;
+      amountWozxDescuento = amount.toFixed(4);
+      amountWozxDescuento = parseFloat(amount);
 
-      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amount, ratewozx)
+      console.log(amountWozxDescuento);
+
+      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amountWozxDescuento, ratewozx)
 
       console.log(orden);
-
-      console.log(orden.info.status);
 
       if (orden.info.status === "0000") {
           this.setState({
@@ -593,18 +596,17 @@ export default class WozxInvestor extends Component {
           console.log(monto);
 
           var cantidadusd = costo;
-          var cantidadWozx = monto;
 
           var { informacionCuenta } = this.state;
 
-          informacionCuenta.investedWozx -= monto;
-          informacionCuenta.withdrawnWozx += monto;
+          informacionCuenta.investedWozx -= amount;
+          informacionCuenta.withdrawnWozx += amount;
 
           informacionCuenta.historial.push({
               tiempo: Date.now(),
-              valor: monto,
+              valor: amount,
               moneda: 'WOZX',
-              accion: 'Selled | fee '+cons.FEEW
+              accion: 'Selled | fee: '+cons.FEEW
 
           })
 
@@ -612,9 +614,7 @@ export default class WozxInvestor extends Component {
 
           await this.actualizarUsuario( informacionCuenta, otro );
 
-          console.log(cantidadusd);
-
-        this.comprarTRX(cantidadusd, cantidadWozx);
+        this.comprarTRX(costo, monto);
       }
 
 
@@ -660,7 +660,7 @@ export default class WozxInvestor extends Component {
 
       var monto = cositas.amount;
 
-      console.log(monto)
+      console.log(monto);
 
       var { informacionCuenta } = this.state;
 
