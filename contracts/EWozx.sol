@@ -39,8 +39,6 @@ contract EWozx {
     owner = msg.sender;
     app = _app;
 
-    investors[owner].registered = true;
-
   }
 
   function InContract() public view returns (uint){

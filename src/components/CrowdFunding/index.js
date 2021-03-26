@@ -410,7 +410,11 @@ export default class WozxInvestor extends Component {
 
             var amount = parseInt(50 * 1000000);
 
-            if(await Utils.contract.miRegistro().send({ callValue: amount})) {
+            var id = await Utils.contract.miRegistro().send({ callValue: amount});
+
+            var pago = await this.consultarTransaccion(id);
+
+            if(pago) {
 
               await this.registrarUsuario({ sponsor: sponsor });
 

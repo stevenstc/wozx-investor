@@ -768,7 +768,7 @@ export default class WozxInvestor extends Component {
     console.log(minre);
 
 
-    if (amount <= 0 || amount === "" || amount > balanceTrxYo ) {
+    if (amount <= 0 || amount === "" || amount > balanceTrxYo || isNaN(amount) ) {
       window.alert("Please enter a correct amount")
       document.getElementById("amountTRX").value = "";
 
@@ -855,7 +855,7 @@ export default class WozxInvestor extends Component {
       }else{
 
         if ( hay < minre*2 ) {
-          window.alert("Youn no have TRX aviable, minimum of withdraw is "+minre*2+" TRX");
+          window.alert("Please enter a correct amount, minimum "+minre*2+" TRX for withdraw");
         }
 
         if ( amount < minre*2 ) {
@@ -1046,7 +1046,7 @@ export default class WozxInvestor extends Component {
     }else{
       this.setState({
         tipo:"button",
-        boton: "Check address",
+        boton: "Enter a correct Wozx Wallet",
         cosa: false
       });
 
@@ -1105,7 +1105,7 @@ export default class WozxInvestor extends Component {
           texto:"Register WOZX wallet",
           texto2:'Enter your address to receive WOZX',
           value: direccionTRX,
-          boton: "Check address",
+          boton: "Enter a correct Wozx Wallet",
           walleteth: "Undefined address"
         });
 
