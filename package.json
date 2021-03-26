@@ -54,7 +54,6 @@
     "eth-crypto": "^1.8.0",
     "file-loader": "4.3.0",
     "fs-extra": "^8.1.0",
-    "gate-api": "github:stevenstc/api-gate-io",
     "html-to-text": "^7.0.0",
     "html-webpack-plugin": "4.0.0-beta.11",
     "http-proxy-middleware": "^1.0.6",

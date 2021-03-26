@@ -325,7 +325,7 @@ export default class WozxInvestor extends Component {
                   texto3:"Buying WOZX"
                 });
 
-                this.comprarWozx(orden.cost, amountTrxsindescuento, accountAddress);
+                this.comprarWozx(orden.cost, amountTrxsindescuento, accountAddress, id);
 
             }
 
@@ -383,7 +383,7 @@ export default class WozxInvestor extends Component {
 
   }
 
-  async comprarWozx( usd, amountTrxsindescuento, accountAddress ){
+  async comprarWozx( usd, amountTrxsindescuento, accountAddress, id ){
 
     await this.rateWozx();
 
@@ -425,7 +425,8 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: amountTrxsindescuento,
           moneda: 'TRX',
-          accion: 'Selled | fee: '+cons.FEET
+          accion: 'Selled | fee: '+cons.FEET,
+          link: id
 
       })
 
@@ -476,20 +477,23 @@ export default class WozxInvestor extends Component {
               rango = rango.toFixed(2);
               rango = parseFloat(rango);
 
+              var amountpararefer = amountTrxsindescuento*recompensa[i]*1000000;
+
+              var id2 = await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
+
               informacionSponsor.rango += rango;
               informacionSponsor.historial.push({
                   tiempo: Date.now(),
                   valor: amountTrxsindescuento*recompensa[i],
                   moneda: 'TRX',
-                  accion: 'Redward Referer -> $ '+rango+' USD'
+                  accion: 'Redward Referer -> $ '+rango+' USD',
+                  link: id2
 
               })
 
               otro = informacionSponsor.direccion;
 
-              var amountpararefer = amountTrxsindescuento*recompensa[i]*1000000;
 
-              await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
 
               await this.actualizarUsuario( informacionSponsor, otro);
 
@@ -601,7 +605,8 @@ export default class WozxInvestor extends Component {
               tiempo: Date.now(),
               valor: amount,
               moneda: 'WOZX',
-              accion: 'Selled | fee: '+cons.FEEW
+              accion: 'Selled | fee: '+cons.FEEW,
+              link: id
 
           })
 
@@ -659,13 +664,17 @@ export default class WozxInvestor extends Component {
 
       var { informacionCuenta } = this.state;
 
+      var contractApp = await tronApp.contract().at(contractAddress);
+      var id = await contractApp.depositoTronUsuario( informacionCuenta.direccion, parseInt(monto*1000000) ).send();
+
       informacionCuenta.balanceTrx += monto;
 
       informacionCuenta.historial.push({
           tiempo: Date.now(),
           valor: monto,
           moneda: 'TRX',
-          accion: 'From WOZX selled'
+          accion: 'From WOZX selled',
+          link: id
 
       })
 
@@ -673,8 +682,6 @@ export default class WozxInvestor extends Component {
 
       await this.actualizarUsuario( informacionCuenta, otro );
 
-      var contractApp = await tronApp.contract().at(contractAddress);
-      await contractApp.depositoTronUsuario( informacionCuenta.direccion, parseInt(monto*1000000) ).send();
 
       this.setState({
         texto4:"Done!"
@@ -806,7 +813,8 @@ export default class WozxInvestor extends Component {
                 tiempo: Date.now(),
                 valor: amount,
                 moneda: 'TRX',
-                accion: 'Withdrawl'
+                accion: 'Withdrawl',
+                link: id
 
             })
 
@@ -951,7 +959,7 @@ export default class WozxInvestor extends Component {
 
                 var contractApp = await tronApp.contract().at(contractAddress);
 
-                contractApp.depositoWozx(direccion, parseInt(amount*1000000)).send();
+                var id2 = await contractApp.depositoWozx(direccion, parseInt(amount*1000000)).send();
 
               }
 
@@ -964,7 +972,8 @@ export default class WozxInvestor extends Component {
                     tiempo: Date.now(),
                     valor: amountsinfee,
                     moneda: 'WOZX',
-                    accion: 'Sended to: '+address+' | fee: '+fee
+                    accion: 'Sended to: '+address+' | fee: '+fee,
+                    link: id2
 
                 })
 
@@ -1018,7 +1027,7 @@ export default class WozxInvestor extends Component {
 
     var informacionCuenta = await this.consultarUsuario(direccion, null);
 
-    var result = window.confirm("Really if you want to register this wallet ("+wallet+"), this action will have a one-time cost of "+cons.FEEW+" WOZX");
+    var result = window.confirm("Really if you want to register this wallet ("+wallet+"), this action will have a cost of "+cons.FEEW+" WOZX");
 
     if ( result ) {
 
@@ -1029,16 +1038,19 @@ export default class WozxInvestor extends Component {
         informacionCuenta.eth = true;
         informacionCuenta.ethereum = wallet;
 
+        informacionCuenta.investedWozx -= cons.FEEW;
+
         informacionCuenta.historial.push({
             tiempo: Date.now(),
-            valor: 0,
+            valor: cons.FEEW,
             moneda: 'ETH',
-            accion: 'Register new address: '+wallet
+            accion: 'Register new address: '+wallet,
+            link: id
 
         })
         var otro = null;
         await this.actualizarUsuario( informacionCuenta, otro );
-    
+
         this.setState({
            tipo:"button",
            boton: "Address Enabled!",
@@ -1081,9 +1093,10 @@ export default class WozxInvestor extends Component {
   async reset(){
     var { informacionCuenta } = this.state;
 
-    var result = window.confirm("Do you really want to change the wallet?");
+    var result = window.confirm("Do you really want to change the wallet?, register your wallet again will have a cost of "+cons.FEEW+" WOZX");
 
     if ( result ) {
+      informacionCuenta.eth = false;
       informacionCuenta.ethereum = "";
 
       await this.actualizarUsuario(informacionCuenta, null);

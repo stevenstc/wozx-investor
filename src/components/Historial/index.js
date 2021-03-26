@@ -66,12 +66,19 @@ export default class WozxInvestor extends Component {
 
           var ver = usuario.historial[i];
           ver.tiempo = new Date(ver.tiempo);
+          var pru = "";
+          if (cons.PRU === "shasta.") {
+            pru = cons.PRU;
+          }
+          ver.link = "https://"+pru+"tronscan.io/#/transaction/"+ver.link
           //console.log(ver);
 
           let evento = (
-            <div className="col-full" key={i.toString()}>
-              <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
-            </div>
+            <a href={ver.link}>
+              <div className="col-full" key={i.toString()}>
+                <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
+              </div>
+            </a>
           );
           historial.splice(0,0,evento);
           this.setState({
