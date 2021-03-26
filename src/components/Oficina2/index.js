@@ -1018,28 +1018,36 @@ export default class WozxInvestor extends Component {
 
     var informacionCuenta = await this.consultarUsuario(direccion, null);
 
-    informacionCuenta.eth = true;
-    informacionCuenta.ethereum = wallet;
+    var result = window.confirm("Really if you want to register this wallet ("+wallet+"), this action will have a one-time cost of "+cons.FEEW+" WOZX");
 
-    informacionCuenta.historial.push({
-        tiempo: Date.now(),
-        valor: 0,
-        moneda: 'ETH',
-        accion: 'Register new address: '+wallet
+    if ( result ) {
 
-    })
+      var id = await Utils.contract.retirarWozx( parseInt(cons.FEEW*1000000 ) ).send();
+      var pago = await this.consultarTransaccion(id);
 
-    var otro = null;
+      if ( pago ) {
+        informacionCuenta.eth = true;
+        informacionCuenta.ethereum = wallet;
+
+        informacionCuenta.historial.push({
+            tiempo: Date.now(),
+            valor: 0,
+            moneda: 'ETH',
+            accion: 'Register new address: '+wallet
+
+        })
+        var otro = null;
+        await this.actualizarUsuario( informacionCuenta, otro );
+    
+        this.setState({
+           tipo:"button",
+           boton: "Address Enabled!",
+           cosa: false
+         });
+      }
+    }
 
 
-    await this.actualizarUsuario( informacionCuenta, otro );
-
-
-    this.setState({
-       tipo:"button",
-       boton: "Address Enabled!",
-       cosa: false
-     });
 
 
   };
@@ -1076,7 +1084,7 @@ export default class WozxInvestor extends Component {
     var result = window.confirm("Do you really want to change the wallet?");
 
     if ( result ) {
-      informacionCuenta.eth = false;
+      informacionCuenta.ethereum = "";
 
       await this.actualizarUsuario(informacionCuenta, null);
 
