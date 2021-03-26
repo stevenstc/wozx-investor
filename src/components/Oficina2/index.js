@@ -275,7 +275,7 @@ export default class WozxInvestor extends Component {
     //investors.
     console.log(investors);
 
-    if ( amountTrx <= 0 || amountTrx === "" || amountTrx > parseInt(investors.tronDisponible._hex )/1000000) {
+    if ( amountTrx <= 0 || isNaN(amountTrx) || amountTrx > parseInt(investors.tronDisponible._hex )/1000000) {
       window.alert("Please enter a correct amount");
       document.getElementById("amountTRX").value = "";
       this.setState({
@@ -549,7 +549,7 @@ export default class WozxInvestor extends Component {
 
     if ( amount >= ope ) {
 
-      if (amount <= 0 || amount === "" || amount > investedWozx) {
+      if (amount <= 0 || isNaN(amount) || amount > investedWozx) {
         window.alert("Please enter a correct amount");
 
       }else{
@@ -680,6 +680,12 @@ export default class WozxInvestor extends Component {
         texto4:"Done!"
       });
 
+      delay(3000);
+
+      this.setState({
+        texto4:"Sell WOZX -> TRX"
+      });
+
     }
 
 
@@ -783,30 +789,41 @@ export default class WozxInvestor extends Component {
       if ( hay >= minre*2 &&  amount >= minre*2 ) {
 
 
-        if ( balanceContract >= amount && amount < 150 && await Utils.contract.withdraw( amount*1000000 ).send() ) {
 
-          var informacionCuenta = await this.consultarUsuario(accountAddress, null);
+        if ( balanceContract >= amount && amount < 150 ) {
 
-          console.log(informacionCuenta);
-          informacionCuenta.balanceTrx -= amount;
-          informacionCuenta.withdrawnTrx += amount;
+          var id = await Utils.contract.withdraw( amount*1000000 ).send();
+          var pago = await this.consultarTransaccion(id);
 
-          informacionCuenta.historial.push({
-              tiempo: Date.now(),
-              valor: amount,
-              moneda: 'TRX',
-              accion: 'Withdrawl'
+          if (pago){
+            var informacionCuenta = await this.consultarUsuario(accountAddress, null);
 
-          })
+            console.log(informacionCuenta);
+            informacionCuenta.balanceTrx -= amount;
+            informacionCuenta.withdrawnTrx += amount;
 
-          var otro = null;
+            informacionCuenta.historial.push({
+                tiempo: Date.now(),
+                valor: amount,
+                moneda: 'TRX',
+                accion: 'Withdrawl'
 
-          await this.actualizarUsuario( informacionCuenta, otro );
+            })
+
+            var otro = null;
+
+            await this.actualizarUsuario( informacionCuenta, otro );
+
+          }
 
           document.getElementById("amountTRX").value = "";
+
         }else{
 
-          if ( await Utils.contract.retirarTron( amount*1000000 ).send() ) {
+          id = await Utils.contract.retirarTron( amount*1000000 ).send();
+          pago = await this.consultarTransaccion(id);
+
+          if ( pago ) {
 
             informacionCuenta = await this.consultarUsuario(accountAddress, null);
 
@@ -885,7 +902,7 @@ export default class WozxInvestor extends Component {
 
       if ( amount >= fee*2 ) {
 
-        if (amount <= 0 || amount === "" || amount > investedWozx) {
+        if (amount <= 0 || amount > investedWozx || isNaN(amount) ) {
           window.alert("Please enter a correct amount");
           document.getElementById("amountWOZX").value = "";
         }else{
@@ -1055,14 +1072,24 @@ export default class WozxInvestor extends Component {
 
   async reset(){
     var { informacionCuenta } = this.state;
-    var ethereum = informacionCuenta.ethereum;
-    this.setState({
-      alerta: "alerta1",
-      funcion: false,
-      value: ethereum,
-      boton: "Change address",
-    })
-  }
+
+    var result = window.confirm("Do you really want to change the wallet?");
+
+    if ( result ) {
+      informacionCuenta.eth = false;
+
+      await this.actualizarUsuario(informacionCuenta, null);
+
+      this.setState({
+        alerta: "alerta1",
+        funcion: false,
+        value: informacionCuenta.ethereum,
+        boton: "Change address",
+      })
+    }
+
+
+  };
 
   async vereth(){
 

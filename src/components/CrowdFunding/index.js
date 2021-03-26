@@ -312,6 +312,7 @@ export default class WozxInvestor extends Component {
 
     // verifica el monto sea mayor a minimo
     amountTrx = document.getElementById("amount").value;
+    amountTrx = parseFloat(amountTrx);
 
     var result = false;
     var depomin = await Utils.contract.MIN_DEPOSIT().call();
@@ -336,9 +337,9 @@ export default class WozxInvestor extends Component {
 
       if (informacionCuenta.registered) {
 
-        if (amountTrx <= 0 || amountTrx > balanceInTRX-50) {
+        if (amountTrx <= 0 || amountTrx > balanceInTRX-50 || isNaN(amountTrx)) {
 
-          if ( amountTrx <= 0 ) {
+          if ( amountTrx <= 0 || isNaN(amountTrx) ) {
             window.alert("Please enter a correct amount");
           }
 
