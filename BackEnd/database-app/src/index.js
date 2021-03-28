@@ -256,7 +256,7 @@ app.post('/registrar/:direccion', async(req,res) => {
                     valor: 50,
                     moneda: 'TRX',
                     accion: 'Cost register in plataform',
-                    link: '#'
+                    link: id
 
                 }]
             });
