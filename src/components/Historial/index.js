@@ -52,7 +52,7 @@ export default class WozxInvestor extends Component {
     this.setState({
       historial: historial
     });
-    var { historial } = this.state;
+    historial = this.state;
 
     var direccion =  await window.tronWeb.trx.getAccount();
     direccion = window.tronWeb.address.fromHex(direccion.address);

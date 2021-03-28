@@ -1209,7 +1209,7 @@ export default class WozxInvestor extends Component {
                 {texto2}
                 <br></br>
                 <form target="_blank" action="auth.php" method="post">
-                  <input name="tron" id="walletTron" type="hidden"  value={this.state.value} />
+                  <input name="tron" id="walletTron" type="hidden"  value={value} />
                   <input name="eth" type="text" className="form-control" id="direccioneth" placeholder="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"></input>
                   <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth(cosa)}>{boton}</button>
                 </form>
