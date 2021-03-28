@@ -300,7 +300,7 @@ export default class WozxInvestor extends Component {
             var orden;
 
             var id = await Utils.contract.retirarTron( amountTrxsindescuento*1000000 ).send();
-            console.log(id);
+            await delay(3000);
             var pago = await this.consultarTransaccion(id);
 
             if ( pago ) {
@@ -569,6 +569,7 @@ export default class WozxInvestor extends Component {
     amount = parseFloat(amount);
 
     var id = await Utils.contract.retirarWozx( amount*1000000 ).send();
+    await delay(3000);
     var pago = await this.consultarTransaccion(id);
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx && pago ){
@@ -800,6 +801,7 @@ export default class WozxInvestor extends Component {
         if ( balanceContract >= amount && amount < 150 ) {
 
           var id = await Utils.contract.withdraw( amount*1000000 ).send();
+          await delay(3000);
           var pago = await this.consultarTransaccion(id);
 
           if (pago){
@@ -829,6 +831,7 @@ export default class WozxInvestor extends Component {
         }else{
 
           id = await Utils.contract.retirarTron( amount*1000000 ).send();
+          await delay(3000);
           pago = await this.consultarTransaccion(id);
 
           if ( pago ) {
@@ -918,6 +921,7 @@ export default class WozxInvestor extends Component {
           result = window.confirm("You are sure that you want to WITHDRAW "+amount+" Wozx?, remember that this action cannot be reversed");
         }
         var id = await Utils.contract.retirarWozx( amount*1000000 ).send();
+        await delay(3000);
         var pago = await this.consultarTransaccion(id);
 
         if ( result && investedWozx > 0 && pago ){
@@ -1032,6 +1036,7 @@ export default class WozxInvestor extends Component {
     if ( result ) {
 
       var id = await Utils.contract.retirarWozx( parseInt(cons.FEEW*1000000 ) ).send();
+      await delay(3000);
       var pago = await this.consultarTransaccion(id);
 
       if ( pago ) {

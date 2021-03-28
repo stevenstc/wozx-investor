@@ -420,6 +420,7 @@ export default class WozxInvestor extends Component {
 
              if ( !investor.registered ) {
                var id = await Utils.contract.miRegistro().send({ callValue: amount});
+               await delay(3000);
                pago = await this.consultarTransaccion(id);
              }else{
                pago = true;
@@ -427,7 +428,7 @@ export default class WozxInvestor extends Component {
 
             if(pago) {
 
-              await this.registrarUsuario({ sponsor: sponsor });
+              await this.registrarUsuario({ sponsor: sponsor, id: id });
 
               document.getElementById("amount").value = "";
               this.setState({
@@ -535,7 +536,7 @@ export default class WozxInvestor extends Component {
     amount = parseInt(amount * 1000000);
 
     var id = await Utils.contract.depositoTron().send({callValue:amount});
-
+    await delay(3000);
     var pago = await this.consultarTransaccion(id);
 
     if ( pago ) {

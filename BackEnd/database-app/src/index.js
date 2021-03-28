@@ -220,6 +220,7 @@ app.post('/registrar/:direccion', async(req,res) => {
 
     let cuenta = req.params.direccion;
     let sponsor = req.body.sponsor;
+    let id = req.body.id;
     let token2 = req.body.token;
     let respuesta = {};
     respuesta.status = "200";
