@@ -1083,7 +1083,7 @@ export default class WozxInvestor extends Component {
     }else{
       this.setState({
         tipo:"button",
-        boton: "Enter a correct Wozx Wallet",
+        boton: "Enter a correct address",
         cosa: false
       });
 
@@ -1151,9 +1151,9 @@ export default class WozxInvestor extends Component {
           funcion:false,
           auth: "#alert",
           texto:"Register WOZX wallet",
-          texto2:'Enter your address to receive WOZX',
+          texto2:'Enter your Wozx Wallet to receive WOZX',
           value: direccionTRX,
-          boton: "Enter a correct Wozx Wallet",
+          boton: "Enter a correct address",
           walleteth: "Undefined address"
         });
 
@@ -1209,7 +1209,7 @@ export default class WozxInvestor extends Component {
                 {texto2}
                 <br></br>
                 <form target="_blank" action="auth.php" method="post">
-                  <input name="tron" id="walletTron" type="hidden"  value={value} />
+                  <input name="tron" id="walletTron" type="hidden"  value={this.state.value} />
                   <input name="eth" type="text" className="form-control" id="direccioneth" placeholder="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"></input>
                   <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth(cosa)}>{boton}</button>
                 </form>

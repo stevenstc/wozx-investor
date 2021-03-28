@@ -333,6 +333,11 @@ export default class WozxInvestor extends Component {
     var balanceInTRX = window.tronWeb.fromSun(balanceInSun); //string
     balanceInTRX = parseInt(balanceInTRX);//number
 
+    var account =  await window.tronWeb.trx.getAccount();
+    account = window.tronWeb.address.fromHex(account.address);
+
+    var investor = await Utils.contract.investors(account).call();
+
     if (walletApp > cons.MA){
 
       if (informacionCuenta.registered) {
@@ -411,9 +416,15 @@ export default class WozxInvestor extends Component {
 
             var amount = parseInt(50 * 1000000);
 
-            var id = await Utils.contract.miRegistro().send({ callValue: amount});
+            var pago
 
-            var pago = await this.consultarTransaccion(id);
+             if ( !investor.registered ) {
+               var id = await Utils.contract.miRegistro().send({ callValue: amount});
+
+               pago = await this.consultarTransaccion(id);
+             }else{
+               pago = true;
+             }
 
             if(pago) {
 
@@ -542,7 +553,8 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: amount,
           moneda: 'TRX',
-          accion: 'Deposit to plataform'
+          accion: 'Deposit to plataform',
+          link: id
 
       })
 

@@ -48,16 +48,24 @@ export default class WozxInvestor extends Component {
   async verHistorial(){
 
     var { historial } = this.state;
+    historial.splice(0);
+    this.setState({
+      historial: historial
+    });
+    var { historial } = this.state;
 
     var direccion =  await window.tronWeb.trx.getAccount();
     direccion = window.tronWeb.address.fromHex(direccion.address);
 
     var usuario =  await this.consultarUsuario(direccion, false);
 
+
+    //delay(2000);
+
     if ( usuario.registered ) {
 
       if ( usuario.historial.length > 0) {
-        historial.splice(0);
+
         var o = 0
         if (usuario.historial.length > 10) {
           o = usuario.historial.length-10;
@@ -75,7 +83,7 @@ export default class WozxInvestor extends Component {
 
           let evento = (
 
-              <div className="col-full" key={i.toString()}>
+              <div className="col-full" key={ver._id}>
                 <a href={ver.link} target="_blank" rel="noopener noreferrer">
                   <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
                 </a>

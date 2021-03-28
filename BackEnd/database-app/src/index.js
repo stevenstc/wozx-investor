@@ -44,7 +44,8 @@ var user = mongoose.model('usuarios', {
             tiempo: Number,
             valor: Number,
             moneda: String,
-            accion: String
+            accion: String,
+            link: String
 
         }]
 
@@ -198,7 +199,8 @@ app.get('/consultar/:direccion', async(req,res) => {
                tiempo: Date.now(),
                valor: 0,
                moneda: 'N/A',
-               accion: 'N/A'
+               accion: 'N/A',
+               link: "#"
 
            }]
        }
@@ -252,7 +254,8 @@ app.post('/registrar/:direccion', async(req,res) => {
                     tiempo: Date.now(),
                     valor: 50,
                     moneda: 'TRX',
-                    accion: 'Cost register in plataform'
+                    accion: 'Cost register in plataform',
+                    link: '#'
 
                 }]
             });
