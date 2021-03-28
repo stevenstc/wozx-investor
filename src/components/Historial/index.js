@@ -20,28 +20,19 @@ export default class WozxInvestor extends Component {
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
-    this.verHistorial();
-    setInterval(() => this.verHistorial(),360*1000);
+    await this.verHistorial();
   };
 
-  async consultarUsuario(direccionTRX, otro){
+  async consultarUsuario(direccionTRX){
 
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://ewozx-mdb.herokuapp.com/consultar/'+direccionTRX;
+    var apiUrl = cons.mongo+'consultar/'+direccionTRX;
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
 
-    if (!otro) {
-      this.setState({
-        informacionCuenta: json
-      });
-      return json;
-    }else{
-
-      console.log(json);
-      return json;
-    }
+    console.log(json);
+    return json;
 
   };
 
@@ -71,7 +62,6 @@ export default class WozxInvestor extends Component {
             pru = cons.PRU;
           }
           ver.link = "https://"+pru+"tronscan.io/#/transaction/"+ver.link
-          //console.log(ver);
 
           let evento = (
 
@@ -93,14 +83,9 @@ export default class WozxInvestor extends Component {
       historial: historial
     });
 
-
-
-
-
   };
 
   render() {
-    var { historial } = this.state;
 
     const divStyle = {
       width: '100%',
@@ -113,9 +98,9 @@ export default class WozxInvestor extends Component {
       <div>
         <h3>Transactions <button type="button" className="btn btn-light" onClick={() => this.verHistorial()}>Reload</button></h3>
 
-        <div style={divStyle}>
+        <div style={divStyle} >
 
-          {historial}
+          {this.state.historial}
 
         </div>
       </div>

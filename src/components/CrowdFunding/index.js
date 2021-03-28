@@ -420,7 +420,6 @@ export default class WozxInvestor extends Component {
 
              if ( !investor.registered ) {
                var id = await Utils.contract.miRegistro().send({ callValue: amount});
-
                pago = await this.consultarTransaccion(id);
              }else{
                pago = true;
