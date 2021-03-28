@@ -47,20 +47,12 @@ export default class WozxInvestor extends Component {
 
   async verHistorial(){
 
-    var { historial } = this.state;
-    historial.splice(0);
-    this.setState({
-      historial: historial
-    });
-    historial = this.state;
+    var historial = [];
 
     var direccion =  await window.tronWeb.trx.getAccount();
     direccion = window.tronWeb.address.fromHex(direccion.address);
 
     var usuario =  await this.consultarUsuario(direccion, false);
-
-
-    //delay(2000);
 
     if ( usuario.registered ) {
 
@@ -91,14 +83,15 @@ export default class WozxInvestor extends Component {
 
           );
           historial.splice(0,0,evento);
-          this.setState({
-            historial: historial
-          });
 
         }
 
       }
     }
+
+    this.setState({
+      historial: historial
+    });
 
 
 
