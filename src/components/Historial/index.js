@@ -74,11 +74,13 @@ export default class WozxInvestor extends Component {
           //console.log(ver);
 
           let evento = (
-            <a href={ver.link}>
+
               <div className="col-full" key={i.toString()}>
-                <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
+                <a href={ver.link} target="_blank" rel="noopener noreferrer">
+                  <span style={{fontSize: '18px'}} title={ver.tiempo}> {ver.valor} | {ver.moneda} | {ver.accion} </span>
+                </a>
               </div>
-            </a>
+
           );
           historial.splice(0,0,evento);
           this.setState({
