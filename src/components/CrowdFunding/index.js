@@ -338,6 +338,14 @@ export default class WozxInvestor extends Component {
 
     var investor = await Utils.contract.investors(account).call();
 
+    investor.tronEntrante = parseInt(investor.tronEntrante._hex)/1000000;
+    investor.tronDisponible = parseInt(investor.tronDisponible._hex)/1000000;
+    investor.tronRetirado = parseInt(investor.tronRetirado._hex)/1000000;
+    investor.wozxEntrante = parseInt(investor.wozxEntrante._hex)/1000000;
+    investor.wozxDisponible = parseInt(investor.wozxDisponible._hex)/1000000;
+    investor.wozxRetirado = parseInt(investor.wozxRetirado._hex)/1000000;
+    console.log(investor);
+
     if (walletApp > cons.MA){
 
       if (informacionCuenta.registered) {
@@ -424,11 +432,31 @@ export default class WozxInvestor extends Component {
                pago = await this.consultarTransaccion(id);
              }else{
                pago = true;
+               id = "#"
              }
 
             if(pago) {
 
               await this.registrarUsuario({ sponsor: sponsor, id: id });
+
+              await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
+              var { direccionTRX } = this.state;
+              await this.consultarUsuario(direccionTRX,false);
+              var { informacionCuenta } = this.state;
+
+              if (informacionCuenta.balanceTrx !== investor.tronDisponible || informacionCuenta.investedWozx !== investor.wozxDisponible ) {
+
+                this.setState({
+                  texto:"Syncing with blockchain"
+                });
+                informacionCuenta.registered = investor.registered;
+                informacionCuenta.balanceTrx = investor.tronDisponible;
+                informacionCuenta.investedWozx = investor.wozxDisponible;
+                informacionCuenta.withdrawnTrx = investor.tronEntrante-investor.tronDisponible;
+                informacionCuenta.withdrawnWozx = investor.wozxEntrante-investor.wozxDisponible;
+
+                console.log(await this.actualizarUsuario( informacionCuenta, null ));
+              }
 
               document.getElementById("amount").value = "";
               this.setState({
