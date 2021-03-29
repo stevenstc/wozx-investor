@@ -247,6 +247,28 @@ export default class WozxInvestor extends Component {
       console.log("INFO: Minimo de deposito "+mini+" TRX // aplicación "+mindepo+" TRX");
     }
 
+    var COMISION_TRON = await Utils.contract.COMISION_TRON().call();
+    COMISION_TRON = parseInt(COMISION_TRON._hex)/1000000;
+
+    if ( COMISION_TRON > 0 && COMISION_TRON !== cons.FEET ) {
+
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.nuevaComisionTron( cons.FEET * 1000000 ).send();
+      console.log("EVENTO: Nueva comision TRON "+cons.FEET +" TRX // anterior "+COMISION_TRON+" TRX");
+
+    }
+
+    var COMISION_WOZX = await Utils.contract.COMISION_WOZX().call();
+    COMISION_WOZX = parseInt(COMISION_WOZX._hex)/1000000;
+
+    if ( COMISION_WOZX > 0 && COMISION_WOZX !== cons.FEEW ) {
+
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.nuevaComisionWozx( cons.FEEW * 1000000 ).send();
+      console.log("EVENTO: Nueva comision WOZX "+cons.FEEW +" WOZX // anterior "+COMISION_WOZX+" WOZX");
+
+    }
+
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
     var { direccionTRX } = this.state;
     await this.consultarUsuario(direccionTRX,false);
@@ -350,13 +372,13 @@ export default class WozxInvestor extends Component {
 
       if (informacionCuenta.registered) {
 
-        if (amountTrx <= 0 || amountTrx > balanceInTRX-50 || isNaN(amountTrx)) {
+        if (amountTrx <= 0 || amountTrx > balanceInTRX-cons.CE || isNaN(amountTrx)) {
 
           if ( amountTrx <= 0 || isNaN(amountTrx) ) {
             window.alert("Please enter a correct amount");
           }
 
-          if (amountTrx > balanceInTRX-50) {
+          if (amountTrx > balanceInTRX-cons.CE) {
             window.alert("You not enough TRON");
           }
 
@@ -373,7 +395,7 @@ export default class WozxInvestor extends Component {
 
         if (result) {
 
-          if (amountTrx >= depomin && amountTrx <= balanceInTRX-50) {
+          if (amountTrx >= depomin && amountTrx <= balanceInTRX-cons.CE) {
             this.deposit();
           }
 
@@ -384,7 +406,7 @@ export default class WozxInvestor extends Component {
             });
           }
 
-          if (balanceInTRX-50 <= amountTrx ){
+          if (balanceInTRX-cons.CE <= amountTrx ){
             this.setState({
               texto:"Not enough TRON"
             });
@@ -417,12 +439,12 @@ export default class WozxInvestor extends Component {
                 }
             }
 
-            document.getElementById("amount").value = 50;
+            document.getElementById("amount").value = cons.CR;
 
             await this.actualizarDireccion();
             direccionTRX = this.state;
 
-            var amount = parseInt(50 * 1000000);
+            var amount = parseInt(cons.CR * 1000000);
 
             var pago = false;
 

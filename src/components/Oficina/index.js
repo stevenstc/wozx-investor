@@ -306,7 +306,7 @@ export default class WozxInvestor extends Component {
 
       }else{
 
-        result = window.confirm("You are sure that you want to SEND "+cantidad+" Wozx?, remember that this action cannot be reversed");
+        result = window.confirm("You are sure that you want to SEND "+cantidad+" Wozx?, remember that this action cannot be reversed - fee: "+cons.FEEW);
 
       }
 
@@ -460,7 +460,7 @@ export default class WozxInvestor extends Component {
 
         <div className="row centrartexto">
           <div className="col-twelve">
-            <a className="btn btn-light" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.syncBlockChain()}>Sync whit BlockChain</a><br />
+            <a className="btn btn-light" href="#officer" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.syncBlockChain()}>Sync whit BlockChain</a><br />
             <small id="syncHelp" className="form-text text-muted">Use it with caution, only when you have questions about your balance</small><br /><br />
           </div>
         </div>

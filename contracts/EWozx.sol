@@ -230,6 +230,11 @@ contract EWozx {
     COSTO_REGISTRO = num;
   }
 
+  function nuevaComisionTron(uint num)public{
+    require (msg.sender == owner || msg.sender == app);
+    COMISION_TRON = num;
+  }
+
   function nuevaComisionWozx(uint num)public{
     require (msg.sender == owner || msg.sender == app);
     COMISION_WOZX = num;
