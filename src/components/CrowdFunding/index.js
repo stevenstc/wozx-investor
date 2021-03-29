@@ -440,9 +440,9 @@ export default class WozxInvestor extends Component {
               await this.registrarUsuario({ sponsor: sponsor, id: id });
 
               await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
-              var { direccionTRX } = this.state;
+              direccionTRX = this.state;
               await this.consultarUsuario(direccionTRX,false);
-              var { informacionCuenta } = this.state;
+              informacionCuenta = this.state;
 
               if (informacionCuenta.balanceTrx !== investor.tronDisponible || informacionCuenta.investedWozx !== investor.wozxDisponible ) {
 
