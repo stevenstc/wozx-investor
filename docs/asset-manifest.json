@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/wozx-investor/static/js/main.f4d9f81f.chunk.js",
-    "main.js.map": "/wozx-investor/static/js/main.f4d9f81f.chunk.js.map",
+    "main.js": "/wozx-investor/static/js/main.858f98e5.chunk.js",
+    "main.js.map": "/wozx-investor/static/js/main.858f98e5.chunk.js.map",
     "runtime-main.js": "/wozx-investor/static/js/runtime-main.fa57f84e.js",
     "runtime-main.js.map": "/wozx-investor/static/js/runtime-main.fa57f84e.js.map",
     "static/js/2.b8b75bde.chunk.js": "/wozx-investor/static/js/2.b8b75bde.chunk.js",
     "static/js/2.b8b75bde.chunk.js.map": "/wozx-investor/static/js/2.b8b75bde.chunk.js.map",
     "index.html": "/wozx-investor/index.html",
-    "precache-manifest.312dcc90396cbcb925604fc7620416f7.js": "/wozx-investor/precache-manifest.312dcc90396cbcb925604fc7620416f7.js",
+    "precache-manifest.ea642d105232a0882b47be9bc90247c0.js": "/wozx-investor/precache-manifest.ea642d105232a0882b47be9bc90247c0.js",
     "service-worker.js": "/wozx-investor/service-worker.js",
     "static/js/2.b8b75bde.chunk.js.LICENSE.txt": "/wozx-investor/static/js/2.b8b75bde.chunk.js.LICENSE.txt",
     "static/media/TronLinkLogo.png": "/wozx-investor/static/media/TronLinkLogo.f8e7d99a.png"
@@ -15,6 +15,6 @@
   "entrypoints": [
     "static/js/runtime-main.fa57f84e.js",
     "static/js/2.b8b75bde.chunk.js",
-    "static/js/main.f4d9f81f.chunk.js"
+    "static/js/main.858f98e5.chunk.js"
   ]
 }
