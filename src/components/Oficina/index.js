@@ -7,6 +7,8 @@ import cons from "../../cons.js";
 
 import ccxt from 'ccxt';
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
@@ -48,6 +50,9 @@ export default class WozxInvestor extends Component {
     this.actualizarDireccion = this.actualizarDireccion.bind(this);
     this.actualizarUsuario = this.actualizarUsuario.bind(this);
 
+    this.consultarTransaccion = this.consultarTransaccion.bind(this);
+    this.syncBlockChain = this.syncBlockChain.bind(this);
+
   }
 
   async componentDidMount() {
@@ -58,6 +63,23 @@ export default class WozxInvestor extends Component {
     setInterval(() => this.Link(),3*1000);
     await this.Investors();
     setInterval(() => this.Investors(),10*1000);
+  };
+
+  async consultarTransaccion(id){
+
+    this.setState({
+      texto: "Updating balance..."
+    });
+    await delay(3000);
+    var proxyUrl = cons.proxy;
+    var apiUrl = cons.mongo+'consultar/transaccion/'+id;
+
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)});
+    const json = await response.json();
+
+    return json.result;
+
   };
 
   async consultarUsuario(direccionTRX, otro){
@@ -180,7 +202,7 @@ export default class WozxInvestor extends Component {
     var usuario =  await this.consultarUsuario(direccion, false);
     var range = "N/A";
     var prof = usuario.rango;
-    
+
     prof = prof.toFixed(2);
     prof = parseFloat(prof);
     //console.log(prof);
@@ -226,12 +248,42 @@ export default class WozxInvestor extends Component {
 
   };
 
+  async syncBlockChain(){
+    var account =  await window.tronWeb.trx.getAccount();
+    account = window.tronWeb.address.fromHex(account.address);
+    var informacionCuenta = await this.consultarUsuario(account,false);
+
+    console.log(informacionCuenta);
+
+    var investor = await Utils.contract.investors(account).call();
+
+    console.log(investor);
+
+    if ( investor.registered && informacionCuenta.registered ) {
+
+      investor.tronEntrante = parseInt(investor.tronEntrante._hex)/1000000;
+      investor.tronDisponible = parseInt(investor.tronDisponible._hex)/1000000;
+      investor.tronRetirado = parseInt(investor.tronRetirado._hex)/1000000;
+      investor.wozxEntrante = parseInt(investor.wozxEntrante._hex)/1000000;
+      investor.wozxDisponible = parseInt(investor.wozxDisponible._hex)/1000000;
+      investor.wozxRetirado = parseInt(investor.wozxRetirado._hex)/1000000;
+
+      informacionCuenta.balanceTrx = investor.tronDisponible;
+      informacionCuenta.investedWozx = investor.wozxDisponible;
+      informacionCuenta.withdrawnTrx = investor.tronEntrante-investor.tronDisponible;
+      informacionCuenta.withdrawnWozx = investor.wozxEntrante-investor.wozxDisponible;
+
+      await this.actualizarUsuario( informacionCuenta, null );
+    }
+  }
+
   async enviarWozx(){
 
     const {investedWozx} = this.state;
 
     let direccion = document.getElementById("enviartronwozx").value;
     var cantidad = document.getElementById("cantidadwozx").value;
+    cantidad = parseFloat(cantidad);
 
     var account =  await window.tronWeb.trx.getAccount();
     var accountAddress = account.address;
@@ -248,7 +300,7 @@ export default class WozxInvestor extends Component {
     }else{
 
 
-      if (cantidad <= 0 || cantidad === "" || cantidad > investedWozx) {
+      if (cantidad <= 0 || isNaN(cantidad) || cantidad > investedWozx || cantidad < cons.FEEW) {
         window.alert("Please enter a correct amount");
         document.getElementById("cantidadwozx").value = "";
 
@@ -267,7 +319,11 @@ export default class WozxInvestor extends Component {
     var informacionCuenta = await this.consultarUsuario(accountAddress, true);
     var informacionDestino = await this.consultarUsuario(direccion, true);
 
-    if (result && await Utils.contract.enviarWozx(direccion, parseInt(cantidad*1000000)).send() && informacionCuenta.registered && informacionDestino.registered) {
+    var id = await Utils.contract.enviarWozx(direccion, parseInt(cantidad*1000000)).send();
+    await delay(3000);
+    var pago = await this.consultarTransaccion(id);
+
+    if (result && pago && informacionCuenta.registered && informacionDestino.registered) {
 
       informacionCuenta.investedWozx -= cantidad;
       informacionCuenta.withdrawnWozx += cantidad;
@@ -275,15 +331,14 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: cantidad,
           moneda: 'WOZX',
-          accion: 'Sed to: '+direccion
+          accion: 'Sed to: '+direccion,
+          link: id
 
       })
 
-      var otro = accountAddress;
-      await this.actualizarUsuario( informacionCuenta, otro);
+      await this.actualizarUsuario( informacionCuenta, informacionCuenta.direccion);
 
-      informacionDestino.investedWozx += cantidad;
-      informacionDestino.withdrawnWozx -= cantidad;
+      informacionDestino.investedWozx += cantidad-cons.FEEW;
       informacionDestino.historial.push({
           tiempo: Date.now(),
           valor: cantidad,
@@ -292,8 +347,7 @@ export default class WozxInvestor extends Component {
 
       })
 
-      otro = direccion;
-      await this.actualizarUsuario( informacionDestino, otro);
+      await this.actualizarUsuario( informacionDestino, informacionDestino.direccion);
 
       document.getElementById("cantidadwozx").value = "";
 
@@ -403,13 +457,20 @@ export default class WozxInvestor extends Component {
           </div>
 
         </div>
+
+        <div className="row centrartexto">
+          <div className="col-twelve">
+            <a className="btn btn-light"  href="#enviartronwozx" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.syncBlockChain()}>Sync whit BlockChain</a><br />
+            <small id="syncHelp" className="form-text text-muted">Use it with caution, only when you have questions about your balance</small><br /><br />
+          </div>
+        </div>
         <div className="row centrartexto">
 
           <div className="col-seven">
 
               <h3 className="display-2--light"> Send WOZX to USER:</h3>
               <input type="text" className="form-control" id="enviartronwozx" aria-describedby="emailHelp" placeholder="Tron wallet Member" />
-              <small id="emailHelp" className="form-text text-muted">make sure the address is well written, once sent, this action cannot be reversed</small>
+              <small id="wozxHelp" className="form-text text-muted">Make sure the address is well written, once sent, this action cannot be reversed</small>
 
 
           </div>

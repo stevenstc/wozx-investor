@@ -183,11 +183,13 @@ contract EWozx {
 
     require (!isBlackListed[msg.sender] && !isBlackListed[_wallet] );
     require (investors[msg.sender].wozxDisponible >= _cantidad);
+    require (_cantidad > COMISION_WOZX);
     require (_wallet !=msg.sender);
 
     investors[msg.sender].wozxDisponible -= _cantidad;
     investors[msg.sender].wozxRetirado += _cantidad-COMISION_WOZX;
     investors[_wallet].wozxDisponible += _cantidad-COMISION_WOZX;
+    investors[_wallet].wozxEntrante += _cantidad-COMISION_WOZX;
 
     return true;
   }

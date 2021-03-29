@@ -424,7 +424,7 @@ export default class WozxInvestor extends Component {
 
             var amount = parseInt(50 * 1000000);
 
-            var pago
+            var pago = false;
 
              if ( !investor.registered ) {
                var id = await Utils.contract.miRegistro().send({ callValue: amount});
@@ -444,18 +444,21 @@ export default class WozxInvestor extends Component {
               await this.consultarUsuario(direccionTRX,false);
               informacionCuenta = this.state;
 
-              if (informacionCuenta.balanceTrx !== investor.tronDisponible || informacionCuenta.investedWozx !== investor.wozxDisponible ) {
+              if ( investor.registered ) {
 
                 this.setState({
                   texto:"Syncing with blockchain"
                 });
+
+                await delay(3000);
+
                 informacionCuenta.registered = investor.registered;
                 informacionCuenta.balanceTrx = investor.tronDisponible;
                 informacionCuenta.investedWozx = investor.wozxDisponible;
                 informacionCuenta.withdrawnTrx = investor.tronEntrante-investor.tronDisponible;
                 informacionCuenta.withdrawnWozx = investor.wozxEntrante-investor.wozxDisponible;
 
-                console.log(await this.actualizarUsuario( informacionCuenta, null ));
+                await this.actualizarUsuario( informacionCuenta, null );
               }
 
               document.getElementById("amount").value = "";
