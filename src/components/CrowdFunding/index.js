@@ -269,6 +269,17 @@ export default class WozxInvestor extends Component {
 
     }
 
+    var COSTO_REGISTRO = await Utils.contract.COSTO_REGISTRO().call();
+    COSTO_REGISTRO = parseInt(COSTO_REGISTRO._hex)/1000000;
+
+    if ( COSTO_REGISTRO > 0 && COSTO_REGISTRO !== cons.CR ) {
+
+      let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+      await contract.nuevoCostoRegistro( cons.CR * 1000000 ).send();
+      console.log("EVENTO: Nuevo costo de registro "+cons.CR +" TRX // anterior "+COSTO_REGISTRO+" TRX");
+
+    }
+
     await this.actualizarDireccion();// asegura que es la wallet conectada con el tronlik
     var { direccionTRX } = this.state;
     await this.consultarUsuario(direccionTRX,false);
