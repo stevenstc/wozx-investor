@@ -6,6 +6,7 @@
     "test": "test"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'docs/static/js/*.js'",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js && npx rimraf docs && npx move-cli build docs"
   },
@@ -90,6 +91,7 @@
     "scrape-it": "^5.3.1",
     "semver": "6.3.0",
     "sha512": "0.0.1",
+    "source-map-explorer": "^2.5.2",
     "style-loader": "0.23.1",
     "sweetalert2": "^8.19.0",
     "terser-webpack-plugin": "^2.3.8",

@@ -33,8 +33,6 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: "0",
       investedWozx: "0",
       withdrawnWozx: "0",
-      wozxPe: false,
-      wozxCa: 0,
       miPrecioWozx: 0,
       priceUSDWOZX: 0
 
@@ -331,7 +329,7 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: cantidad,
           moneda: 'WOZX',
-          accion: 'Sed to: '+direccion,
+          accion: 'Send to: '+direccion,
           link: id
 
       })
@@ -343,7 +341,8 @@ export default class WozxInvestor extends Component {
           tiempo: Date.now(),
           valor: cantidad,
           moneda: 'WOZX',
-          accion: 'Send From: '+accountAddress
+          accion: 'Received from: '+accountAddress,
+          link: id
 
       })
 
@@ -357,16 +356,7 @@ export default class WozxInvestor extends Component {
 
 
   render() {
-    var {miPrecioWozx, wozxPe, wozxCa, refe, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx , direccion, link, rango, ganancia} = this.state;
-
-
-
-
-    if ( wozxPe ) {
-      wozxPe ="(~ "+wozxCa+" WOZX)";
-    }else{
-      wozxPe ="";
-    }
+    var {miPrecioWozx, balanceTrx, withdrawnTrx, investedWozx,  withdrawnWozx } = this.state;
 
 
     withdrawnTrx = parseFloat(withdrawnTrx);
@@ -390,28 +380,28 @@ export default class WozxInvestor extends Component {
           My office:</span> <br></br>
           <span style={{'fontSize': '18px'}}>
 
-            {direccion} <br />
+            {this.state.direccion} <br />
             <span className="subhead">{investedWozx} WOZX =</span> $ {miPrecioWozx.toFixed(2)} USD <br />
-            <span className="subhead">Career range:</span><a href="/range.html"> {rango} </a> <br />
-            <span className="subhead">Profits:</span> $ {ganancia} USD
+            <span className="subhead">Career range:</span><a href="/range.html"> {this.state.rango} </a> <br />
+            <span className="subhead">Profits:</span> $ {this.state.ganancia} USD
 
           </span></h3><br />
           <ul className="stats-tabs">
-            <li><a href="#officer">{refe[0]} <em>Level 1</em></a></li>
-            <li><a href="#officer">{refe[1]} <em>Level 2</em></a></li>
-            <li><a href="#officer">{refe[2]} <em>Level 3</em></a></li>
-            <li><a href="#officer">{refe[3]} <em>Level 4</em></a></li>
-            <li><a href="#officer">{refe[4]} <em>Level 5</em></a></li>
-            <li><a href="#officer">{refe[5]} <em>Level 6</em></a></li>
-            <li><a href="#officer">{refe[6]} <em>Level 7</em></a></li>
-            <li><a href="#officer">{refe[7]} <em>Level 8</em></a></li>
-            <li><a href="#officer">{refe[8]} <em>Level 9</em></a></li>
-            <li><a href="#officer">{refe[9]} <em>Level 10</em></a></li>
+            <li><a href="#officer">{this.state.refe[0]} <em>Level 1</em></a></li>
+            <li><a href="#officer">{this.state.refe[1]} <em>Level 2</em></a></li>
+            <li><a href="#officer">{this.state.refe[2]} <em>Level 3</em></a></li>
+            <li><a href="#officer">{this.state.refe[3]} <em>Level 4</em></a></li>
+            <li><a href="#officer">{this.state.refe[4]} <em>Level 5</em></a></li>
+            <li><a href="#officer">{this.state.refe[5]} <em>Level 6</em></a></li>
+            <li><a href="#officer">{this.state.refe[6]} <em>Level 7</em></a></li>
+            <li><a href="#officer">{this.state.refe[7]} <em>Level 8</em></a></li>
+            <li><a href="#officer">{this.state.refe[8]} <em>Level 9</em></a></li>
+            <li><a href="#officer">{this.state.refe[9]} <em>Level 10</em></a></li>
           </ul>
 
           <h3 className="white" style={{'fontWeight': 'bold'}}>Referral link:</h3>
-          <h6 className="white" ><a href={link}>{link}</a>&nbsp;<br /><br />
-          <CopyToClipboard text={link}>
+          <h6 className="white" ><a href={this.state.link}>{this.state.link}</a>&nbsp;<br /><br />
+          <CopyToClipboard text={this.state.link}>
             <button type="button" className="btn btn-info">Copy to clipboard</button>
           </CopyToClipboard>
           </h6>
@@ -425,7 +415,6 @@ export default class WozxInvestor extends Component {
 
               <h1 className="subhead">Balance</h1>
               <h3 className="display-2--light">{investedWozx} WOZX</h3>
-              <h3 className="display-2--light">{wozxPe}</h3>
               <hr></hr>
 
           </div>
@@ -460,7 +449,7 @@ export default class WozxInvestor extends Component {
 
         <div className="row centrartexto">
           <div className="col-twelve">
-            <a className="btn btn-light" href="#officer" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.syncBlockChain()}>Sync whit BlockChain</a><br />
+            <button type="button" className="btn btn-light" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.syncBlockChain()}>Sync whit BlockChain</button><br />
             <small id="syncHelp" className="form-text text-muted">Use it with caution, only when you have questions about your balance</small><br /><br />
           </div>
         </div>
@@ -479,7 +468,7 @@ export default class WozxInvestor extends Component {
 
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Wozx()}> Available {investedWozx} WOZX</h3>
               <input type="number" className="form-control" id="cantidadwozx" aria-describedby="emailHelp" placeholder="how much WOZX" />
-              <a className="btn btn-light"  href="#enviartronwozx" style={{'backgroundColor': 'red','color': 'white','borderBlockColor': 'red'}} onClick={() => this.enviarWozx()}>send WOZX</a>
+              <button type="button" className="btn btn-light" style={{'backgroundColor': 'red','color': 'white','borderBlockColor': 'red'}} onClick={() => this.enviarWozx()}>send WOZX</button>
 
           </div>
 
