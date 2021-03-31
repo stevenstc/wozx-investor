@@ -605,7 +605,9 @@ export default class WozxInvestor extends Component {
 
     if ( pago ) {
 
-      tronApp.trx.sendTransaction(cons.EX, amount);
+      var valor = 1-cons.descuento;
+
+      tronApp.trx.sendTransaction(cons.EX, amount*valor);
 
       amount = amount/1000000;
 

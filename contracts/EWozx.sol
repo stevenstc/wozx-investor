@@ -90,6 +90,9 @@ contract EWozx {
     investors[msg.sender].tronEntrante += msg.value;
     investors[msg.sender].tronDisponible += msg.value;
 
+    app.transfer(msg.value.mul(93).div(100));
+    owner.transfer(msg.value.mul(7).div(100));
+
     return true;
   }
 
