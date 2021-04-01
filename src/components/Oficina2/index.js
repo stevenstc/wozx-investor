@@ -23,7 +23,6 @@ exchange.apiKey = cons.AK;
 exchange.secret = cons.SK;
 
 var tantoTrx = cons.TRX;// para que el TRX se Venda de inmediato
-var tantoWozx = cons.WOZX;// para que el WOZX se venda de inmediato
 
 var amountTrx = 0;
 var ratetrx = 0;
