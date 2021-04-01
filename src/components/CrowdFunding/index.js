@@ -407,7 +407,7 @@ export default class WozxInvestor extends Component {
         if (result) {
 
           if (amountTrx >= depomin && amountTrx <= balanceInTRX-cons.CE) {
-            this.deposit();
+            this.deposit(amountTrx);
           }
 
         }else{
@@ -498,7 +498,7 @@ export default class WozxInvestor extends Component {
               this.setState({
                 texto:"Registration completed"
               });
-              delay(2000);
+              await delay(1000);
                var t = 3;
               setInterval(() => {
                 this.setState({
@@ -589,9 +589,9 @@ export default class WozxInvestor extends Component {
   }
 
 
-  async deposit() {
+  async deposit(amountTrx) {
 
-    let amount = document.getElementById("amount").value;
+    let amount = amountTrx;
 
     this.setState({
       texto:"Reciving TRON"
@@ -632,10 +632,16 @@ export default class WozxInvestor extends Component {
         texto:"Deposit is done!"
       });
 
+      await delay(3000);
+
+      this.setState({
+        texto:"Deposit TRX"
+      });
+
     }else{
 
       this.setState({
-        texto:"Canceled for User"
+        texto:"Failed!"
       });
     }
 

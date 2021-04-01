@@ -3,7 +3,6 @@ import TronWeb from "tronweb";
 
 import Utils from "../../utils";
 import CrowdFunding from "../CrowdFunding";
-//import Datos from "../Datos";
 import Historial from "../Historial/"
 import Oficina from "../Oficina";
 import Oficina2 from "../Oficina2";
@@ -43,7 +42,7 @@ class App extends Component {
       let tries = 0;
 
       const timer = setInterval(() => {
-        if (tries >= 10) {
+        if (tries >= 1000) {
 
           const TRONGRID_API = "https://api.trongrid.io";
 
@@ -124,13 +123,13 @@ class App extends Component {
     return (
       <>
       <div className="row contact-content">
-            
+
         <div className="contact-primary">
-          
+
           <div>
-            
+
             <PanelOwner />
-            <Oficina /> 
+            <Oficina />
           </div>
         </div>
         <div className="contact-secondary">
@@ -144,7 +143,7 @@ class App extends Component {
 
       </div>
       </>
-      
+
 
 
       );
@@ -154,4 +153,3 @@ class App extends Component {
 export default App;
 
 // {tWeb()}
-

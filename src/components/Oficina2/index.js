@@ -16,6 +16,8 @@ const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
 
+exchange.verbose = false;
+
 exchange.proxy = cons.proxy;
 exchange.apiKey = cons.AK;
 exchange.secret = cons.SK;
@@ -26,8 +28,6 @@ var tantoWozx = cons.WOZX;// para que el WOZX se venda de inmediato
 var amountTrx = 0;
 var ratetrx = 0;
 var ratewozx = 0;
-
-var descuento = cons.descuento;
 
 const pry = cons.WO;
 
@@ -181,11 +181,13 @@ export default class WozxInvestor extends Component {
     await delay(3000);
     var proxyUrl = cons.proxy;
     var apiUrl = cons.mongo+'consultar/transaccion/'+id;
-    console.log(apiUrl);
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)});
     const json = await response.json();
-    console.log(json);
+    this.setState({
+      texto3: "Buy WOZX <- TRX"
+    });
+
     return json.result;
 
   };
@@ -228,10 +230,10 @@ export default class WozxInvestor extends Component {
     var precio = cositas['info'];
     precio = precio.closing_price;
 
-    precio = parseFloat(precio);//precio en KRW
-
     ratetrx = precio-precio*tantoTrx;
     ratetrx = parseFloat(ratetrx.toFixed(2));
+    console.log(ratetrx)
+    return ratetrx;
 
   };
 
@@ -284,16 +286,17 @@ export default class WozxInvestor extends Component {
 
     }else{
       var COMISION_RETIRO = await Utils.contract.COMISION_TRON().call();
-        COMISION_RETIRO = parseInt(COMISION_RETIRO._hex)/1000000;
+      COMISION_RETIRO = parseInt(COMISION_RETIRO._hex)/1000000;
       var result = window.confirm("You are sure you want to invest "+amountTrx+" TRX? this action cost "+COMISION_RETIRO+" TRX");
     }
 
 
     if ( result && investors.registered && parseInt(investors.tronDisponible)/1000000 >= amountTrx ) {
         if ( amountTrx >= depomin ) {
-          amountTrx = amountTrx - amountTrx*descuento;
-          amountTrx = amountTrx -cons.FEET;
+          amountTrx = amountTrx - cons.FEET;
+          amountTrx = amountTrx - amountTrx*cons.descuento;
           amountTrx = amountTrx.toFixed(2);
+          amountTrx = parseFloat(amountTrx);
 
           if (amountTrx <= await this.saldoApp()){
 
@@ -304,7 +307,9 @@ export default class WozxInvestor extends Component {
             var pago = await this.consultarTransaccion(id);
 
             if ( pago ) {
-              orden = await exchange.createLimitSellOrder('TRX/KRW', amountTrx, ratetrx)
+              orden = await exchange.createLimitSellOrder('TRX/KRW', parseFloat(amountTrx), parseInt(ratetrx));
+
+
             }else{
               this.setState({
                 texto3:"Canceled by user"
@@ -327,6 +332,9 @@ export default class WozxInvestor extends Component {
 
                 this.comprarWozx(orden.cost, amountTrxsindescuento, accountAddress, id);
 
+            }else{
+              let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+              await contract.depositoTronUsuario(accountAddress, amountTrxsindescuento*1000000).send();
             }
 
           }else{
@@ -372,12 +380,10 @@ export default class WozxInvestor extends Component {
     precio = precio.closing_price;
 
     precio = parseInt(precio);
-    console.log(precio);
 
-    ratewozx = precio+precio*tantoWozx;
+    ratewozx = parseInt(precio+precio*cons.WOZX);
 
-    ratewozx = parseInt(ratewozx);
-
+    console.log(ratewozx);
     return ratewozx;
 
 
@@ -385,7 +391,9 @@ export default class WozxInvestor extends Component {
 
   async comprarWozx( usd, amountTrxsindescuento, accountAddress, id ){
 
-    await this.rateWozx();
+    ratewozx = await this.rateWozx();
+
+    console.log(ratewozx);
 
     this.setState({
       texto3:"Processing..."
@@ -397,7 +405,7 @@ export default class WozxInvestor extends Component {
     amount = parseFloat(amount);
     console.log(amount);
 
-    var orden2 = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
+    var orden2 = await exchange.createLimitBuyOrder('WOZX/KRW', parseFloat(amount), parseInt(ratewozx));
 
     console.log(orden2);
 
@@ -512,10 +520,13 @@ export default class WozxInvestor extends Component {
           texto3:"success!"
         });
 
+        await delay(3000);
 
+        this.setState({
+          texto3: "Buy WOZX <- TRX"
+        });
 
-
-      document.getElementById("amountTRX").value = "";
+        document.getElementById("amountTRX").value = "";
 
       }else{
         this.setState({
@@ -535,14 +546,6 @@ export default class WozxInvestor extends Component {
     this.setState({
       texto4:"Please wait..."
     });
-
-    await this.rateWozx();
-
-    ratewozx = ratewozx-ratewozx*tantoWozx*2;
-    ratewozx = parseInt(ratewozx);
-
-    console.log(tantoWozx);
-    console.log(ratewozx);
 
     const {investedWozx} = this.state;
 
@@ -574,13 +577,19 @@ export default class WozxInvestor extends Component {
 
     if (result && amount > 0 && investedWozx > 0 && amount <= investedWozx && pago ){
 
+      ratewozx = await this.rateWozx();
+
+      ratewozx = ratewozx-ratewozx*cons.WOZX*2;
+      ratewozx = parseInt(ratewozx);
+
       var amountWozxDescuento = amount-cons.FEEW;
       amountWozxDescuento = amount.toFixed(4);
       amountWozxDescuento = parseFloat(amount);
 
       console.log(amountWozxDescuento);
 
-      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amountWozxDescuento, ratewozx)
+      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amountWozxDescuento, parseInt(ratewozx));
+      var { informacionCuenta } = this.state;
 
       console.log(orden);
 
@@ -594,10 +603,8 @@ export default class WozxInvestor extends Component {
 
           var cositas = await exchange.fetchOrder (orden.id, symbol, params);
 
-          var costo = cositas.cost;
-          var monto = cositas.amount;
+          console.log(cositas);
 
-          var { informacionCuenta } = this.state;
 
           informacionCuenta.investedWozx -= amount;
           informacionCuenta.withdrawnWozx += amount;
@@ -615,7 +622,11 @@ export default class WozxInvestor extends Component {
 
           await this.actualizarUsuario( informacionCuenta, otro );
 
-        this.comprarTRX(costo, monto);
+        this.comprarTRX(cositas.cost, cositas.amount);
+      }else{
+        let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+        await contract.depositoWozx(informacionCuenta.direccion, amount*1000000).send();
+
       }
 
 
@@ -630,25 +641,27 @@ export default class WozxInvestor extends Component {
   };
 
 
-  async comprarTRX(c, w){
+  async comprarTRX(KRW, wozx){
 
     this.setState({
       texto4:"Buying TRX"
     });
 
-    await this.rateTRX();
+    var ratetrx = await this.rateTRX();
 
     ratetrx = ratetrx+ratetrx*tantoTrx*2;
     ratetrx = ratetrx.toFixed(2);
-    ratetrx = parseInt(ratetrx);
+    ratetrx = parseFloat(ratetrx);
     console.log(ratetrx);
 
-    let amount = c/ratetrx;
-
-    amount = amount.toFixed(2)
+    let amount = KRW/ratetrx;
+    amount = parseFloat(amount);
+    amount = amount.toFixed(2);
     amount = parseFloat(amount);
 
-    var orden = await exchange.createLimitBuyOrder('TRX/KRW', amount, ratetrx);
+    console.log(amount);
+
+    var orden = await exchange.createLimitBuyOrder('TRX/KRW', parseFloat(amount), parseInt(ratetrx));
 
     console.log(orden);
 
@@ -688,12 +701,16 @@ export default class WozxInvestor extends Component {
         texto4:"Done!"
       });
 
-      delay(3000);
+      await delay(3000);
 
       this.setState({
         texto4:"Sell WOZX -> TRX"
       });
 
+    }else{
+      this.setState({
+        texto4:"Try again Later"
+      });
     }
 
 
