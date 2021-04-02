@@ -128,15 +128,13 @@ export default class WozxInvestor extends Component {
 
   async rateT(){
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
+    var apiUrl = cons.mongo+'precio/usd/trx';
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
-    //console.log(json.market_data.current_price.usd);
-    this.setState({
-      priceUSDTRON: json.market_data.current_price.usd
-    });
-    return json.market_data.current_price.usd;
+    //console.log(json);
+
+    return json.data.tron.usd;
 
 
   };
@@ -320,13 +318,12 @@ export default class WozxInvestor extends Component {
     consulta = consulta['info'].closing_price;
 
     var precio = parseFloat(consulta);
-    console.log(precio); //precio en KRW
-
+    //console.log(precio); //precio en KRW
 
     ratetrx = precio-precio*tantoTrx;
     ratetrx = parseFloat(ratetrx.toFixed(2));
 
-    console.log(ratetrx);
+    //console.log(ratetrx);
 
     return ratetrx;
 

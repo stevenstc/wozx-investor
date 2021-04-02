@@ -60,7 +60,7 @@ export default class WozxInvestor extends Component {
     await this.Link();
     setInterval(() => this.Link(),3*1000);
     await this.Investors();
-    setInterval(() => this.Investors(),10*1000);
+    setInterval(() => this.Investors(),1*1000);
   };
 
   async consultarTransaccion(id){

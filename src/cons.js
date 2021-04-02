@@ -3,7 +3,7 @@ import {APP_AK, APP_SK, APP_WO, APP_MT} from "@env";
 const AK = APP_AK;
 const SK = APP_SK;
 const WO = APP_WO;
-const proxy = "https://proxy-ewozx.herokuapp.com/";
+const proxy = "https://proxy-wozx.herokuapp.com/";
 const mongo = "https://ewozx-mdb.herokuapp.com/";
 const MT = APP_MT;
 const PRU = "shasta.";// shasta1. para inhabilitar red de pruebas
@@ -11,7 +11,7 @@ const WS = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHx
 const descuento = 0.01;// 0.14 es el 14% que queda en la plataforma el restante osea el 86% para comprar wozx y repartir los referidos
 const WOZX = 0.07; // para que el WOZX se Compre de inmediato
 const TRX = 0.035; // para que el TRX se Venda de inmediato
-const SC = "TCwPXGSyADayKieEBpXZjN6L2nj9JskoG9";// direccion del contrato
+const SC = "TAHWRwbkVYZmcbeQkG9Zfo5L1SDuHeY4c5";// direccion del contrato
 const USD = 1; // minimo de inversion en dolares USD (100)
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 const EX = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de of exchange

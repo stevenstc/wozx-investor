@@ -21,6 +21,7 @@ export default class WozxInvestor extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     await this.verHistorial();
+    setInterval(() => this.verHistorial(),3*1000);
   };
 
   async consultarUsuario(direccionTRX){
@@ -31,7 +32,7 @@ export default class WozxInvestor extends Component {
     .catch(error =>{console.error(error)})
     const json = await response.json();
 
-    console.log(json);
+    //console.log(json);
     return json;
 
   };
