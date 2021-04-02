@@ -132,7 +132,7 @@ export default class WozxInvestor extends Component {
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
-    console.log(json.market_data.current_price.usd);
+    //console.log(json.market_data.current_price.usd);
     this.setState({
       priceUSDTRON: json.market_data.current_price.usd
     });
@@ -377,7 +377,7 @@ export default class WozxInvestor extends Component {
     investor.wozxEntrante = parseInt(investor.wozxEntrante._hex)/1000000;
     investor.wozxDisponible = parseInt(investor.wozxDisponible._hex)/1000000;
     investor.wozxRetirado = parseInt(investor.wozxRetirado._hex)/1000000;
-    console.log(investor);
+    //console.log(investor);
 
     if (walletApp > cons.MA){
 
@@ -407,6 +407,15 @@ export default class WozxInvestor extends Component {
         if (result) {
 
           if (amountTrx >= depomin && amountTrx <= balanceInTRX-cons.CE) {
+
+            informacionCuenta.registered = investor.registered;
+            informacionCuenta.balanceTrx = investor.tronDisponible;
+            informacionCuenta.investedWozx = investor.wozxDisponible;
+            informacionCuenta.withdrawnTrx = investor.tronEntrante-investor.tronDisponible;
+            informacionCuenta.withdrawnWozx = investor.wozxEntrante-investor.wozxDisponible;
+
+            await this.actualizarUsuario( informacionCuenta, null );
+
             this.deposit(amountTrx);
           }
 
