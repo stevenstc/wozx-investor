@@ -246,6 +246,7 @@ app.post('/registrar/:direccion', async(req,res) => {
                 eth: false,
                 rango: 0,
                 recompensa: false,
+                aumentar: true,
                 nivel: [0,0,0,0,0,0,0,0,0,0],
                 balanceTrx: 0,
                 withdrawnTrx: 0,

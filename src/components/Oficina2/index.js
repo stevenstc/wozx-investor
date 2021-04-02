@@ -425,7 +425,6 @@ export default class WozxInvestor extends Component {
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
       if (!informacionCuenta.recompensa) {
         informacionCuenta.recompensa = true;
-        informacionCuenta.aumentar =  true;
       }
 
       informacionCuenta.historial.push({
