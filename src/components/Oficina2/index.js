@@ -419,8 +419,6 @@ export default class WozxInvestor extends Component {
 
       var informacionCuenta = await this.consultarUsuario(accountAddress, otro);
 
-      var aumentar = false;
-
       informacionCuenta.balanceTrx -= amountTrxsindescuento;
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
       if (!informacionCuenta.recompensa) {
