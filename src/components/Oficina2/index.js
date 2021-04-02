@@ -289,6 +289,7 @@ export default class WozxInvestor extends Component {
     }else{
       var COMISION_RETIRO = await Utils.contract.COMISION_TRON().call();
       COMISION_RETIRO = parseInt(COMISION_RETIRO._hex)/1000000;
+      window.alert("!!! WARNING, DON’T REFRESH OR CLOSE THE PAGE WHEN YOU ARE BUYING WOZX !!!");
       var result = window.confirm("You are sure you want to invest "+amountTrx+" TRX? this action cost "+COMISION_RETIRO+" TRX");
     }
 
@@ -480,8 +481,6 @@ export default class WozxInvestor extends Component {
 
               var precioUsdTron = await this.rateT();
 
-              console.log(precioUsdTron);
-
               var rango = precioUsdTron*amountTrxsindescuento*recompensa[i];
               rango = rango.toFixed(2);
               rango = parseFloat(rango);
@@ -500,11 +499,7 @@ export default class WozxInvestor extends Component {
 
               })
 
-              otro = informacionSponsor.direccion;
-
-
-
-              await this.actualizarUsuario( informacionSponsor, otro);
+              await this.actualizarUsuario( informacionSponsor, informacionSponsor.direccion);
 
             }
 
@@ -513,6 +508,10 @@ export default class WozxInvestor extends Component {
             }
 
             informacionSponsor = await this.consultarUsuario( informacionSponsor.sponsor, true);
+
+            this.setState({
+              texto3:"DON’T REFRESH THE PAGE!"
+            });
 
           }
         }
@@ -534,6 +533,9 @@ export default class WozxInvestor extends Component {
         document.getElementById("amountTRX").value = "";
 
       }else{
+        let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
+        await contract.depositoTronUsuario(accountAddress, amountTrxsindescuento*1000000).send();
+
         this.setState({
           texto3:"Error: U-Of2-422"
         });
