@@ -238,15 +238,18 @@ export default class WozxInvestor extends Component {
 
   async rateT(){
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://api.coingecko.com/api/v3/coins/tron';
+    var apiUrl = cons.mongo+'precio/usd/trx';
     const response = await fetch(proxyUrl+apiUrl)
     .catch(error =>{console.error(error)})
     const json = await response.json();
-
+    //console.log(json);
     this.setState({
-      priceUSDTRON: json.market_data.current_price.usd
+      priceUSDTRON: json.data.tron.usd
     });
-    return json.market_data.current_price.usd;
+
+    return json.data.tron.usd;
+
+
 
 
   };

@@ -142,19 +142,16 @@ export default class WozxInvestor extends Component {
 
   async rateW(){
     var proxyUrl = cons.proxy;
-    var apiUrl = 'https://api.coingecko.com/api/v3/coins/wozx';
-    fetch(proxyUrl+apiUrl).then(response => {
-      return response.json();
-    }).then(data => {
-      // Work with JSON data
-      this.setState({
-        priceUSDWOZX: data.market_data.current_price.usd
-      });
-
-    }).catch(err => {
-        console.log(err)
-
+    var apiUrl = cons.mongo+'precio/usd/wozx';
+    const response = await fetch(proxyUrl+apiUrl)
+    .catch(error =>{console.error(error)})
+    const json = await response.json();
+    //console.log(json);
+    this.setState({
+      priceUSDWOZX: json.data.wozx.usd
     });
+
+    return json.data.wozx.usd;
 
   };
 
