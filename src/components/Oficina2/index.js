@@ -425,7 +425,7 @@ export default class WozxInvestor extends Component {
       informacionCuenta.withdrawnTrx += amountTrxsindescuento;
       if (!informacionCuenta.recompensa) {
         informacionCuenta.recompensa = true;
-        aumentar =  true;
+        informacionCuenta.aumentar =  true;
       }
 
       informacionCuenta.historial.push({
@@ -447,13 +447,11 @@ export default class WozxInvestor extends Component {
 
       })
 
-      otro = null;
-
       var contractApp = await tronApp.contract().at(contractAddress);
 
         contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send();
 
-        await this.actualizarUsuario( informacionCuenta, otro );
+        await this.actualizarUsuario( informacionCuenta, null );
 
         //repartir recompensa referidos
         informacionCuenta = await this.consultarUsuario(accountAddress, otro);
@@ -472,9 +470,13 @@ export default class WozxInvestor extends Component {
 
               informacionSponsor.balanceTrx += amountTrxsindescuento*recompensa[i];
 
-              if (aumentar) {
+              if (informacionCuenta.aumentar) {
                 informacionSponsor.nivel[i]++;
               }
+
+              this.setState({
+                texto3:"Redwarding level "+i
+              });
 
               var precioUsdTron = await this.rateT();
 
@@ -514,6 +516,10 @@ export default class WozxInvestor extends Component {
 
           }
         }
+
+        informacionCuenta.aumentar = false;
+
+        await this.actualizarUsuario( informacionCuenta, null );
 
         this.setState({
           texto3:"success!"
