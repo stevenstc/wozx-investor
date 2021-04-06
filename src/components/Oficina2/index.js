@@ -450,75 +450,23 @@ export default class WozxInvestor extends Component {
 
       var contractApp = await tronApp.contract().at(contractAddress);
 
+        await this.actualizarUsuario( informacionCuenta, null );
+
         contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send();
 
-        await this.actualizarUsuario( informacionCuenta, null );
+        this.setState({
+          texto3:"Redwarding referers"
+        });
 
         //repartir recompensa referidos
-        informacionCuenta = await this.consultarUsuario(accountAddress, otro);
-        var informacionSponsor = await this.consultarUsuario(informacionCuenta.sponsor, true);
-
-        if ( window.tronWeb.isAddress(informacionCuenta.sponsor) && informacionSponsor.registered) {
-
-          var recompensa = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01];
-
-          this.setState({
-            texto3:"Redwarding referers"
-          });
-          for (var i = 0; i < recompensa.length; i++) {
-
-            if (informacionSponsor.registered && informacionSponsor.recompensa ) {
-
-              informacionSponsor.balanceTrx += amountTrxsindescuento*recompensa[i];
-
-              if (informacionCuenta.aumentar) {
-                informacionSponsor.nivel[i]++;
-              }
-
-              this.setState({
-                texto3:"Redwarding level "+i
-              });
-
-              var precioUsdTron = await this.rateT();
-
-              var rango = precioUsdTron*amountTrxsindescuento*recompensa[i];
-              rango = rango.toFixed(2);
-              rango = parseFloat(rango);
-
-              var amountpararefer = amountTrxsindescuento*recompensa[i]*1000000;
-
-              var id2 = await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
-
-              informacionSponsor.rango += rango;
-              informacionSponsor.historial.push({
-                  tiempo: Date.now(),
-                  valor: amountTrxsindescuento*recompensa[i],
-                  moneda: 'TRX',
-                  accion: 'Redward Referer -> $ '+rango+' USD',
-                  link: id2
-
-              })
-
-              await this.actualizarUsuario( informacionSponsor, informacionSponsor.direccion);
-
-            }
-
-            if ( informacionSponsor.direccion === cons.WS ) {
-              break;
-            }
-
-            informacionSponsor = await this.consultarUsuario( informacionSponsor.sponsor, true);
-
-            this.setState({
-              texto3:"DON’T REFRESH THE PAGE!"
-            });
-
-          }
-        }
-
-        informacionCuenta.aumentar = false;
-
-        await this.actualizarUsuario( informacionCuenta, null );
+        var datos = {};
+        var datos.recompensa = cons.RW;
+        var datos.direccion = informacionCuenta.direccion;
+        var datos.monto = amountTrxsindescuento;
+        var datos.usd = precioUsdTron;
+        var datos.contractAddress = contractAddress;
+        await this.repartirReferidos( datos );
+        //--------------------------
 
         this.setState({
           texto3:"success!"
@@ -533,6 +481,9 @@ export default class WozxInvestor extends Component {
         document.getElementById("amountTRX").value = "";
 
       }else{
+        this.setState({
+          texto3: "Reverted"
+        });
         let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
         await contract.depositoTronUsuario(accountAddress, amountTrxsindescuento*1000000).send();
 

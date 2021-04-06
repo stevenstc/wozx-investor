@@ -16,6 +16,8 @@ const USD = 1; // minimo de inversion en dolares USD (100)
 const SD = 0.1; // 10% de sensibilidad para modificar el precio minimo de inversion
 const EX = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"; //wallet de of exchange
 
+const RW = [0.05, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.01]; // niveles y recompensas de cada nivel
+
 const MA = 100; //cantidad minima de tron permitida en la wallet de la aplicación
 
 const CR = 50; // costo de registro en la plataforma trx
@@ -25,4 +27,4 @@ const CE = 40; // Cantidad extra de tron que hay que tener para cubrir gastos de
 const FEEW = 0.025; //fee de retiro del wozx por la platafora de ethereum
 const FEET = 10; //fee de retiro del Tron por medio del contrato
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, MA, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET, mongo, MT, CR, CE};
+export default {AK, SK, WO, proxy, PRU, WS, descuento, MA, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET, mongo, MT, CR, CE, RW};
