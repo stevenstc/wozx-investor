@@ -384,16 +384,16 @@ export default class WozxInvestor extends Component {
 
           </span></h3><br />
           <ul className="stats-tabs">
-            <li><a href="#officer">{this.state.refe[0]} <em>Level 1</em></a></li>
-            <li><a href="#officer">{this.state.refe[1]} <em>Level 2</em></a></li>
-            <li><a href="#officer">{this.state.refe[2]} <em>Level 3</em></a></li>
-            <li><a href="#officer">{this.state.refe[3]} <em>Level 4</em></a></li>
-            <li><a href="#officer">{this.state.refe[4]} <em>Level 5</em></a></li>
-            <li><a href="#officer">{this.state.refe[5]} <em>Level 6</em></a></li>
-            <li><a href="#officer">{this.state.refe[6]} <em>Level 7</em></a></li>
-            <li><a href="#officer">{this.state.refe[7]} <em>Level 8</em></a></li>
-            <li><a href="#officer">{this.state.refe[8]} <em>Level 9</em></a></li>
-            <li><a href="#officer">{this.state.refe[9]} <em>Level 10</em></a></li>
+            <li><a href="#officer">{this.state.refe[0].length} <em>Level 1</em></a></li>
+            <li><a href="#officer">{this.state.refe[1].length} <em>Level 2</em></a></li>
+            <li><a href="#officer">{this.state.refe[2].length} <em>Level 3</em></a></li>
+            <li><a href="#officer">{this.state.refe[3].length} <em>Level 4</em></a></li>
+            <li><a href="#officer">{this.state.refe[4].length} <em>Level 5</em></a></li>
+            <li><a href="#officer">{this.state.refe[5].length} <em>Level 6</em></a></li>
+            <li><a href="#officer">{this.state.refe[6].length} <em>Level 7</em></a></li>
+            <li><a href="#officer">{this.state.refe[7].length} <em>Level 8</em></a></li>
+            <li><a href="#officer">{this.state.refe[8].length} <em>Level 9</em></a></li>
+            <li><a href="#officer">{this.state.refe[9].length} <em>Level 10</em></a></li>
           </ul>
 
           <h3 className="white" style={{'fontWeight': 'bold'}}>Referral link:</h3>

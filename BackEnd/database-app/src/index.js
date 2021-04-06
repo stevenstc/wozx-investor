@@ -37,7 +37,7 @@ var user = mongoose.model('usuarios', {
         eth: Boolean,
         rango: Number,
         recompensa: Boolean,
-        nivel: [[{address: String}]],
+        nivel: [[String]],
         balanceTrx: Number,
         withdrawnTrx: Number,
         investedWozx: Number,
@@ -306,14 +306,21 @@ app.post('/referidos/', async(req,res) => {
 
     console.log(datos);
 
+    if ( token == token2 ) {
+
     var usuario = await user.find({ direccion: datos.direccion }, function (err, docs) {});
+    console.log(usuario);
     var sponsor = await user.find({ direccion: usuario.sponsor }, function (err, docs) {});
+    console.log(sponsor);
+    var done = 0;
 
     if ( TronWeb.isAddress(usuario.sponsor) && sponsor.registered) {
 
       for (var i = 0; i < datos.recompensa.length; i++) {
 
         if (sponsor.registered && sponsor.recompensa ) {
+
+          done++;
 
           sponsor.balanceTrx += datos.monto*datos.recompensa[i];
 
@@ -356,9 +363,8 @@ app.post('/referidos/', async(req,res) => {
       }
     }
 
-    if ( token == token2 ) {
-      usuario = await user.updateOne({ direccion: cuenta }, datos);
-      res.send(usuario);
+
+      res.send({"done": done});
 
     }else{
       res.send("No autorizado");
