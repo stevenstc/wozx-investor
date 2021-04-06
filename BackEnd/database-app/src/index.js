@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const CoinGecko = require('coingecko-api');
 var TronWeb = require('tronweb');
 
 const app = express();
@@ -8,9 +9,12 @@ const port = process.env.PORT || 3003;
 const token = process.env.APP_MT;
 const uri = process.env.APP_URI || "mongodb+srv://userwozx:wozx1234567890@ewozx.neief.mongodb.net/registro";
 const TRONGRID_API = process.env.APP_API || "https://api.shasta.trongrid.io";
-const prykey = process.env.APP_PRYKEY;
+const proxy = process.env.APP_PROXY || "https://proxy-wozx.herokuapp.com/";
+const prykey = process.env.APP_PRYKEY || "d57bd5da960638ee6067402d9208e2fb34707b0a1480bf32fcecb3741a75e2a5";
 
 console.log(TRONGRID_API);
+
+const CoinGeckoClient = new CoinGecko();
 
 TronWeb = new TronWeb(
   TRONGRID_API,
@@ -37,7 +41,7 @@ var user = mongoose.model('usuarios', {
         eth: Boolean,
         rango: Number,
         recompensa: Boolean,
-        nivel: [[String]],
+        niveles: [[String]],
         balanceTrx: Number,
         withdrawnTrx: Number,
         investedWozx: Number,
@@ -78,6 +82,30 @@ app.get('/', async(req,res) => {
       err => { res.send(err); }
     );
 
+
+});
+
+app.get('/precio/usd/trx', async(req,res) => {
+
+  let data = await CoinGeckoClient.simple.price({
+      ids: ['tron'],
+      vs_currencies: ['usd']
+  });
+  //console.log(data);
+
+  res.send(data)
+
+});
+
+app.get('/precio/usd/wozx', async(req,res) => {
+
+  let data = await CoinGeckoClient.simple.price({
+      ids: ['wozx'],
+      vs_currencies: ['usd']
+  });
+  //console.log(data);
+
+  res.send(data)
 
 });
 
@@ -192,7 +220,7 @@ app.get('/consultar/:direccion', async(req,res) => {
            eth: false,
            rango: 0,
            recompensa: false,
-           nivel: [[],[],[],[],[],[],[],[],[],[]],
+           niveles: [[],[],[],[],[],[],[],[],[],[]],
            balanceTrx: 0,
            withdrawnTrx: 0,
            investedWozx: 0,
@@ -248,8 +276,7 @@ app.post('/registrar/:direccion', async(req,res) => {
                 eth: false,
                 rango: 0,
                 recompensa: false,
-                aumentar: true,
-                nivel: [[],[],[],[],[],[],[],[],[],[]],
+                niveles: [[],[],[],[],[],[],[],[],[],[]],
                 balanceTrx: 0,
                 withdrawnTrx: 0,
                 investedWozx: 0,
@@ -304,14 +331,21 @@ app.post('/referidos/', async(req,res) => {
     let token2 = req.body.token;
     let datos = req.body.datos;
 
+    datos = JSON.parse(datos)
     console.log(datos);
 
     if ( token == token2 ) {
 
     var usuario = await user.find({ direccion: datos.direccion }, function (err, docs) {});
-    console.log(usuario);
+    usuario = usuario[0];
+    //console.log(usuario);
+    console.log(usuario.direccion);
+
     var sponsor = await user.find({ direccion: usuario.sponsor }, function (err, docs) {});
-    console.log(sponsor);
+    sponsor = sponsor[0];
+    //console.log(sponsor);
+    console.log(sponsor.direccion);
+
     var done = 0;
 
     if ( TronWeb.isAddress(usuario.sponsor) && sponsor.registered) {
@@ -324,12 +358,17 @@ app.post('/referidos/', async(req,res) => {
 
           sponsor.balanceTrx += datos.monto*datos.recompensa[i];
 
-          var aumentar = sponsor.nivel[i].find({ direccion: datos.direccion }, function (err, docs) {});
-          // cada billetera tiene que buscar si ya está
+          var aumentar = sponsor.niveles[i].find(element => element == usuario.direccion);
 
-          if ( aumentar == "" ) {
-            sponsor.nivel[i].push({direccion:usuario.direccion});
+          const found = undefined;
+
+          console.log(aumentar);
+
+          if ( aumentar == found ) {
+            sponsor.niveles[i].push(usuario.direccion);
           }
+
+          console.log(sponsor.niveles[i]);
 
           var rango = datos.usd*datos.monto*datos.recompensa[i];
           rango = rango.toFixed(2);
@@ -338,7 +377,7 @@ app.post('/referidos/', async(req,res) => {
           var amountpararefer = datos.monto*datos.recompensa[i]*1000000;
 
           var contractApp = await TronWeb.contract().at(datos.contractAddress);
-          var id2 = await contractApp.depositoTronUsuario(informacionSponsor.direccion, parseInt(amountpararefer)).send();
+          var id2 = await contractApp.depositoTronUsuario(sponsor.direccion, parseInt(amountpararefer)).send();
 
           sponsor.rango += rango;
           sponsor.historial.push({
@@ -350,7 +389,7 @@ app.post('/referidos/', async(req,res) => {
 
           })
 
-          usuario = await user.updateOne({ direccion: sponsor.direccion }, sponsor);
+          var updateUsuario = await user.updateOne({ direccion: sponsor.direccion }, sponsor);
 
         }
 
@@ -364,7 +403,7 @@ app.post('/referidos/', async(req,res) => {
     }
 
 
-      res.send({"done": done});
+      res.send({"upline": done, "usuario": usuario);
 
     }else{
       res.send("No autorizado");

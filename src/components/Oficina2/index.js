@@ -460,11 +460,11 @@ export default class WozxInvestor extends Component {
 
         //repartir recompensa referidos
         var datos = {};
-        var datos.recompensa = cons.RW;
-        var datos.direccion = informacionCuenta.direccion;
-        var datos.monto = amountTrxsindescuento;
-        var datos.usd = precioUsdTron;
-        var datos.contractAddress = contractAddress;
+        datos.recompensa = cons.RW;
+        datos.direccion = informacionCuenta.direccion;
+        datos.monto = amountTrxsindescuento;
+        datos.usd = this.rateT();
+        datos.contractAddress = contractAddress;
         await this.repartirReferidos( datos );
         //--------------------------
 

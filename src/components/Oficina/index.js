@@ -25,7 +25,7 @@ export default class WozxInvestor extends Component {
     this.state = {
       rango: "N/A",
       ganancia: 0,
-      refe: [],
+      refe: [[],[],[],[],[],[],[],[],[],[]],
       direccion: "",
       link: "Make an investment to get the referral LINK",
       registered: false,
@@ -235,7 +235,7 @@ export default class WozxInvestor extends Component {
       withdrawnTrx: usuario.withdrawnTrx,
       investedWozx: usuario.investedWozx,
       withdrawnWozx: usuario.withdrawnWozx,
-      refe: usuario.nivel,
+      refe: usuario.niveles,
       rango: range,
       ganancia: prof,
       miPrecioWozx: investedWozx*priceUSDWOZX
@@ -367,6 +367,8 @@ export default class WozxInvestor extends Component {
 
     balanceTrx = parseFloat(balanceTrx);
     balanceTrx = balanceTrx.toFixed(2);
+
+    //console.log(this.state.refe);
 
     return (
 
