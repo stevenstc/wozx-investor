@@ -14,9 +14,8 @@
     "coingecko-api": "^1.0.10",
     "express": "^4.17.1",
     "mongoose": "^5.11.18",
-    "mysql": "^2.18.1",
     "request": "^2.88.2",
-    "tronweb": "^3.1.0"
+    "tronweb": "^3.2.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
