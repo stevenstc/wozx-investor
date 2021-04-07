@@ -486,7 +486,7 @@ export default class Oficina2 extends Component {
         datos.recompensa = cons.RW;
         datos.direccion = informacionCuenta.direccion;
         datos.monto = amountTrxsindescuento;
-        datos.usd = this.rateT();
+        datos.usd = await this.rateT();
         datos.contractAddress = contractAddress;
         this.repartirReferidos( datos );
         //--------------------------
