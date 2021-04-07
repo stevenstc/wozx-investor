@@ -46,7 +46,7 @@ const tronApp = new TronWeb2(
   pry
 );
 
-export default class WozxInvestor extends Component {
+export default class CrowdFunding extends Component {
   constructor(props) {
     super(props);
 

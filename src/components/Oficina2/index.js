@@ -45,7 +45,7 @@ const tronApp = new TronWeb2(
   pry
 );
 
-export default class WozxInvestor extends Component {
+export default class Oficina2 extends Component {
   constructor(props) {
     super(props);
 
@@ -97,6 +97,7 @@ export default class WozxInvestor extends Component {
     this.actualizarUsuario = this.actualizarUsuario.bind(this);
 
     this.consultarTransaccion = this.consultarTransaccion.bind(this);
+    this.repartirReferidos = this.repartirReferidos.bind(this);
 
 
   }
@@ -106,7 +107,7 @@ export default class WozxInvestor extends Component {
     await this.Investors();
     await this.vereth();
     await this.enviarEth();
-    setInterval(() => this.Investors(),10*1000);
+    setInterval(() => this.Investors(),3*1000);
     setInterval(() => this.vereth(),10*1000);
     setInterval(() => this.enviarEth(),3*1000);
 
@@ -137,6 +138,28 @@ export default class WozxInvestor extends Component {
 
     console.log(json);
     return json;
+
+  };
+
+  async repartirReferidos(datos){
+
+      var body = {};
+      body.token = cons.MT;
+      body.datos = datos;
+      var proxyUrl = cons.proxy;
+      var apiUrl = cons.mongo+'referidos';
+      const response = await fetch(proxyUrl+apiUrl, {
+         method: 'POST',
+         headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+         body: JSON.stringify(body)
+      })
+      .catch(error =>{console.error(error)})
+      const json = await response.json();
+
+      console.log(json);
 
   };
 
@@ -465,7 +488,7 @@ export default class WozxInvestor extends Component {
         datos.monto = amountTrxsindescuento;
         datos.usd = this.rateT();
         datos.contractAddress = contractAddress;
-        await this.repartirReferidos( datos );
+        this.repartirReferidos( datos );
         //--------------------------
 
         this.setState({

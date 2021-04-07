@@ -4,7 +4,7 @@ import Utils from "../../utils";
 import contractAddress from "../Contract";
 import cons from "../../cons.js";
 
-export default class WozxInvestor extends Component {
+export default class Historial extends Component {
   constructor(props) {
     super(props);
 

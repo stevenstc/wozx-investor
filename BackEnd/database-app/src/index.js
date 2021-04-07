@@ -331,7 +331,7 @@ app.post('/referidos/', async(req,res) => {
     let token2 = req.body.token;
     let datos = req.body.datos;
 
-    datos = JSON.parse(datos)
+    //datos = JSON.parse(datos);//use whit postman
     console.log(datos);
 
     if ( token == token2 ) {
@@ -347,6 +347,7 @@ app.post('/referidos/', async(req,res) => {
     console.log(sponsor.direccion);
 
     var done = 0;
+    var trx = 0;
 
     if ( TronWeb.isAddress(usuario.sponsor) && sponsor.registered) {
 
@@ -354,7 +355,7 @@ app.post('/referidos/', async(req,res) => {
 
         if (sponsor.registered && sponsor.recompensa ) {
 
-          done++;
+
 
           sponsor.balanceTrx += datos.monto*datos.recompensa[i];
 
@@ -365,6 +366,7 @@ app.post('/referidos/', async(req,res) => {
           console.log(aumentar);
 
           if ( aumentar == found ) {
+            done++;
             sponsor.niveles[i].push(usuario.direccion);
           }
 
@@ -374,15 +376,16 @@ app.post('/referidos/', async(req,res) => {
           rango = rango.toFixed(2);
           rango = parseFloat(rango);
 
-          var amountpararefer = datos.monto*datos.recompensa[i]*1000000;
+          var valor = datos.monto*datos.recompensa[i];
+          trx += valor;
 
           var contractApp = await TronWeb.contract().at(datos.contractAddress);
-          var id2 = await contractApp.depositoTronUsuario(sponsor.direccion, parseInt(amountpararefer)).send();
+          var id2 = await contractApp.depositoTronUsuario(sponsor.direccion, parseInt(valor*1000000)).send();
 
           sponsor.rango += rango;
           sponsor.historial.push({
               tiempo: Date.now(),
-              valor: datos.monto*datos.recompensa[i],
+              valor: valor,
               moneda: 'TRX',
               accion: 'Redward Referer -> $ '+rango+' USD',
               link: id2
@@ -403,7 +406,8 @@ app.post('/referidos/', async(req,res) => {
     }
 
 
-      res.send({"N-Upline": done, "usuario": usuario});
+      //res.send({"New-Upline": done, "usuario": usuario});
+      res.send({"New-Upline": done, "trx-distributed": trx});
 
     }else{
       res.send("No autorizado");

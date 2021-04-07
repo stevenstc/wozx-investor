@@ -3,7 +3,7 @@ import Utils from "../../utils";
 import contractAddress from "../Contract";
 
 
-export default class WozxInvestor extends Component {
+export default class PanelOwner extends Component {
   constructor(props) {
     super(props);
 
