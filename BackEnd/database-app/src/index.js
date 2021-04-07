@@ -123,10 +123,10 @@ app.get('/consultar/todos', async(req,res) => {
 app.get('/consultar/ejemplo', async(req,res) => {
 
     usuario = await user.find({ direccion: usuariobuscado }, function (err, docs) {});
+    usuario = usuario[0];
+    //console.log(usuario);
 
-    console.log(usuario);
-
-    res.send(usuario[0]);
+    res.send(usuario);
 
 });
 
@@ -136,7 +136,7 @@ app.get('/consultar/transaccion/:id', async(req,res) => {
 
     await TronWeb.trx.getTransaction(id)
     .then(value=>{
-      console.log(value.ret[0].contractRet);
+    //  console.log(value.ret[0].contractRet);
 
       if (value.ret[0].contractRet === 'SUCCESS') {
 
@@ -338,16 +338,20 @@ app.post('/referidos/', async(req,res) => {
 
     var usuario = await user.find({ direccion: datos.direccion }, function (err, docs) {});
     usuario = usuario[0];
+    delete usuario._id;
     //console.log(usuario);
-    console.log(usuario.direccion);
+    //console.log(usuario.direccion);
 
     var sponsor = await user.find({ direccion: usuario.sponsor }, function (err, docs) {});
     sponsor = sponsor[0];
-    //console.log(sponsor);
-    console.log(sponsor.direccion);
+    delete sponsor._id;
+    console.log(sponsor);
+    //console.log(sponsor.direccion);
 
     var done = 0;
     var trx = 0;
+
+    console.log(datos.recompensa.length);
 
     if ( TronWeb.isAddress(usuario.sponsor) && sponsor.registered) {
 
@@ -355,22 +359,23 @@ app.post('/referidos/', async(req,res) => {
 
         if (sponsor.registered && sponsor.recompensa ) {
 
-
+          //console.log(sponsor.direccion);
 
           sponsor.balanceTrx += datos.monto*datos.recompensa[i];
 
-          var aumentar = sponsor.niveles[i].find(element => element == usuario.direccion);
-
           const found = undefined;
 
-          console.log(aumentar);
+          var aumentar = await sponsor.niveles[i].find(element => element == usuario.direccion);
+
+          //console.log(found);
+          //console.log(aumentar);
 
           if ( aumentar == found ) {
             done++;
             sponsor.niveles[i].push(usuario.direccion);
           }
 
-          console.log(sponsor.niveles[i]);
+          //console.log(sponsor.niveles[i]);
 
           var rango = datos.usd*datos.monto*datos.recompensa[i];
           rango = rango.toFixed(2);
@@ -399,8 +404,12 @@ app.post('/referidos/', async(req,res) => {
         if ( sponsor.direccion === sponsor.sponsor || sponsor == "" ) {
           break;
         }
+        //console.log(sponsor.sponsor);
 
         sponsor = await user.find({ direccion: sponsor.sponsor }, function (err, docs) {});
+        sponsor = sponsor[0];
+        delete sponsor._id;
+        //console.log(sponsor);
 
       }
     }
