@@ -10,7 +10,7 @@ const token = process.env.APP_MT;
 const uri = process.env.APP_URI || "mongodb+srv://userwozx:wozx1234567890@ewozx.neief.mongodb.net/registro";
 const TRONGRID_API = process.env.APP_API || "https://api.shasta.trongrid.io";
 const proxy = process.env.APP_PROXY || "https://proxy-wozx.herokuapp.com/";
-const prykey = process.env.APP_PRYKEY || "d57bd5da960638ee6067402d9208e2fb34707b0a1480bf32fcecb3741a75e2a5";
+const prykey = process.env.APP_PRYKEY;
 
 console.log(TRONGRID_API);
 
@@ -403,7 +403,7 @@ app.post('/referidos/', async(req,res) => {
     }
 
 
-      res.send({"upline": done, "usuario": usuario);
+      res.send({"N-Upline": done, "usuario": usuario});
 
     }else{
       res.send("No autorizado");
