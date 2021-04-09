@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const CoinGecko = require('coingecko-api');
+const fetch = require("node-fetch");
 var TronWeb = require('tronweb');
 
 const app = express();
@@ -69,7 +70,9 @@ var aplicacion = mongoose.model('aplicacions', {
           tronSaldoRetirado: Number,
           permitirRegistros: Boolean,
           permitirRetiros: Boolean,
-          depositoMinimo: Number
+          depositoMinimo: Number,
+          precioWozx: Number,
+          precioTron: Number
 
       });
 
@@ -94,30 +97,50 @@ app.get('/precio/usd/trx', async(req,res) => {
   //console.log(data);*/
 
   var apiUrl = 'https://data.gateapi.io/api2/1/marketlist';
-  const response = await fetch(proxy+apiUrl)
+  const response = await fetch(apiUrl)
   .catch(error =>{console.error(error)})
   const json = await response.json();
 
-  var upd = json.data.find(element => element.pair == "wozx_usdt");
+  var upd = json.data.find(element => element.pair == "trx_usdt");
 
-  console.log(upd);
+  //console.log(upd.rate);
 
-  return json;
-
-
-  res.send(data)
+  res.status(200).send({
+    "data":{
+      "tron":{
+        "usd":parseFloat(upd.rate)
+      }
+    }
+  })
 
 });
 
 app.get('/precio/usd/wozx', async(req,res) => {
 
-  let data = await CoinGeckoClient.simple.price({
+  /*let data = await CoinGeckoClient.simple.price({
       ids: ['wozx'],
       vs_currencies: ['usd']
-  });
+  });*/
   //console.log(data);
 
-  res.send(data)
+  var apiUrl = 'https://data.gateapi.io/api2/1/marketlist';
+  const response = await fetch(apiUrl)
+  .catch(error =>{console.error(error)})
+  const json = await response.json();
+
+  var upd = json.data.find(element => element.pair == "wozx_usdt");
+
+  //console.log(upd.rate);
+
+  res.status(200).send({
+    "data":{
+      "wozx":{
+        "usd":parseFloat(upd.rate)
+      }
+    }
+  })
+
+  //res.status(200).send(data)
 
 });
 
@@ -169,12 +192,12 @@ app.get('/consultar/transaccion/:id', async(req,res) => {
 
 app.get('/registrar/aplicacion', async(req,res) => {
 
-    let cuenta = "ewozx";
+    let nombre = "ewozx";
 
     let respuesta = {};
     respuesta.status = "200";
 
-    var miApp = await aplicacion.find({ nombre: cuenta }, function (err, docs) {});
+    var miApp = await aplicacion.find({ nombre: nombre }, function (err, docs) {});
 
     if ( miApp != "" ) {
         respuesta.status = "303";
@@ -186,7 +209,7 @@ app.get('/registrar/aplicacion', async(req,res) => {
     }else{
 
          var apps = new aplicacion({
-           nombre: cuenta,
+           nombre: nombre,
            wozxSaldo: 0,
            wozxSaldoAsignado: 0,
            wozxSaldoRecibido: 0,
@@ -197,7 +220,9 @@ app.get('/registrar/aplicacion', async(req,res) => {
            tronSaldoRetirado: 0,
            permitirRegistros: true,
            permitirRetiros: true,
-           depositoMinimo: 0
+           depositoMinimo: 0,
+           precioWozx: 0,
+           precioTron: 0
         });
 
         apps.save().then(() => {
@@ -211,6 +236,44 @@ app.get('/registrar/aplicacion', async(req,res) => {
     }
 
 
+
+});
+
+app.get('/consultar/aplicacion', async(req,res) => {
+
+    let nombre = "ewozx";
+    let respuesta = {};
+    usuario = await aplicacion.find({ nombre: nombre }, function (err, docs) {});
+
+    //console.log(usuario);
+
+    if ( usuario == "" ) {
+
+        respuesta = {
+          nombre: nombre,
+          wozxSaldo: 0,
+          wozxSaldoAsignado: 0,
+          wozxSaldoRecibido: 0,
+          wozxSaldoRetirado: 0,
+          tronSaldo: 0,
+          tronSaldoAsignado: 0,
+          tronSaldoRecibido: 0,
+          tronSaldoRetirado: 0,
+          permitirRegistros: true,
+          permitirRetiros: true,
+          depositoMinimo: 0,
+          precioWozx: 0,
+          precioTron: 0
+       }
+
+        respuesta.status = "200";
+        respuesta.txt = "Esta aplicacion no está registrada";
+        res.status(200).send(respuesta);
+
+    }else{
+        respuesta = usuario[0];
+        res.status(200).send(respuesta);
+    }
 
 });
 

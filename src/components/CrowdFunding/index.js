@@ -90,9 +90,8 @@ export default class CrowdFunding extends Component {
     setInterval(() => this.minDepo(),30*1000);
     setInterval(() => this.actualizarDireccion(),3*1000);
     await this.actualizarDireccion();
-    var { direccionTRX } = this.state;
-    await this.consultarUsuario(direccionTRX,false);
-    setInterval(() => this.consultarUsuario(direccionTRX,false),3*1000);
+    await this.consultarUsuario(this.state.direccionTRX,false);
+    setInterval(() => this.consultarUsuario(this.state.direccionTRX,false),3*1000);
 
   };
 
@@ -613,7 +612,7 @@ export default class CrowdFunding extends Component {
 
       var valor = 1-cons.descuento;
 
-      tronApp.trx.sendTransaction(cons.EX, amount*valor);
+      console.log(await tronApp.trx.sendTransaction(cons.EX, amount*valor));
 
       amount = amount/1000000;
 
