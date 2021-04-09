@@ -86,12 +86,24 @@ app.get('/', async(req,res) => {
 });
 
 app.get('/precio/usd/trx', async(req,res) => {
-
+/*
   let data = await CoinGeckoClient.simple.price({
       ids: ['tron'],
       vs_currencies: ['usd']
   });
-  //console.log(data);
+  //console.log(data);*/
+
+  var apiUrl = 'https://data.gateapi.io/api2/1/marketlist';
+  const response = await fetch(proxy+apiUrl)
+  .catch(error =>{console.error(error)})
+  const json = await response.json();
+
+  var upd = json.data.find(element => element.pair == "wozx_usdt");
+
+  console.log(upd);
+
+  return json;
+
 
   res.send(data)
 
