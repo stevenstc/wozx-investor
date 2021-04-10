@@ -80,7 +80,6 @@ export default class Oficina2 extends Component {
     this.venderWozx = this.venderWozx.bind(this);
     this.rateTRX = this.rateTRX.bind(this);
     this.comprarTRX = this.comprarTRX.bind(this);
-    this.enviarTron = this.enviarTron.bind(this);
     this.vereth = this.vereth.bind(this);
     this.reset = this.reset.bind(this);
     this.withdrawETH = this.withdrawETH.bind(this);
@@ -698,43 +697,6 @@ export default class Oficina2 extends Component {
 
   }
 
-  async enviarTron(trx, wozx){
-
-
-    //enviar el tron a la direccion del contrato
-    let wallet = await window.tronWeb.trx.getAccount();
-    wallet = window.tronWeb.address.fromHex(wallet.address)
-
-    if (false) {
-
-      let amount = trx;
-      let currency = "TRX";
-
-      // envia el saldo necesario a la direccion del contrato // si está en pruebas se lo envia al owner
-      var address;
-      if (cons.PRU) {
-        let ownerContrato = await Utils.contract.owner().call();
-        ownerContrato = window.tronWeb.address.fromHex(ownerContrato);
-        address = ownerContrato;
-        wallet = ownerContrato;
-      }else{
-        address = contractAddress;
-      }
-
-      console.log("se envio "+trx+" TRX a "+wallet+" exitosamente");
-
-      //console.log(address);
-
-      var tag = undefined;
-      var params = {};
-
-      var versacado = await exchange.withdraw(currency, amount, address, tag, params);
-      console.log(versacado);
-
-    }
-
-  };
-
   async Investors() {
 
     var direccion = await window.tronWeb.trx.getAccount();
@@ -759,14 +721,12 @@ export default class Oficina2 extends Component {
   async withdraw(){
 
     var hay = await Utils.contract.withdrawableTrx().call();
-    var minre = await Utils.contract.COMISION_TRON().call();
     var balanceContract = await Utils.contract.InContract().call();
 
     var amount = document.getElementById("amountTRX").value;
     amount = parseFloat(amount);
 
     hay = parseInt(hay._hex)/1000000;
-    minre = parseInt(minre._hex)/1000000;
     balanceContract = parseInt(balanceContract._hex)/1000000;
 
     const account =  await window.tronWeb.trx.getAccount();
@@ -777,7 +737,6 @@ export default class Oficina2 extends Component {
     console.log(balanceTrxYo);
     console.log(balanceContract);
     console.log(hay);
-    console.log(minre);
 
 
     if (amount <= 0 || amount === "" || amount > balanceTrxYo || isNaN(amount) ) {
@@ -785,18 +744,16 @@ export default class Oficina2 extends Component {
       document.getElementById("amountTRX").value = "";
 
     }else{
-      var result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+minre+" TRX");
+      var result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+(amount*cons.withdrawl)+" TRX");
 
     }
 
 
     if ( result ){
 
-      if ( hay >= minre*2 &&  amount >= minre*2 ) {
+      if ( hay >= cons.minWithdrawl &&  amount >= cons.minWithdrawl ) {
 
-
-
-        if ( balanceContract >= amount && amount < 150 ) {
+        if ( balanceContract >= amount && amount < cons.minWithdrawl && cons.habilitarRetirosContrato ) {
 
           var id = await Utils.contract.withdraw( amount*1000000 ).send();
           await delay(3000);
@@ -846,7 +803,7 @@ export default class Oficina2 extends Component {
                 texto: "Sendig TRX"
               });
 
-              var sacado = await exchange.withdraw(currency2, amount, informacionCuenta.direccion, tag2, params2);
+              var sacado = await exchange.withdraw(currency2, amount-amount*cons.withdrawl, informacionCuenta.direccion, tag2, params2);
 
               console.log(sacado);
 
@@ -880,16 +837,16 @@ export default class Oficina2 extends Component {
 
       }else{
 
-        if ( hay < minre*2 ) {
-          window.alert("Please enter a correct amount, minimum "+minre*2+" TRX for withdraw");
+        if ( hay < cons.minWithdrawl ) {
+          window.alert("Please enter a correct amount, minimum "+cons.minWithdrawl+" TRX for withdraw");
         }
 
-        if ( amount < minre*2 ) {
-          window.alert("Minimum of withdraw is "+minre*2+" TRX");
+        if ( amount < cons.minWithdrawl ) {
+          window.alert("Minimum of withdraw is "+cons.minWithdrawl+" TRX");
         }
 
         if ( balanceContract < amount ){
-          window.alert("The Aplication in this moment no have TRX available, Try again Later");
+          window.alert("We no have TRX available, Try again Later");
         }
 
     }
@@ -1191,7 +1148,7 @@ export default class Oficina2 extends Component {
               <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.venderTRX()}>{texto3}</button>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'orange','color': 'white','borderBlockColor': 'orange'}} onClick={() => this.withdraw()}>Withdrawal TRX</button>
-              <p>Fee {feetrx} TRX</p>
+              <p>Fee {feetrx} TRX + {cons.withdrawl*100} %</p>
               <hr></hr>
             </div>
           </div>

@@ -27,4 +27,20 @@ const CE = 40; // Cantidad extra de tron que hay que tener para cubrir gastos de
 const FEEW = 0.025; //fee de retiro del wozx por la platafora de ethereum
 const FEET = 10; //fee de retiro del Tron por medio del contrato
 
-export default {AK, SK, WO, proxy, PRU, WS, descuento, MA, WOZX, TRX, SC, USD, SD, EX, FEEW, FEET, mongo, MT, CR, CE, RW};
+const withdrawl = 0.1; //10% de los retiros comision extra
+const minWithdrawl = 150;
+
+const habilitarRetirosContrato = false;
+
+export default {
+  AK, SK, WO,
+   proxy, PRU,
+    WS, descuento,
+     MA, WOZX, TRX,
+      SC, USD, SD, EX,
+       FEEW, FEET,
+        mongo, MT,
+         CR, CE, RW,
+          withdrawl, minWithdrawl,
+          habilitarRetirosContrato
+        };
