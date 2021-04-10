@@ -58,7 +58,6 @@ export default class Oficina2 extends Component {
       texto: "Loading...",
       texto3: "Buy WOZX <- TRX",
       texto4:"Sell WOZX -> TRX",
-      value: "",
       fee: cons.FEEW,
       feetrx: cons.FEET,
       funcion: false,
@@ -1124,7 +1123,7 @@ export default class Oficina2 extends Component {
 
 
   render() {
-    var { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, texto4, alerta, value, tipo, boton, fee, feetrx} = this.state;
+    var { cosa, walleteth, balanceTrx, investedWozx, auth, texto, texto2, texto3, texto4, alerta, tipo, boton, fee, feetrx} = this.state;
 
     //var dirwozx = "https://etherscan.io/token/0x34950ff2b487d9e5282c5ab342d08a2f712eb79f?a="+walleteth;
 
@@ -1168,11 +1167,10 @@ export default class Oficina2 extends Component {
               <div id="alert" className={alerta}>
                 {texto2}
                 <br></br>
-                <form target="_blank" action="auth.php" method="post">
-                  <input name="tron" id="walletTron" type="hidden"  value={value} />
+
                   <input name="eth" type="text" className="form-control" id="direccioneth" placeholder="0x11134Bd1dd0219eb9B4Ab931c508834EA29C0F8d"></input>
                   <button type={tipo} className="btn btn-info" onClick={() => this.enviarEth(cosa)}>{boton}</button>
-                </form>
+
               </div>
 
 
