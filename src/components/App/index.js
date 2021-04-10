@@ -42,7 +42,7 @@ class App extends Component {
       let tries = 0;
 
       const timer = setInterval(() => {
-        if (tries >= 1000) {
+        if (tries >= 100) {
 
           const TRONGRID_API = "https://api.trongrid.io";
 
@@ -74,7 +74,7 @@ class App extends Component {
         });
 
         resolve();
-      }, 3*1000);
+      }, 1*1000);
     });
 
     if (!this.state.tronWeb.loggedIn) {
