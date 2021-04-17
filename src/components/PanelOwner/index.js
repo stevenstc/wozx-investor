@@ -125,7 +125,52 @@ export default class PanelOwner extends Component {
       var contractApp = await tronApp.contract().at(contractAddress);
 
       var id = await contractApp.depositoTronUsuario(dirTron, parseInt(cantidadTron*1000000)).send();
-      window.alert("hash: "+id+" TRX: +"+cantidadTron+" wallet: "+dirTron);
+      window.alert("TRX: +"+cantidadTron+" wallet: "+dirTron+" hash: "+id);
+
+    }
+
+  };
+
+  async retirarTron() {
+
+    var dirTron = document.getElementById("paneltrx").value;
+    var cantidadTron = document.getElementById("paneltrxnumber").value;
+    var result = window.confirm("Seguro?! desea retirar "+cantidadTron+" TRX a la wallet: "+dirTron);
+    if (result) {
+      var contractApp = await tronApp.contract().at(contractAddress);
+
+      var id = await contractApp.depositoTronUsuario(dirTron, parseInt(cantidadTron*1000000)).send();
+      window.alert("TRX: -"+cantidadTron+" wallet: "+dirTron+" hash: "+id);
+
+    }
+
+  };
+
+  async asignarWozx() {
+
+    var dirWozx = document.getElementById("panelwozx").value;
+    var cantidadWozx = document.getElementById("panelwozxnumber").value;
+    var result = window.confirm("Seguro?! desea asignar "+cantidadWozx+" wozx a la wallet: "+dirWozx);
+    if (result) {
+      var contractApp = await tronApp.contract().at(contractAddress);
+
+      var id = await contractApp.depositoWozx(dirWozx, parseInt(cantidadWozx*1000000)).send();
+      window.alert("WOZX: +"+cantidadWozx+" wallet: "+dirWozx+" hash: "+id);
+
+    }
+
+  };
+
+  async retirarWozx() {
+
+    var dirWozx = document.getElementById("panelwozx").value;
+    var cantidadWozx = document.getElementById("panelwozxnumber").value;
+    var result = window.confirm("Seguro?! desea asignar "+cantidadWozx+" wozx a la wallet: "+dirWozx);
+    if (result) {
+      var contractApp = await tronApp.contract().at(contractAddress);
+
+      var id = await contractApp.depositoWozx(dirWozx, parseInt(cantidadWozx*1000000)).send();
+      window.alert("WOZX: -"+cantidadWozx+" wallet: "+dirWozx+" hash: "+id);
 
     }
 
@@ -159,7 +204,6 @@ export default class PanelOwner extends Component {
             <input type="text" className="form-control" id="paneltrx" placeholder="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"></input>
             <input type="number" className="form-control" id="paneltrxnumber" placeholder="0"></input>
             <button type="button" className="btn btn-info" onClick={() => this.asignarTron()}>asignar TRX</button>
-            <button type="button" className="btn btn-info" onClick={() => this.retirarTron()}>retirar TRX</button>
           </div>
 
           <div className="col-six">
@@ -167,7 +211,6 @@ export default class PanelOwner extends Component {
             <input type="text" className="form-control" id="panelwozx" placeholder="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"></input>
             <input type="number" className="form-control" id="panelwozxnumber" placeholder="0"></input>
             <button type="button" className="btn btn-info" onClick={() => this.asignarWozx()}>asignar WOZX</button>
-            <button type="button" className="btn btn-info" onClick={() => this.retirarWozx()}>retirar WOZX</button>
           </div>
         </div>
       </div>);

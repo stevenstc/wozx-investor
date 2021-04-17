@@ -889,7 +889,7 @@ export default class Oficina2 extends Component {
             var amountsinfee = amount;
             var retiro = amount-fee;
             retiro = retiro-retiro*cons.withdrawl;
-            retiro = parseInt(retiro*10000)*10000;
+            retiro = parseInt(retiro*10000)/10000;
             retiro = retiro.toString();
 
             var direccion = await window.tronWeb.trx.getAccount();
