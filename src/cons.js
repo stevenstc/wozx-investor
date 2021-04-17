@@ -24,8 +24,8 @@ const CR = 50; // costo de registro en la plataforma trx
 
 const CE = 40; // Cantidad extra de tron que hay que tener para cubrir gastos de energia
 
-const FEEW = 0.025; //fee de retiro del wozx por la platafora de ethereum
-const FEET = 10; //fee de retiro del Tron por medio del contrato
+const FEEW = 0.001; //fee de retiro del wozx por la platafora de ethereum
+const FEET = 0; //fee de retiro del Tron por medio del contrato
 
 const withdrawl = 0.1; //10% de los retiros comision extra
 const minWithdrawl = 150;
