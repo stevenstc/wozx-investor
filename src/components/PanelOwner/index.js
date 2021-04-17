@@ -2,6 +2,26 @@ import React, { Component } from "react";
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
+import cons from "../../cons.js";
+import TronWeb2 from 'tronweb';
+
+const pry = cons.WO;
+
+var pru = "";
+if (cons.PRU === "shasta.") {
+  pru = cons.PRU;
+}
+
+const TRONGRID_API = "https://api."+pru+"trongrid.io";
+console.log(TRONGRID_API);
+
+const tronApp = new TronWeb2(
+  TRONGRID_API,
+  TRONGRID_API,
+  TRONGRID_API,
+  pry
+);
+
 
 export default class PanelOwner extends Component {
   constructor(props) {
@@ -15,6 +35,12 @@ export default class PanelOwner extends Component {
 
     this.isOwner = this.isOwner.bind(this);
     this.pararRetiros = this.pararRetiros.bind(this);
+
+    this.asignarTron = this.asignarTron.bind(this);
+    this.retirarTron = this.retirarTron.bind(this);
+
+    this.asignarWozx = this.asignarWozx.bind(this);
+    this.retirarWozx = this.retirarWozx.bind(this);
 
   }
 
@@ -90,6 +116,21 @@ export default class PanelOwner extends Component {
 
   };
 
+  async asignarTron() {
+
+    var dirTron = document.getElementById("paneltrx").value;
+    var cantidadTron = document.getElementById("paneltrxnumber").value;
+    var result = window.confirm("Seguro?! desea asignar "+cantidadTron+" TRX a la wallet: "+dirTron);
+    if (result) {
+      var contractApp = await tronApp.contract().at(contractAddress);
+
+      var id = await contractApp.depositoTronUsuario(dirTron, parseInt(cantidadTron*1000000)).send();
+      window.alert("hash: "+id+" TRX: +"+cantidadTron+" wallet: "+dirTron);
+
+    }
+
+  };
+
 
   render() {
     const { isowner, retiros, saldo } = this.state;
@@ -97,10 +138,36 @@ export default class PanelOwner extends Component {
       return (
       <div className="container">
         <div className="row">
-          <div className="col-six">
+          <div className="col-twelve">
             <h5 className="card-title">Panel Owner</h5>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-six">
             <button type="button" className="btn btn-info" onClick={() => this.pararRetiros()}>{retiros}</button><hr></hr>
+          </div>
+
+          <div className="col-six">
             <button type="button" className="btn btn-info" onClick={() => this.sacarSaldo()}>Sacar {saldo} TRX</button>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-six">
+            <h5 className="card-title">Panel TRX</h5>
+            <input type="text" className="form-control" id="paneltrx" placeholder="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"></input>
+            <input type="number" className="form-control" id="paneltrxnumber" placeholder="0"></input>
+            <button type="button" className="btn btn-info" onClick={() => this.asignarTron()}>asignar TRX</button>
+            <button type="button" className="btn btn-info" onClick={() => this.retirarTron()}>retirar TRX</button>
+          </div>
+
+          <div className="col-six">
+            <h5 className="card-title">Panel WOZX</h5>
+            <input type="text" className="form-control" id="panelwozx" placeholder="TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF"></input>
+            <input type="number" className="form-control" id="panelwozxnumber" placeholder="0"></input>
+            <button type="button" className="btn btn-info" onClick={() => this.asignarWozx()}>asignar WOZX</button>
+            <button type="button" className="btn btn-info" onClick={() => this.retirarWozx()}>retirar WOZX</button>
           </div>
         </div>
       </div>);

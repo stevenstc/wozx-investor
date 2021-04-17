@@ -918,7 +918,6 @@ export default class Oficina2 extends Component {
 
               console.log(retiro);
 
-
               var sacado = await exchange.withdraw(currency2, retiro, address, tag2, params2);
 
               console.log(sacado);
