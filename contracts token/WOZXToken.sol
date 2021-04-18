@@ -16,7 +16,7 @@ contract UpgradedStandardToken is StandardToken {
 }
 
 
-contract COPToken is Pausable, StandardTokenWithFees, BlackList {
+contract WOZXToken is Pausable, StandardTokenWithFees, BlackList {
 
     address public upgradedAddress;
     bool public deprecated;
@@ -28,7 +28,7 @@ contract COPToken is Pausable, StandardTokenWithFees, BlackList {
     // @param _name Token Name
     // @param _symbol Token symbol
     // @param _decimals Token decimals
-    function COPToken(uint _initialSupply, string _name, string _symbol, uint8 _decimals) public {
+    function WOZXToken(uint _initialSupply, string _name, string _symbol, uint8 _decimals) public {
         _totalSupply = _initialSupply;
         name = _name;
         symbol = _symbol;
