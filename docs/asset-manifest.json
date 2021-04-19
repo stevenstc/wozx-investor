@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.js": "/wozx-investor/static/js/main.f19e84a2.chunk.js",
-    "main.js.map": "/wozx-investor/static/js/main.f19e84a2.chunk.js.map",
-    "runtime-main.js": "/wozx-investor/static/js/runtime-main.fa57f84e.js",
-    "runtime-main.js.map": "/wozx-investor/static/js/runtime-main.fa57f84e.js.map",
-    "static/js/2.b8b75bde.chunk.js": "/wozx-investor/static/js/2.b8b75bde.chunk.js",
-    "static/js/2.b8b75bde.chunk.js.map": "/wozx-investor/static/js/2.b8b75bde.chunk.js.map",
-    "index.html": "/wozx-investor/index.html",
-    "precache-manifest.241c4be29d02397ad94cbc756822f0aa.js": "/wozx-investor/precache-manifest.241c4be29d02397ad94cbc756822f0aa.js",
-    "service-worker.js": "/wozx-investor/service-worker.js",
-    "static/js/2.b8b75bde.chunk.js.LICENSE.txt": "/wozx-investor/static/js/2.b8b75bde.chunk.js.LICENSE.txt",
-    "static/media/TronLinkLogo.png": "/wozx-investor/static/media/TronLinkLogo.f8e7d99a.png"
+    "main.js": "/static/js/main.8c371f0a.chunk.js",
+    "main.js.map": "/static/js/main.8c371f0a.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.9d0f5ec0.js",
+    "runtime-main.js.map": "/static/js/runtime-main.9d0f5ec0.js.map",
+    "static/js/2.f98cd32c.chunk.js": "/static/js/2.f98cd32c.chunk.js",
+    "static/js/2.f98cd32c.chunk.js.map": "/static/js/2.f98cd32c.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.d8ca9ffae0e1cfe2d76eacab2f37840f.js": "/precache-manifest.d8ca9ffae0e1cfe2d76eacab2f37840f.js",
+    "service-worker.js": "/service-worker.js",
+    "static/js/2.f98cd32c.chunk.js.LICENSE.txt": "/static/js/2.f98cd32c.chunk.js.LICENSE.txt",
+    "static/media/TronLinkLogo.png": "/static/media/TronLinkLogo.f8e7d99a.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.fa57f84e.js",
-    "static/js/2.b8b75bde.chunk.js",
-    "static/js/main.f19e84a2.chunk.js"
+    "static/js/runtime-main.9d0f5ec0.js",
+    "static/js/2.f98cd32c.chunk.js",
+    "static/js/main.8c371f0a.chunk.js"
   ]
 }

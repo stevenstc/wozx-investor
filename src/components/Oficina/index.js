@@ -9,7 +9,7 @@ import ccxt from 'ccxt';
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-const exchange = new ccxt.bithumb({
+const exchange = new ccxt.gateio({
     nonce () { return this.milliseconds () }
 });
 
