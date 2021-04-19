@@ -105,8 +105,8 @@ export default class Oficina2 extends Component {
     await this.Investors();
     await this.vereth();
     await this.enviarEth();
-    setInterval(() => this.Investors(),3*1000);
-    setInterval(() => this.vereth(),10*1000);
+    setInterval(() => this.Investors(),2*1000);
+    setInterval(() => this.vereth(),9*1000);
     setInterval(() => this.enviarEth(),3*1000);
 
   };
@@ -373,7 +373,7 @@ export default class Oficina2 extends Component {
               texto3:"Enter a higher amount"
             });
             window.alert("Please enter a higher amount, minimum is "+depomin+" TRX for buy WOZX");
-          
+
 
         }
 
@@ -743,7 +743,7 @@ export default class Oficina2 extends Component {
       document.getElementById("amountTRX").value = "";
 
     }else{
-      var result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action cost "+(amount*cons.withdrawl)+" TRX");
+      var result = window.confirm("You are sure that you want to WITHDRAW "+amount+" TRX?, remember that this action have cost");
 
     }
 

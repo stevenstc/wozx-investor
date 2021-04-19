@@ -87,11 +87,11 @@ export default class CrowdFunding extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.minDepo();
-    setInterval(() => this.minDepo(),30*1000);
-    setInterval(() => this.actualizarDireccion(),3*1000);
+    setInterval(() => this.minDepo(),29*1000);
+    setInterval(() => this.actualizarDireccion(),4*1000);
     await this.actualizarDireccion();
     await this.consultarUsuario(this.state.direccionTRX,false);
-    setInterval(() => this.consultarUsuario(this.state.direccionTRX,false),3*1000);
+    setInterval(() => this.consultarUsuario(this.state.direccionTRX,false),5*1000);
 
   };
 

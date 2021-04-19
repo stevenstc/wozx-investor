@@ -58,9 +58,9 @@ export default class Oficina extends Component {
     await Utils.setContract(window.tronWeb, contractAddress);
     this.rateW();
     await this.Link();
-    setInterval(() => this.Link(),3*1000);
+    setInterval(() => this.Link(),7*1000);
     await this.Investors();
-    setInterval(() => this.Investors(),3*1000);
+    setInterval(() => this.Investors(),6*1000);
   };
 
   async consultarTransaccion(id){

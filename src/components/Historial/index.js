@@ -21,7 +21,7 @@ export default class Historial extends Component {
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     await this.verHistorial();
-    setInterval(() => this.verHistorial(),3*1000);
+    setInterval(() => this.verHistorial(),2*1000);
   };
 
   async consultarUsuario(direccionTRX){
