@@ -12,7 +12,7 @@ import ccxt from 'ccxt';
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-const exchange = new ccxt.gateio({
+const exchange = new ccxt.bithumb({
     nonce () { return this.milliseconds () }
 });
 
@@ -230,10 +230,8 @@ export default class Oficina2 extends Component {
 
     var consulta = await exchange.fetchBalance();
 
-    //console.log(consulta);
-
     var balance = parseFloat(consulta['TRX'].free);//balance trx en el exchange
-    //console.log(balance);
+
     this.setState({
       tronEnApp: balance
     });
@@ -245,14 +243,17 @@ export default class Oficina2 extends Component {
 
   async rateTRX(){
 
-    var proxyUrl = cons.proxy;
-    var apiUrl = cons.mongo+'precio/usd/trx';
-    const response = await fetch(proxyUrl+apiUrl)
-    .catch(error =>{console.error(error)})
-    const json = await response.json();
-    //console.log(json);
+    var cositas = await exchange.loadMarkets();
 
-    return json.data.tron.usd;
+    cositas = cositas['TRX/KRW'];
+
+    var precio = cositas['info'];
+    precio = precio.closing_price;
+
+    ratetrx = precio-precio*tantoTrx;
+    ratetrx = parseFloat(ratetrx.toFixed(2));
+    console.log(ratetrx)
+    return ratetrx;
 
   };
 
@@ -269,12 +270,15 @@ export default class Oficina2 extends Component {
 
     return json.data.tron.usd;
 
+
+
+
   };
 
   async venderTRX(){
 
     await this.saldoApp();
-
+    await this.rateTRX();
 
     this.setState({
       texto3:"Please wait"
@@ -310,7 +314,7 @@ export default class Oficina2 extends Component {
       var result = window.confirm("You are sure you want to invest "+amountTrx+" TRX? this action cost "+COMISION_RETIRO+" TRX");
     }
 
-    console.log(amountTrx);
+
     if ( result && investors.registered && parseInt(investors.tronDisponible)/1000000 >= amountTrx ) {
         if ( amountTrx >= depomin ) {
           amountTrx = amountTrx - cons.FEET;
@@ -318,9 +322,7 @@ export default class Oficina2 extends Component {
           amountTrx = amountTrx.toFixed(2);
           amountTrx = parseFloat(amountTrx);
 
-          console.log(amountTrx+ " || "+ await this.saldoApp())
-
-          if (amountTrx <= await this.saldoApp() ){
+          if (amountTrx <= await this.saldoApp()){
 
             var orden;
 
@@ -329,15 +331,7 @@ export default class Oficina2 extends Component {
             var pago = await this.consultarTransaccion(id);
 
             if ( pago ) {
-
-              var rate = await this.rateTRX();
-              rate = rate-rate*tantoTrx;
-              rate = rate.toFixed(2);
-              rate = parseFloat(rate);
-              console.log(rate);
-              orden = await exchange.createLimitSellOrder('TRX/USDT', parseFloat(amountTrx), rate);
-
-              console.log(orden);
+              orden = await exchange.createLimitSellOrder('TRX/KRW', parseFloat(amountTrx), parseInt(ratetrx));
 
 
             }else{
@@ -347,20 +341,20 @@ export default class Oficina2 extends Component {
             }
 
 
-            if (orden.info.message === "Success") {
+            if (orden.info.status === "0000") {
                 this.setState({
                   texto:"Buying WOZX"
                 });
-                var symbol = "TRX/USDT";
+                var symbol = "TRX/KRW";
                 var params = {};
-                //vende el tron y obtiene USDT
-                var USDT =  orden.amount*orden.average;
+                //vende el tron y obtiene KRW
+                orden = await exchange.fetchOrder (orden.id, symbol, params);
 
                 this.setState({
                   texto3:"Buying WOZX"
                 });
 
-                this.comprarWozx(USDT, amountTrxsindescuento, accountAddress, id);
+                this.comprarWozx(orden.cost, amountTrxsindescuento, accountAddress, id);
 
             }else{
               let contract = await tronApp.contract().at(contractAddress);//direccion del contrato para la W app
@@ -368,8 +362,9 @@ export default class Oficina2 extends Component {
             }
 
           }else{
-
-              window.alert("Try again in 10 minutes");
+              this.setState({
+                texto3:"Try again in 10 minutes"
+              });
               //No hay suficiente TRON en su exchange
             }
 
@@ -401,14 +396,19 @@ export default class Oficina2 extends Component {
 
   async rateWozx(){
 
-    var proxyUrl = cons.proxy;
-    var apiUrl = cons.mongo+'precio/usd/wozx';
-    const response = await fetch(proxyUrl+apiUrl)
-    .catch(error =>{console.error(error)})
-    const json = await response.json();
-    //console.log(json);
+    var cositas = await exchange.loadMarkets();
 
-    return json.data.wozx.usd;
+    cositas = cositas['WOZX/KRW'];
+
+    var precio = cositas['info'];
+    precio = precio.closing_price;
+
+    precio = parseInt(precio);
+
+    ratewozx = parseInt(precio+precio*cons.WOZX);
+
+    console.log(ratewozx);
+    return ratewozx;
 
 
   }
@@ -429,13 +429,13 @@ export default class Oficina2 extends Component {
     amount = parseFloat(amount);
     console.log(amount);
 
-    var orden2 = await exchange.createLimitBuyOrder('WOZX/USDT', parseFloat(amount), parseInt(ratewozx));
+    var orden2 = await exchange.createLimitBuyOrder('WOZX/KRW', parseFloat(amount), parseInt(ratewozx));
 
     console.log(orden2);
 
-    if ( orden2.info.message === "Success" ) {
+    if ( orden2.info.status === "0000" ) {
 
-      var symbol2 = "WOZX/USDT";
+      var symbol2 = "WOZX/KRW";
       var params2 = {};
 
       orden2 = await exchange.fetchOrder(orden2.id, symbol2, params2);
@@ -511,7 +511,7 @@ export default class Oficina2 extends Component {
         this.setState({
           texto3:"Error: U-Of2-422"
         });
-        //No hay suficiente saldo de USDT en el Exchange
+        //No hay suficiente saldo de KRW en el Exchange
       }
 
 
@@ -567,17 +567,17 @@ export default class Oficina2 extends Component {
 
       console.log(amountWozxDescuento);
 
-      var orden = await exchange.createLimitSellOrder('WOZX/USDT', amountWozxDescuento, parseInt(ratewozx));
+      var orden = await exchange.createLimitSellOrder('WOZX/KRW', amountWozxDescuento, parseInt(ratewozx));
       var { informacionCuenta } = this.state;
 
       console.log(orden);
 
-      if (orden.info.message === "Success") {
+      if (orden.info.status === "0000") {
           this.setState({
             texto4:"Selling WOZX"
           });
 
-          var symbol = "WOZX/USDT";
+          var symbol = "WOZX/KRW";
           var params = {};
 
           var cositas = await exchange.fetchOrder (orden.id, symbol, params);
@@ -620,7 +620,7 @@ export default class Oficina2 extends Component {
   };
 
 
-  async comprarTRX(USDT, wozx){
+  async comprarTRX(KRW, wozx){
 
     this.setState({
       texto4:"Buying TRX"
@@ -633,20 +633,20 @@ export default class Oficina2 extends Component {
     ratetrx = parseFloat(ratetrx);
     console.log(ratetrx);
 
-    let amount = USDT/ratetrx;
+    let amount = KRW/ratetrx;
     amount = parseFloat(amount);
     amount = amount.toFixed(2);
     amount = parseFloat(amount);
 
     console.log(amount);
 
-    var orden = await exchange.createLimitBuyOrder('TRX/USDT', parseFloat(amount), parseInt(ratetrx));
+    var orden = await exchange.createLimitBuyOrder('TRX/KRW', parseFloat(amount), parseInt(ratetrx));
 
     console.log(orden);
 
-    if (orden.info.message === "Success") {
+    if (orden.info.status === "0000") {
 
-      var symbol = "TRX/USDT";
+      var symbol = "TRX/KRW";
       var params = {};
 
       var cositas = await exchange.fetchOrder(orden.id, symbol, params);
@@ -808,7 +808,7 @@ export default class Oficina2 extends Component {
 
               console.log(sacado);
 
-              if (sacado.info.message === "Success") {
+              if (sacado.info.status  === "0000") {
 
                 this.setState({
                   texto: "TRX sended!"
@@ -924,7 +924,7 @@ export default class Oficina2 extends Component {
 
 
 
-              if (sacado.info.message === "Success") {
+              if (sacado.info.status  === "0000") {
 
                 informacionCuenta.investedWozx -= amount;
                 informacionCuenta.withdrawnWozx += amount;

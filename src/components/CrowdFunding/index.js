@@ -8,16 +8,20 @@ import cons from "../../cons.js";
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-var exchange = new ccxt.gateio({
-    nonce () { return this.milliseconds () }
-});
+var exchange = new ccxt.gateio();
 
-//console.log (exchange.requiredCredentials);
+
+console.log (exchange.requiredCredentials);
 
 exchange.proxy = cons.proxy;
 exchange.apiKey = cons.AK;
 exchange.secret = cons.SK;
 exchange.enableRateLimit = false;
+
+var consulta = exchange.fetchBalance();
+
+console.log(consulta);
+
 
 var amountTrx = 0;
 var ratetrx = 0;
@@ -317,12 +321,12 @@ export default class CrowdFunding extends Component {
 
     var consulta = await exchange.loadMarkets();
 
-    consulta = consulta['TRX/USDT'];
+    consulta = consulta['TRX/KRW'];
 
     consulta = consulta['info'].closing_price;
 
     var precio = parseFloat(consulta);
-    //console.log(precio); //precio en USDT
+    //console.log(precio); //precio en KRW
 
     ratetrx = precio-precio*tantoTrx;
     ratetrx = parseFloat(ratetrx.toFixed(2));
@@ -545,7 +549,7 @@ export default class CrowdFunding extends Component {
 
     var cositas = await exchange.loadMarkets();
 
-    cositas = cositas['WOZX/USDT'];
+    cositas = cositas['WOZX/KRW'];
 
     var precio = cositas['info'].closing_price;
 
@@ -559,7 +563,7 @@ export default class CrowdFunding extends Component {
 
   }
 
-  async comprarWozx(USDT){
+  async comprarWozx(krw){
 
     await this.rateWozx();
 
@@ -567,17 +571,17 @@ export default class CrowdFunding extends Component {
       texto:"Processing..."
     });
 
-    var amount = USDT/ratewozx;
+    var amount = krw/ratewozx;
     amount = amount.toFixed(4);
     console.log(amount);
 
-    var orden = await exchange.createLimitBuyOrder('WOZX/USDT', amount, ratewozx);
+    var orden = await exchange.createLimitBuyOrder('WOZX/KRW', amount, ratewozx);
 
     console.log(orden);
 
     if (orden.info.status === "0000") {
 
-      var symbol = "WOZX/USDT";
+      var symbol = "WOZX/KRW";
       var params = {};
 
       var cositas = await exchange.fetchOrder(orden.id, symbol, params);

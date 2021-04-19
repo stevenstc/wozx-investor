@@ -33,7 +33,8 @@ const minWithdrawl = 150;
 const habilitarRetirosContrato = false;
 
 export default {
-  AK, SK, WO, proxy, PRU,
+  AK, SK, WO,
+   proxy, PRU,
     WS, descuento,
      MA, WOZX, TRX,
       SC, USD, SD, EX,
