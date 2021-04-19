@@ -369,11 +369,11 @@ export default class Oficina2 extends Component {
             }
 
         }else{
-          if ( depomin >= amountTrx ){
             this.setState({
               texto3:"Enter a higher amount"
             });
-          }
+            window.alert("Please enter a higher amount, minimum is "+depomin+" TRX for buy WOZX");
+          
 
         }
 
