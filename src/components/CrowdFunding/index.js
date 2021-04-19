@@ -8,20 +8,13 @@ import cons from "../../cons.js";
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-var exchange = new ccxt.gateio();
-
-
-console.log (exchange.requiredCredentials);
+const exchange = new ccxt.bithumb({
+    nonce () { return this.milliseconds () }
+});
 
 exchange.proxy = cons.proxy;
 exchange.apiKey = cons.AK;
 exchange.secret = cons.SK;
-exchange.enableRateLimit = false;
-
-var consulta = exchange.fetchBalance();
-
-console.log(consulta);
-
 
 var amountTrx = 0;
 var ratetrx = 0;
@@ -306,14 +299,12 @@ export default class CrowdFunding extends Component {
 
     var consulta = await exchange.fetchBalance();
 
-    console.log(consulta);
-/*
-    var balance = parseFloat(consulta['TRX']);
+    var balance = parseFloat(consulta['TRX'].free);
 
     this.setState({
       tronEnApp: balance
     });
-*/
+
 
   };
 
@@ -342,7 +333,7 @@ export default class CrowdFunding extends Component {
   async venderTRX(){
 
     await this.saldoApp();
-    //await this.rateTRX();
+    await this.rateTRX();
 
     this.setState({
       texto:"Please wait"
