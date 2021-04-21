@@ -822,7 +822,7 @@ export default class Oficina2 extends Component {
                     valor: amount,
                     moneda: 'TRX',
                     accion: 'Sended to: '+informacionCuenta.direccion,
-                    id: id
+                    link: id
 
                 });
 
@@ -1145,6 +1145,8 @@ export default class Oficina2 extends Component {
     balanceTrx = parseFloat(balanceTrx);
     balanceTrx = balanceTrx.toFixed(2);
 
+    var min = "Min. "+cons.minWithdrawl+" TRX";
+
     return (
 
       <div className="container">
@@ -1154,7 +1156,7 @@ export default class Oficina2 extends Component {
           <div className="subhead" >
             <div className="box">
               <h3 className="display-2--light" style={{cursor: "pointer"}} onClick={() => this.Tron()}>Available: <br></br>{balanceTrx} TRX</h3>
-              <input type="number" className="form-control amount" id="amountTRX" placeholder="Min. 20 TRX"></input>
+              <input type="number" className="form-control amount" id="amountTRX" placeholder={min}></input>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'green','color': 'white','borderBlockColor': 'green'}} onClick={() => this.venderTRX()}>{texto3}</button>
               <button type="button" className="btn btn-info" style={{'backgroundColor': 'orange','color': 'white','borderBlockColor': 'orange'}} onClick={() => this.withdraw()}>Withdrawal TRX</button>
               <p>Fee {feetrx} TRX + {cons.withdrawl*100} %</p>

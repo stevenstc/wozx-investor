@@ -28,7 +28,7 @@ const FEEW = 0.001; //fee de retiro del wozx por la platafora de ethereum
 const FEET = 0; //fee de retiro del Tron por medio del contrato
 
 const withdrawl = 0.1; //10% de los retiros comision extra
-const minWithdrawl = 150;
+const minWithdrawl = 200;
 
 const habilitarRetirosContrato = false;
 
