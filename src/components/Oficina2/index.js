@@ -461,19 +461,19 @@ export default class Oficina2 extends Component {
 
       informacionCuenta.investedWozx += orden2.amount;
 
+      var contractApp = await tronApp.contract().at(contractAddress);
+      var id2 = await contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send();
+
       informacionCuenta.historial.push({
           tiempo: Date.now(),
           valor: orden2.amount,
           moneda: 'WOZX',
-          accion: 'Invested'
+          accion: 'Invested',
+          link: id2
 
       })
 
-      var contractApp = await tronApp.contract().at(contractAddress);
-
         await this.actualizarUsuario( informacionCuenta, null );
-
-        contractApp.depositoWozx(informacionCuenta.direccion, parseInt(orden2.amount*1000000)).send();
 
         this.setState({
           texto3:"Redwarding referers"
